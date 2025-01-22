@@ -1,0 +1,11 @@
+name: ddrc
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: appcontainer/Dockerfile
+    image: cdt/ddrc:app
+    env_file: .env
+    ports:
+      - "${DJANGO_LOCAL_PORT:-8000}:8000"
