@@ -1,0 +1,104 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      # pre-release tag
+      - "202[5-9].[0-9][0-9].[0-9]+-rc[0-9]+"
+      # release tags
+      - "202[5-9].[0-9][0-9].[0-9]+"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  tests-pytest:
+    uses: ./.github/workflows/tests-pytest.yml
+    permissions:
+      pull-requests: write
+      contents: write
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [tests-pytest]
+    permissions:
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .github/workflows/.python-version
+          cache: pip
+          cache-dependency-path: "**/pyproject.toml"
+
+      - name: Write python packages to file
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install pipdeptree
+          pip install -e .
+          mkdir -p web/static
+          pipdeptree
+          pipdeptree >> web/static/requirements.txt
+
+      - name: Write commit SHA to file
+        run: echo "${{ github.sha }}" >> web/static/sha.txt
+
+      - name: Write tag to file
+        run: echo "${{ github.ref_name }}" >> web/static/version.txt
+
+      - name: Docker Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push image to GitHub Container Registry
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
+          builder: ${{ steps.buildx.outputs.name }}
+          build-args: GIT-SHA=${{ github.sha }}
+          cache-from: type=gha,scope=compilerla
+          cache-to: type=gha,scope=compilerla,mode=max
+          context: .
+          file: appcontainer/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+  release:
+    needs: deploy
+    if: ${{ github.ref_type == 'tag' && !contains(github.ref, '-rc') }}
+    runs-on: ubuntu-latest
+    permissions:
+      # https://github.com/softprops/action-gh-release#permissions
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: false
+          generate_release_notes: true
