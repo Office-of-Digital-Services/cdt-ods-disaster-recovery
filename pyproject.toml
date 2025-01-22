@@ -9,6 +9,10 @@ requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
 dependencies = ["Django==5.1.4", "gunicorn==23.0.0"]
 
+[project.optional-dependencies]
+dev = ["black", "djlint", "flake8", "pre-commit", "setuptools_scm>=8"]
+test = ["coverage", "pytest", "pytest-django", "pytest-mock", "pytest-socket"]
+
 [project.urls]
 Code = "https://github.com/compilerla/ddrc"
 Issues = "https://github.com/compilerla/ddrc/issues"
@@ -16,6 +20,20 @@ Issues = "https://github.com/compilerla/ddrc/issues"
 [build-system]
 requires = ["setuptools>=75", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 127
+target-version = ["py312"]
+include = '\.pyi?$'
+
+[tool.coverage.run]
+branch = true
+relative_files = true
+source = ["web"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "web.settings"
+
 [tool.setuptools.packages.find]
 include = ["web*"]
 namespaces = false

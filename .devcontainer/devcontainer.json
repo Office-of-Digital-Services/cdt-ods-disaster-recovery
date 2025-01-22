@@ -1,0 +1,37 @@
+{
+  "name": "cdt/ddrc",
+  "dockerComposeFile": ["../compose.yml"],
+  "service": "dev",
+  "runServices": ["dev"],
+  "workspaceFolder": "/cdt/app",
+  "postStartCommand": ["/bin/bash", "bin/reset_db.sh"],
+  "postAttachCommand": ["/bin/bash", ".devcontainer/postAttach.sh"],
+  "customizations": {
+    "vscode": {
+      // Set *default* container specific settings.json values on container create.
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "/bin/bash"
+          }
+        }
+      },
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "batisteo.vscode-django",
+        "bpruitt-goddard.mermaid-markdown-syntax-highlighting",
+        "DavidAnson.vscode-markdownlint",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "mhutchie.git-graph",
+        "monosans.djlint",
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-python.flake8",
+        "qwtel.sqlite-viewer",
+        "tamasfe.even-better-toml"
+      ]
+    }
+  }
+}
