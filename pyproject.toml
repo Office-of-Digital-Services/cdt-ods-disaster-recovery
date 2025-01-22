@@ -1,0 +1,24 @@
+[project]
+name = "ddrc"
+dynamic = ["version"]
+description = "State of California Digital Disaster Recovery Center (DDRC)"
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = ["Programming Language :: Python :: 3 :: Only"]
+requires-python = ">=3.12"
+maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
+dependencies = ["Django==5.1.4", "gunicorn==23.0.0"]
+
+[project.urls]
+Code = "https://github.com/compilerla/ddrc"
+Issues = "https://github.com/compilerla/ddrc/issues"
+
+[build-system]
+requires = ["setuptools>=75", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+[tool.setuptools.packages.find]
+include = ["web*"]
+namespaces = false
+
+[tool.setuptools_scm]
+# intentionally left blank, but we need the section header to activate the tool
