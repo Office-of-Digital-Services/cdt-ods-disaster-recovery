@@ -8,6 +8,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 import os
 from pathlib import Path
 
+from django.conf import settings
+
 
 def _filter_empty(ls):
     return [s for s in ls if s]
@@ -22,7 +24,29 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "secret")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = _filter_empty(os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(","))
+ALLOWED_HOSTS = _filter_empty(os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,0.0.0.0").split(","))
+
+
+class RUNTIME_ENVS:
+    LOCAL = "local"
+    DEV = "dev"
+    TEST = "test"
+    PROD = "prod"
+
+
+def RUNTIME_ENVIRONMENT():
+    """Helper calculates the current runtime environment from ALLOWED_HOSTS."""
+
+    # usage of django.conf.settings.ALLOWED_HOSTS here (rather than the module variable directly)
+    # is to ensure dynamic calculation, e.g. for unit tests and elsewhere this setting is needed
+    env = RUNTIME_ENVS.LOCAL
+    if "dev" in settings.ALLOWED_HOSTS:
+        env = RUNTIME_ENVS.DEV
+    elif "test" in settings.ALLOWED_HOSTS:
+        env = RUNTIME_ENVS.TEST
+    elif "prod" in settings.ALLOWED_HOSTS:
+        env = RUNTIME_ENVS.PROD
+    return env
 
 
 # Application definition
