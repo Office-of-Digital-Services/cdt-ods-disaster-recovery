@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+{% block title %}
+    {% translate "OIDC: success" %}
+{% endblock title %}
+{% block headline %}
+    {% translate "OIDC: success" %}
+{% endblock headline %}
+{% block inner-content %}
+    <p>{% translate "You are now signed in." %}</p>
+    <p>
+        <a class="btn btn-secondary" href="{% url 'oauth:logout' %}">Sign out</a>
+    </p>
+{% endblock inner-content %}
