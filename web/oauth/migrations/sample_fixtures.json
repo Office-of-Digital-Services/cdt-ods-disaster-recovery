@@ -1,0 +1,12 @@
+[
+  {
+    "model": "oauth.oauthclientconfig",
+    "fields": {
+      "client_name": "dev",
+      "client_id_secret_name": "dev-client-id",
+      "authority": "https://dev.ca.gov",
+      "scheme": "dev-ddrc",
+      "scopes": "attribute:flag"
+    }
+  }
+]

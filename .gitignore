@@ -4,6 +4,8 @@
 *.tfbackend
 *.tmp
 *.egg-info
+*fixtures.json
+!web/oauth/migrations/sample_fixtures.json
 dist/
 static/
 __pycache__/
