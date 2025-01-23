@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+{% block title %}
+    {% translate "Request vital records" %}
+{% endblock title %}
+{% block headline %}
+    {% translate "Request vital records" %}
+{% endblock headline %}
+{% block inner-content %}
+    <p>{% translate "Here you can request copies of your vital records." %}</p>
+    <p>
+        <a class="btn btn-primary" href="{% url 'oauth:login' %}">Get started with Login.gov</a>
+    </p>
+{% endblock inner-content %}
