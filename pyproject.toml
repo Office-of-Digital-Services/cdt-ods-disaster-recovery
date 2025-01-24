@@ -14,8 +14,8 @@ dev = ["black", "djlint", "flake8", "pre-commit", "setuptools_scm>=8"]
 test = ["coverage", "pytest", "pytest-django", "pytest-mock", "pytest-socket"]
 
 [project.urls]
-Code = "https://github.com/compilerla/ddrc"
-Issues = "https://github.com/compilerla/ddrc/issues"
+Code = "https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery"
+Issues = "https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/issues"
 
 [build-system]
 requires = ["setuptools>=75", "setuptools_scm>=8"]
