@@ -4,7 +4,7 @@
 
 | Name                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |-------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| web/\_\_init\_\_.py                   |        5 |        0 |        0 |        0 |    100% |           |
+| web/\_\_init\_\_.py                   |        5 |        2 |        0 |        0 |     60% |       5-7 |
 | web/core/\_\_init\_\_.py              |        0 |        0 |        0 |        0 |    100% |           |
 | web/core/apps.py                      |        5 |        0 |        0 |        0 |    100% |           |
 | web/core/middleware.py                |        9 |        1 |        2 |        1 |     82% |        19 |
@@ -29,7 +29,7 @@
 | web/vital\_records/apps.py            |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/urls.py            |        4 |        4 |        0 |        0 |      0% |       1-7 |
 | web/wsgi.py                           |        4 |        4 |        0 |        0 |      0% |      8-14 |
-|                             **TOTAL** |  **362** |  **238** |   **68** |    **4** | **30%** |           |
+|                             **TOTAL** |  **362** |  **240** |   **68** |    **4** | **29%** |           |
 
 
 ## Setup coverage badge
