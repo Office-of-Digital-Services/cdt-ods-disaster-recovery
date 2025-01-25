@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "web.core",
     "web.oauth",
-    "web.vitals",
+    "web.vital_records",
 ]
 
 MIDDLEWARE = [
