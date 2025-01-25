@@ -9,6 +9,8 @@ requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
 dependencies = [
     "Authlib==1.4.0",
+    "azure-keyvault-secrets==4.9.0",
+    "azure-identity==1.19.0",
     "Django==5.1.5",
     "gunicorn==23.0.0",
     "requests==2.32.3",
