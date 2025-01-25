@@ -83,7 +83,7 @@ COPY bin bin
 COPY web web
 
 # install source as a package
-RUN pip install $(find /build/dist -name ddrc*.whl)
+RUN pip install $(find /build/dist -name ca_disaster_recovery*.whl)
 
 # configure container executable
 ENTRYPOINT ["/bin/bash"]
