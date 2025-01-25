@@ -79,8 +79,21 @@ CSRF_COOKIE_SAMESITE = "Strict"
 CSRF_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = _filter_empty(os.environ.get("DJANGO_TRUSTED_ORIGINS", "http://localhost").split(","))
 
+# With `Strict`, the user loses their Django session between leaving our app to
+# sign in with OAuth, and coming back into our app from the OAuth redirect.
+# This is because `Strict` disallows our cookie being sent from an external
+# domain and so the session cookie is lost.
+#
+# `Lax` allows the cookie to travel with the user and be sent back to us by the
+# OAuth server, as long as the request is "safe" i.e. GET
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_NAME = "_ddrcsessionid"
+
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
 
 ROOT_URLCONF = "web.urls"
 
