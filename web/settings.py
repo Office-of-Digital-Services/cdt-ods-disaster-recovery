@@ -40,11 +40,11 @@ def RUNTIME_ENVIRONMENT():
     # usage of django.conf.settings.ALLOWED_HOSTS here (rather than the module variable directly)
     # is to ensure dynamic calculation, e.g. for unit tests and elsewhere this setting is needed
     env = RUNTIME_ENVS.LOCAL
-    if "dev.recovery.cdt.ca.gov" in settings.ALLOWED_HOSTS:
+    if "dev.disasterrecovery.ca.gov" in settings.ALLOWED_HOSTS:
         env = RUNTIME_ENVS.DEV
-    elif "test.recovery.cdt.ca.gov" in settings.ALLOWED_HOSTS:
+    elif "test.disasterrecovery.ca.gov" in settings.ALLOWED_HOSTS:
         env = RUNTIME_ENVS.TEST
-    elif "recovery.cdt.ca.gov" in settings.ALLOWED_HOSTS:
+    elif "disasterrecovery.ca.gov" in settings.ALLOWED_HOSTS:
         env = RUNTIME_ENVS.PROD
     return env
 
@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "web.core",
     "web.oauth",
-    "web.vitals",
+    "web.vital_records",
 ]
 
 MIDDLEWARE = [
