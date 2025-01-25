@@ -9,6 +9,10 @@ provide a platform-agnostic, standardized development environment.
 
 ### Prerequisites
 
+<details>
+
+<summary>Expand for prerequisites</summary>
+
 This section describes the tooling you need to have installed and configured on your development machine before continuing.
 
 #### Git
@@ -118,6 +122,8 @@ ext install ms-vscode-remote.remote-containers
 
 `ms-vscode-remote.remote-containers` is the Extension ID of the
 [Dev Containers extension from Microsoft](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+
+</details>
 
 ### Get the project code
 
