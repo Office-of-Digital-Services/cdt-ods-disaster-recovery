@@ -101,6 +101,14 @@ SECURE_BROWSER_XSS_FILTER = True
 # see https://github.com/cal-itp/benefits/pull/793
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 
+# the NGINX reverse proxy sits in front of the application in deployed environments
+# SSL terminates before getting to Django, and NGINX adds this header to indicate
+# if the original request was secure or not
+#
+# See https://docs.djangoproject.com/en/5.1/ref/settings/#secure-proxy-ssl-header
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 ROOT_URLCONF = "web.urls"
 
 TEMPLATES = [
