@@ -25,6 +25,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [tests-pytest]
+    environment: ${{ github.ref_type != 'tag' && github.ref_name || contains(github.ref, '-rc') && 'test' || 'prod' }}
     permissions:
       packages: write
 
