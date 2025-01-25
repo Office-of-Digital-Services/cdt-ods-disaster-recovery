@@ -97,6 +97,10 @@ if not DEBUG:
 
 SECURE_BROWSER_XSS_FILTER = True
 
+# required so that cross-origin pop-ups have access to parent window context
+# see https://github.com/cal-itp/benefits/pull/793
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+
 ROOT_URLCONF = "web.urls"
 
 TEMPLATES = [
