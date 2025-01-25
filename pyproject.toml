@@ -1,5 +1,5 @@
 [project]
-name = "ddrc"
+name = "ca-disaster-recovery"
 dynamic = ["version"]
 description = "State of California Digital Disaster Recovery Center (DDRC)"
 readme = "README.md"
