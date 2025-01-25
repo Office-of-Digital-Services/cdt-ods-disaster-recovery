@@ -87,4 +87,4 @@ RUN pip install $(find /build/dist -name ddrc*.whl)
 
 # configure container executable
 ENTRYPOINT ["/bin/bash"]
-CMD ["bin/reset_db.sh"]
+CMD ["bin/start.sh"]
