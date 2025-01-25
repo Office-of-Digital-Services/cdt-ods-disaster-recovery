@@ -2,27 +2,27 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>California Digital Disaster Recovery Center</title>
     <meta name="Author" content="State of California" />
     <meta name="Description" content="State of California" />
     <meta name="Keywords" content="California, government" />
     <meta name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+          content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- Public Sans font google API -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=block">
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=block" />
     <!-- State Template CDN CSS -->
     <link rel="stylesheet"
           href="https://cdn.cdt.ca.gov/cdt/statetemplate/6.4.1/css/cagov.core.css"
           integrity="sha256-OGe4kV30/3p8qPhmiORxFvLS/NrPhdifrumYA6W5W5k="
-          crossorigin="anonymous">
+          crossorigin="anonymous" />
     <link rel="stylesheet"
           href="https://cdn.cdt.ca.gov/cdt/statetemplate/6.4.1/css/colortheme-oceanside.css"
           integrity="sha256-PC5Yszm8bAjYYFmjeL8EeB8mHo+S4dJbQt4OwA4aTmg="
-          crossorigin="anonymous">
+          crossorigin="anonymous" />
     <!-- State Template JavaScript CDN -->
     <script src="https://cdn.cdt.ca.gov/cdt/statetemplate/6.4.1/js/cagov.core.js"
             integrity="sha256-TOklMoh1iWoUNIVyzn+Wq8bS56lQWa0R8qklisvEALo="
@@ -41,12 +41,21 @@
 
       //Support code to make this work, just leave this as is
       var stateGTMAccount = "GTM-NJ6Q4MV"; //GTM-NJ6Q4MV - all ca.gov
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      (function(){dataLayer.push(arguments)})('config',yourGA4MeasurementId,{cookie_flags:'secure;samesite=lax;domain='});
-      })(window,document,'script','dataLayer',stateGTMAccount);
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+        (function () {
+          dataLayer.push(arguments);
+        })("config", yourGA4MeasurementId, {
+          cookie_flags: "secure;samesite=lax;domain=",
+        });
+      })(window, document, "script", "dataLayer", stateGTMAccount);
     </script>
     <!-- END Google Tag Manager -->
   </head>
@@ -162,7 +171,7 @@
             <a href="../contact.html" class="d-block no-underline m-y font-size-16">Contact us</a>
           </div>
           <div class="col-md-4">
-            <div class="h4 w-100 brd-bottom  brd-highlight p-b"
+            <div class="h4 w-100 brd-bottom brd-highlight p-b"
                  role="heading"
                  aria-level="2">Heading</div>
             <a href="javascript:;" class="d-block no-underline m-y font-size-16">Link 1</a>
@@ -209,7 +218,7 @@
           </ul>
           <ul class="socialsharer-container">
             <li>
-              <a href="https://github.com/compilerla/ddrc">
+              <a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery">
                 <span class="ca-gov-icon-github" aria-hidden="true"></span>
                 <span class="sr-only">GitHub</span>
               </a>
@@ -222,7 +231,11 @@
         <div class="container text-right">
           <span aria-hidden="true">©</span>
           <span id="thisyear">
-            <script>document.getElementById('thisyear').appendChild(document.createTextNode(new Date().getFullYear()))</script>
+            <script>
+              document
+                .getElementById("thisyear")
+                .appendChild(document.createTextNode(new Date().getFullYear()));
+            </script>
           </span>
           State of California
         </div>
