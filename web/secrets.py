@@ -3,10 +3,16 @@ import os
 import re
 import sys
 
+from azure.core.exceptions import ClientAuthenticationError
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 from django.conf import settings
 from django.core.validators import RegexValidator
 
 logger = logging.getLogger(__name__)
+
+
+KEY_VAULT_URL = "https://kv-cdt-pub-ddrc-{env}-001.vault.azure.net/"
 
 
 class SecretNameValidator(RegexValidator):
@@ -33,7 +39,8 @@ NAME_VALIDATOR = SecretNameValidator()
 
 
 def get_secret_by_name(secret_name, client=None):
-    """Read a value from the secret store.
+    """
+    Read a value from the secret store, currently Azure KeyVault.
 
     When `settings.RUNTIME_ENVIRONMENT() == "local"`, reads from the environment instead.
     """
@@ -42,7 +49,7 @@ def get_secret_by_name(secret_name, client=None):
     runtime_env = settings.RUNTIME_ENVIRONMENT()
 
     if runtime_env == "local":
-        logger.debug("Runtime environment is local, reading from environment.")
+        logger.debug("Runtime environment is local, reading from environment instead of Azure KeyVault.")
         # environment variable names cannot contain the hyphen character
         # assume the variable name is the same but with underscores instead
         env_secret_name = secret_name.replace("-", "_")
@@ -52,8 +59,27 @@ def get_secret_by_name(secret_name, client=None):
         # because the VS Code Python extension doesn't support multiline environment variables
         # https://code.visualstudio.com/docs/python/environments#_environment-variables
         return secret_value.replace("\\n", "\n")
+
+    elif client is None:
+        # construct the KeyVault URL from the runtime environment
+        vault_url = KEY_VAULT_URL.format(env=runtime_env[0])
+        logger.debug(f"Configuring Azure KeyVault secrets client for: {vault_url}")
+
+        credential = DefaultAzureCredential()
+        client = SecretClient(vault_url=vault_url, credential=credential)
+
+    secret_value = None
+
+    if client is not None:
+        try:
+            secret = client.get_secret(secret_name)
+            secret_value = secret.value
+        except ClientAuthenticationError:
+            logger.error("Could not authenticate to Azure KeyVault")
     else:
-        raise RuntimeError("Only the local runtime is supported")
+        logger.error("Azure KeyVault SecretClient was not configured")
+
+    return secret_value
 
 
 if __name__ == "__main__":
