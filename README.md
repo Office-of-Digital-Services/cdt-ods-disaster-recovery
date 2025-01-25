@@ -25,9 +25,9 @@
 | web/secrets.py                        |       48 |       29 |       10 |        1 |     34% |47-82, 86-95 |
 | web/settings.py                       |       53 |        8 |       10 |        2 |     75% |42-49, 94->98, 109->112 |
 | web/urls.py                           |        3 |        3 |        0 |        0 |      0% |      8-11 |
-| web/vitals/\_\_init\_\_.py            |        0 |        0 |        0 |        0 |    100% |           |
-| web/vitals/apps.py                    |        5 |        0 |        0 |        0 |    100% |           |
-| web/vitals/urls.py                    |        4 |        4 |        0 |        0 |      0% |       1-7 |
+| web/vital\_records/\_\_init\_\_.py    |        0 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/apps.py            |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/urls.py            |        4 |        4 |        0 |        0 |      0% |       1-7 |
 | web/wsgi.py                           |        4 |        4 |        0 |        0 |      0% |      8-14 |
 |                             **TOTAL** |  **362** |  **238** |   **68** |    **4** | **30%** |           |
 
