@@ -38,17 +38,17 @@ stages:
               REASON: $(Build.Reason)
       - job: dev
         dependsOn: environment
-        condition: eq(dependencies.environment.outputs['env_select.service_connection'], 'Development')
+        condition: ne(dependencies.environment.outputs['env_select.workspace'], 'default')
         variables:
           workspace: $[ dependencies.environment.outputs['env_select.workspace'] ]
         steps:
           - template: pipeline/deploy.yml
             parameters:
-              service_connection: Development
+              service_connection: Production
               workspace: $(workspace)
       - job: prod
         dependsOn: environment
-        condition: eq(dependencies.environment.outputs['env_select.service_connection'], 'Production')
+        condition: eq(dependencies.environment.outputs['env_select.workspace'], 'default')
         variables:
           workspace: $[ dependencies.environment.outputs['env_select.workspace'] ]
         steps:
