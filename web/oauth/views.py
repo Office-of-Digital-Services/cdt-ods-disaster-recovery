@@ -5,19 +5,18 @@ from django.shortcuts import redirect
 from django.urls import reverse
 
 from . import redirects, session
-from .client import oauth, create_client
-from .models import OAuthClientConfig
+from .client import create_client, oauth
+from .models import ClientConfig
 from .routes import Routes
-
 
 logger = logging.getLogger(__name__)
 
 
 def _oauth_client_config():
-    return OAuthClientConfig.objects.first()
+    return ClientConfig.objects.first()
 
 
-def _oauth_client_or_error_redirect(request: HttpRequest, config: OAuthClientConfig):
+def _oauth_client_or_error_redirect(request: HttpRequest, config: ClientConfig):
     """Calls `web.oauth.client.create_client()`.
 
     If a client is created successfully, return it; Otherwise, return a redirect response to OAuth system error.
@@ -99,7 +98,7 @@ def authorize(request):
     session.oauth_token(request, id_token)
     session.oauth_claims(request, stored_claims)
 
-    return redirect(Routes.SUCCESS)
+    return redirect(oauth_client_config.post_authorize_access_token_redirect)
 
 
 def login(request):

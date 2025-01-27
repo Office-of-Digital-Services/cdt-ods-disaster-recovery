@@ -7,6 +7,7 @@ from . import views
 app_name = "oauth"
 endpoints_template = [
     "cancel",
+    "error",
     "post_logout",
     "success",
 ]

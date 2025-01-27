@@ -5,16 +5,16 @@ from django.db import models
 from .secret_name_field import SecretNameField
 
 
-class OAuthClientConfig(models.Model):
+class ClientConfig(models.Model):
     """OAuth Client configuration."""
 
     class Meta:
         verbose_name = "OAuth Client"
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    client_name = models.CharField(
+    client_name = models.SlugField(
         help_text="The name of this OAuth client",
-        max_length=50,
+        unique=True,
     )
     client_id_secret_name = SecretNameField(help_text="The name of the secret containing the client ID for this OAuth client")
     authority = models.CharField(
@@ -22,13 +22,7 @@ class OAuthClientConfig(models.Model):
         max_length=50,
     )
     scheme = models.CharField(
-        help_text="The authentication scheme to use for this OAuth client",
-        max_length=50,
-    )
-    scopes = models.CharField(
-        blank=True,
-        default="",
-        help_text="A space-separated list of identifiers used to specify what access privileges are being requested",
+        help_text="The authentication scheme for the authority server",
         max_length=50,
     )
 

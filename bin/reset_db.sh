@@ -27,7 +27,7 @@ valid_fixtures=$(echo "$DJANGO_DB_FIXTURES" | grep -e fixtures\.json$ || test $?
 
 if [[ -n "$valid_fixtures" ]]; then
     # load data fixtures
-    python manage.py loaddata "$DJANGO_DB_FIXTURES"
+    python manage.py loaddata $DJANGO_DB_FIXTURES
 else
     echo "No JSON fixtures to load"
 fi

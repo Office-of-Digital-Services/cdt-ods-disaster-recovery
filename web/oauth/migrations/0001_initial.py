@@ -16,10 +16,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="oauthclientconfig",
+            name="ClientConfig",
             fields=[
                 ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ("client_name", models.CharField(help_text="The name of this OAuth client", max_length=50)),
+                ("client_name", models.SlugField(help_text="The name of this OAuth client", unique=True)),
                 (
                     "client_id_secret_name",
                     web.oauth.models.secret_name_field.SecretNameField(
@@ -36,16 +36,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "scheme",
-                    models.CharField(help_text="The authentication scheme to use for this OAuth client", max_length=50),
-                ),
-                (
-                    "scopes",
-                    models.CharField(
-                        blank=True,
-                        default="",
-                        help_text="A space-separated list of identifiers used to specify what access privileges are being requested",  # noqa: E501
-                        max_length=50,
-                    ),
+                    models.CharField(help_text="The authentication scheme for the authority server", max_length=50),
                 ),
             ],
             options={
