@@ -142,6 +142,12 @@ cp .env.sample .env
 
 Feel free to inspect the environment file, but leave the defaults for now.
 
+Then build the application and devcontainer Docker images:
+
+```shell
+bin/build.sh
+```
+
 ### Open the project in a VS Code devcontainer
 
 Still in your terminal, enter the following command to open the project in VS Code:
