@@ -23,13 +23,13 @@
 | web/oauth/urls.py                     |       11 |       11 |        4 |        0 |      0% |      1-27 |
 | web/oauth/views.py                    |       98 |       98 |       32 |        0 |      0% |     1-169 |
 | web/secrets.py                        |       48 |       29 |       10 |        1 |     34% |47-82, 86-95 |
-| web/settings.py                       |       53 |        8 |       10 |        2 |     75% |42-49, 94->98, 109->112 |
+| web/settings.py                       |       55 |        8 |       10 |        2 |     75% |42-49, 94->98, 109->112 |
 | web/urls.py                           |        3 |        3 |        0 |        0 |      0% |      8-11 |
 | web/vital\_records/\_\_init\_\_.py    |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/apps.py            |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/urls.py            |        4 |        4 |        0 |        0 |      0% |       1-7 |
 | web/wsgi.py                           |        4 |        4 |        0 |        0 |      0% |      8-14 |
-|                             **TOTAL** |  **362** |  **240** |   **68** |    **4** | **29%** |           |
+|                             **TOTAL** |  **364** |  **240** |   **68** |    **4** | **30%** |           |
 
 
 ## Setup coverage badge
