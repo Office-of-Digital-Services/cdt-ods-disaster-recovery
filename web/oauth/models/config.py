@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from django.db import models
 
-from web.core.models import SecretNameField
+from .secret_name_field import SecretNameField
 
 
 class OAuthClientConfig(models.Model):
