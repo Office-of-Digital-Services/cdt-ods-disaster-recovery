@@ -65,38 +65,77 @@
       <div id="skip-to-content">
         <a href="#main-content">Skip to Main Content</a>
       </div>
-      <div class="utility-header">
+      <!-- Utility header structural component -->
+      <div class="utility-header" data-nosnippet>
         <div class="container">
           <div class="flex-row">
-            <div class="social-media-links">
-              <div class="header-cagov-logo">
-                <a href="https://ca.gov">
-                  <span class="sr-only">CA.gov</span>
-                  <span class="ca-gov-logo-svg"></span>
-                </a>
+            <div class="social-media-links align-items-start">
+              <div class="official-collapsible-content">
+                <button type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapseOficial"
+                        aria-expanded="false"
+                        aria-controls="collapseOficial"
+                        class="btn-official mt-1 gray-900 color-black-hover">
+                  <span class="underline">Official California website</span>
+                  <span class="ca-gov-icon-caret-up" aria-hidden="true"></span>
+                  <span class="ca-gov-icon-caret-down" aria-hidden="true"></span>
+                </button>
+                <div class="collapse" id="collapseOficial">
+                  <div class="font-size-13 gray-900 p-y ps-1 pe-2">
+                    <span class="bold">California government websites use .ca.gov</span>
+                    <br />
+                    A .ca.gov website is part of California’s government.
+                  </div>
+                </div>
               </div>
-              <p class="official-tag">
-                <span class="desktop-only">Official website of the</span>
-                State of California
-              </p>
             </div>
-            <div class="settings-links">
-              <a href="{% url 'core:index' %}">About</a>
-              <a href="{% url 'core:index' %}">Contact</a>
+            <div class="settings-links ms-auto align-items-start pt-2">
+              <a href="{% url 'core:index' %}"
+                 class="m-l-0 underline cursor-pointer"
+                 lang="es"
+                 hreflang="es"
+                 translate="no"
+                 rel="alternate">Español</a>
+              <a href="{% url 'core:index' %}"
+                 lang="ko"
+                 hreflang="ko"
+                 translate="no"
+                 rel="alternate"
+                 class="underline cursor-pointer">한국어</a>
+              <a href="{% url 'core:index' %}"
+                 lang="tl"
+                 hreflang="tl"
+                 translate="no"
+                 rel="alternate"
+                 class="underline cursor-pointer">Tagalog</a>
+              <a href="{% url 'core:index' %}"
+                 lang="vi"
+                 hreflang="vi"
+                 translate="no"
+                 rel="alternate"
+                 class="underline cursor-pointer">Tiếng Việt</a>
+              <a href="{% url 'core:index' %}"
+                 lang="zh-hant"
+                 hreflang="zh-hant"
+                 translate="no"
+                 rel="alternate"
+                 class="underline cursor-pointer">繁體中文</a>
+              <a class="translate notranslate pos-rel top-minus-2"
+                 href="https:www.ca.gov/translate/"><span class="ca-gov-icon-globe" aria-hidden="true"></span><span class="sr-only">Translate</span></a>
             </div>
           </div>
         </div>
       </div>
-      <!-- header branding with light gray background -->
+      <!-- Site header (branding) structural component -->
       <div class="section-default">
         <div class="branding">
           <div class="header-organization-banner">
             <a href="{% url 'core:index' %}">
               <div class="logo-assets">
-                <div class="logo-text">
-                  <span class="logo-state">State of California</span>
-                  <span class="logo-dept">Digital Disaster Recovery Center</span>
-                </div>
+                <img src="https://cdn.cdt.ca.gov/cdt/cagov/cagov-lockup/cagov-lockup-flag/cagov-lockup-flag-gradient/cagov-lockup-flag-gradient.svg"
+                     class="logo-img"
+                     alt="CA.gov official logo" />
               </div>
             </a>
           </div>
@@ -122,6 +161,16 @@
         </div>
       </div>
       <div class="navigation-search full-width-nav container">
+        <div id="head-search" class="search-container featured-search">
+          <div class="d-block d-lg-none">
+            <a href="{% url 'core:index' %}"
+               class="drawer-logo-link first-level-link">
+              <img src="https://cdn.cdt.ca.gov/cdt/cagov/cagov-lockup/cagov-lockup-flag/cagov-lockup-flag-gradient/cagov-lockup-flag-gradient.svg"
+                   alt="CA.gov official logo"
+                   class="drawer-logo mb-4" />
+            </a>
+          </div>
+        </div>
         <!-- navigation types -->
         <nav id="navigation"
              class="main-navigation dropdown"
