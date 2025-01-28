@@ -31,5 +31,3 @@ if [[ -n "$valid_fixtures" ]]; then
 else
     echo "No JSON fixtures to load"
 fi
-
-bin/start.sh
