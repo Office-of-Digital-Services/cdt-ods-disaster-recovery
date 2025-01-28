@@ -41,8 +41,8 @@
 | web/vital\_records/session.py           |       24 |       24 |       10 |        0 |      0% |      1-29 |
 | web/vital\_records/urls.py              |        4 |        4 |        0 |        0 |      0% |       1-8 |
 | web/vital\_records/views.py             |       13 |       13 |        0 |        0 |      0% |      1-22 |
-| web/wsgi.py                             |        9 |        9 |        2 |        0 |      0% |      8-22 |
-|                               **TOTAL** |  **528** |  **361** |  **102** |    **5** | **27%** |           |
+| web/wsgi.py                             |       14 |       14 |        2 |        0 |      0% |      8-26 |
+|                               **TOTAL** |  **533** |  **366** |  **102** |    **5** | **27%** |           |
 
 
 ## Setup coverage badge
