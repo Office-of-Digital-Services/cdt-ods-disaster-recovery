@@ -87,4 +87,4 @@ RUN pip install $(find /build/dist -name ca_disaster_recovery*.whl)
 
 # configure container executable
 ENTRYPOINT ["/bin/bash"]
-CMD ["bin/start.sh"]
+CMD ["bin/reset_db.sh"]
