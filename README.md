@@ -2,34 +2,47 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|-------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| web/\_\_init\_\_.py                   |        5 |        2 |        0 |        0 |     60% |       5-7 |
-| web/core/\_\_init\_\_.py              |        0 |        0 |        0 |        0 |    100% |           |
-| web/core/apps.py                      |        5 |        0 |        0 |        0 |    100% |           |
-| web/core/middleware.py                |        9 |        1 |        2 |        1 |     82% |        19 |
-| web/core/models.py                    |       12 |        2 |        0 |        0 |     83% |     30-31 |
-| web/core/urls.py                      |        4 |        4 |        0 |        0 |      0% |       1-7 |
-| web/oauth/\_\_init\_\_.py             |        0 |        0 |        0 |        0 |    100% |           |
-| web/oauth/admin.py                    |        7 |        0 |        0 |        0 |    100% |           |
-| web/oauth/apps.py                     |        5 |        0 |        0 |        0 |    100% |           |
-| web/oauth/client.py                   |       21 |       21 |        4 |        0 |      0% |      5-62 |
-| web/oauth/migrations/0001\_initial.py |        8 |        8 |        0 |        0 |      0% |      3-15 |
-| web/oauth/migrations/\_\_init\_\_.py  |        0 |        0 |        0 |        0 |    100% |           |
-| web/oauth/models.py                   |       18 |        3 |        0 |        0 |     83% | 37-38, 41 |
-| web/oauth/redirects.py                |       17 |       17 |        2 |        0 |      0% |      1-34 |
-| web/oauth/routes.py                   |        9 |        9 |        0 |        0 |      0% |      1-10 |
-| web/oauth/session.py                  |       16 |       16 |        4 |        0 |      0% |      1-29 |
-| web/oauth/urls.py                     |       11 |       11 |        4 |        0 |      0% |      1-27 |
-| web/oauth/views.py                    |       98 |       98 |       32 |        0 |      0% |     1-169 |
-| web/secrets.py                        |       48 |       29 |       10 |        1 |     34% |47-82, 86-95 |
-| web/settings.py                       |       55 |        8 |       10 |        2 |     75% |42-49, 94->98, 109->112 |
-| web/urls.py                           |        3 |        3 |        0 |        0 |      0% |      8-11 |
-| web/vital\_records/\_\_init\_\_.py    |        0 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/apps.py            |        5 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/urls.py            |        4 |        4 |        0 |        0 |      0% |       1-7 |
-| web/wsgi.py                           |        4 |        4 |        0 |        0 |      0% |      8-14 |
-|                             **TOTAL** |  **364** |  **240** |   **68** |    **4** | **30%** |           |
+| Name                                    |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
+|---------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
+| web/\_\_init\_\_.py                     |        5 |        2 |        0 |        0 |     60% |       5-7 |
+| web/core/\_\_init\_\_.py                |        0 |        0 |        0 |        0 |    100% |           |
+| web/core/admin/\_\_init\_\_.py          |        2 |        0 |        0 |        0 |    100% |           |
+| web/core/admin/userflow.py              |        7 |        0 |        0 |        0 |    100% |           |
+| web/core/apps.py                        |        5 |        0 |        0 |        0 |    100% |           |
+| web/core/context\_processors.py         |        9 |        9 |        2 |        0 |      0% |      1-12 |
+| web/core/middleware.py                  |        9 |        1 |        2 |        1 |     82% |        19 |
+| web/core/migrations/0001\_initial.py    |        7 |        7 |        0 |        0 |      0% |      3-17 |
+| web/core/migrations/\_\_init\_\_.py     |        0 |        0 |        0 |        0 |    100% |           |
+| web/core/models/\_\_init\_\_.py         |        2 |        0 |        0 |        0 |    100% |           |
+| web/core/models/userflow.py             |       39 |       15 |        0 |        0 |     62% |68, 72-77, 81-84, 88-91 |
+| web/core/session.py                     |        9 |        9 |        2 |        0 |      0% |      1-13 |
+| web/core/urls.py                        |        4 |        4 |        0 |        0 |      0% |       1-7 |
+| web/oauth/\_\_init\_\_.py               |        0 |        0 |        0 |        0 |    100% |           |
+| web/oauth/admin/\_\_init\_\_.py         |        2 |        0 |        0 |        0 |    100% |           |
+| web/oauth/admin/config.py               |        7 |        0 |        0 |        0 |    100% |           |
+| web/oauth/apps.py                       |        5 |        0 |        0 |        0 |    100% |           |
+| web/oauth/claims.py                     |       24 |       24 |       16 |        0 |      0% |      1-37 |
+| web/oauth/client.py                     |       24 |       24 |        6 |        0 |      0% |      5-65 |
+| web/oauth/migrations/0001\_initial.py   |        8 |        8 |        0 |        0 |      0% |      3-17 |
+| web/oauth/migrations/\_\_init\_\_.py    |        0 |        0 |        0 |        0 |    100% |           |
+| web/oauth/models/\_\_init\_\_.py        |        3 |        0 |        0 |        0 |    100% |           |
+| web/oauth/models/config.py              |       17 |        3 |        0 |        0 |     82% | 31-32, 35 |
+| web/oauth/models/secret\_name\_field.py |       12 |        2 |        0 |        0 |     83% |     30-31 |
+| web/oauth/redirects.py                  |       17 |       17 |        2 |        0 |      0% |      1-34 |
+| web/oauth/routes.py                     |        9 |        9 |        0 |        0 |      0% |      1-10 |
+| web/oauth/secrets.py                    |       48 |       29 |       10 |        1 |     34% |47-82, 86-95 |
+| web/oauth/session.py                    |       36 |       36 |        8 |        0 |      0% |      1-65 |
+| web/oauth/urls.py                       |       11 |       11 |        4 |        0 |      0% |      1-28 |
+| web/oauth/views.py                      |       89 |       89 |       26 |        0 |      0% |     1-152 |
+| web/settings.py                         |       60 |        9 |       12 |        3 |     75% |42-49, 94->98, 109->112, 122 |
+| web/urls.py                             |        3 |        3 |        0 |        0 |      0% |      8-11 |
+| web/vital\_records/\_\_init\_\_.py      |        0 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/apps.py              |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/session.py           |       24 |       24 |       10 |        0 |      0% |      1-29 |
+| web/vital\_records/urls.py              |        4 |        4 |        0 |        0 |      0% |       1-8 |
+| web/vital\_records/views.py             |       13 |       13 |        0 |        0 |      0% |      1-22 |
+| web/wsgi.py                             |        9 |        9 |        2 |        0 |      0% |      8-22 |
+|                               **TOTAL** |  **528** |  **361** |  **102** |    **5** | **27%** |           |
 
 
 ## Setup coverage badge
