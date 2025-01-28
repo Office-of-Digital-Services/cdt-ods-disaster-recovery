@@ -1,29 +1,65 @@
+import logging
+
+from django.db import models
 from django.http import HttpRequest
 
-_OAUTH_CLAIMS = "oauth_claims"
-_OAUTH_TOKEN = "oauth_token"
+from .models import ClientConfig
 
 
-def logged_in(request: HttpRequest):
-    """Check if the current session has an OAuth token."""
-    return bool(oauth_token(request))
+logger = logging.getLogger(__name__)
 
 
-def logout(request: HttpRequest):
-    """Reset the session claims and tokens."""
-    oauth_claims(request, [])
-    oauth_token(request, "")
+class Session:
 
+    props = {
+        "oauth_claims_check": str,
+        "oauth_claims_eligibility": str,
+        "oauth_claims_verified": str,
+        "oauth_config": ClientConfig,
+        "oauth_redirect_failure": str,
+        "oauth_redirect_success": str,
+        "oauth_scopes": str,
+        "oauth_token": str,
+    }
 
-def oauth_claims(request: HttpRequest, new_value: list[str] = None) -> str | None:
-    """Get the oauth claims from the request's session. Optionally update the value first."""
-    if new_value is not None:
-        request.session[_OAUTH_CLAIMS] = new_value
-    return request.session.get(_OAUTH_CLAIMS)
+    def __init__(self, request: HttpRequest, reset: bool = False):
+        self.request = request
+        self.session = request.session
 
+        logger.debug(self.session.keys())
 
-def oauth_token(request: HttpRequest, new_value: str = None) -> str | None:
-    """Get the oauth token from the request's session. Optionally update the value first."""
-    if new_value is not None:
-        request.session[_OAUTH_TOKEN] = new_value
-    return request.session.get(_OAUTH_TOKEN)
+        for prop_name in self.props.keys():
+            self._make_property(prop_name)
+
+        if reset:
+            self.oauth_claims_check = ""
+            self.oauth_claims_eligibility = ""
+            self.logout()
+
+    def _make_property(self, prop_name):
+        def _getter(s):
+            if issubclass(self.props[prop_name], models.Model):
+                val = s.session.get(prop_name)
+                cls = self.props[prop_name]
+                return cls.objects.filter(id=val).first()
+            else:
+                return s.session.get(prop_name)
+
+        def _setter(s, value):
+            if issubclass(self.props[prop_name], models.Model):
+                s.session[prop_name] = str(getattr(value, "id"))
+            else:
+                s.session[prop_name] = value
+
+        prop = property(fget=_getter, fset=_setter)
+        setattr(self.__class__, prop_name, prop)
+
+    @property
+    def logged_in(self):
+        """Check if the current session has an OAuth token."""
+        return bool(self.oauth_token)
+
+    def logout(self):
+        """Reset the session claims and tokens."""
+        self.oauth_claims_verified = ""
+        self.oauth_token = ""

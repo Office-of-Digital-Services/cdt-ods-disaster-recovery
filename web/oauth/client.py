@@ -6,20 +6,23 @@ import logging
 
 from authlib.integrations.django_client import OAuth
 
-from web.oauth.models import OAuthClientConfig
+from web.oauth.models import ClientConfig
 
 logger = logging.getLogger(__name__)
 
 oauth = OAuth()
 
 
-def _client_kwargs(scope=None):
+def _client_kwargs(extra_scopes: str = ""):
     """
     Generate the OpenID Connect client_kwargs, with optional extra scope(s).
 
-    `scope` should be a space-separated list of scopes to add.
+    `extra_scopes` should be a space-separated list of scopes to add.
     """
-    scopes = ["openid", scope] if scope else ["openid"]
+    scopes = []
+    if "openid" not in extra_scopes:
+        scopes.append("openid")
+    scopes.append(extra_scopes)
     return {"code_challenge_method": "S256", "scope": " ".join(scopes), "prompt": "login"}
 
 
@@ -41,7 +44,7 @@ def _authorize_params(scheme):
     return params
 
 
-def create_client(oauth_registry: OAuth, config: OAuthClientConfig):
+def create_client(oauth_registry: OAuth, config: ClientConfig, scopes: str, scheme: str = ""):
     """
     Returns an OAuth client, registering it if needed.
     """
@@ -55,8 +58,8 @@ def create_client(oauth_registry: OAuth, config: OAuthClientConfig):
             config.client_name,
             client_id=config.client_id,
             server_metadata_url=_server_metadata_url(config.authority),
-            client_kwargs=_client_kwargs(config.scopes),
-            authorize_params=_authorize_params(config.scheme),
+            client_kwargs=_client_kwargs(scopes),
+            authorize_params=_authorize_params(scheme or config.scheme),
         )
 
     return client

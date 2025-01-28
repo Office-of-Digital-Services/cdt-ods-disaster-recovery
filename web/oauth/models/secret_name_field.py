@@ -1,6 +1,6 @@
 from django.db import models
 
-from web.secrets import NAME_VALIDATOR, get_secret_by_name
+from ..secrets import NAME_VALIDATOR, get_secret_by_name
 
 
 class SecretNameField(models.SlugField):

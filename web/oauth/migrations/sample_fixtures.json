@@ -1,12 +1,12 @@
 [
   {
-    "model": "oauth.oauthclientconfig",
+    "model": "oauth.clientconfig",
+    "pk": "6915939f-a852-441e-aec6-9fb225156656",
     "fields": {
       "client_name": "dev",
       "client_id_secret_name": "dev-client-id",
-      "authority": "https://dev.ca.gov",
-      "scheme": "dev-ddrc",
-      "scopes": "attribute:flag"
+      "authority": "https://dev.cdt.ca.gov",
+      "scheme": "dev"
     }
   }
 ]

@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+{% block title %}
+    {% translate "Request vital records: Complete" %}
+{% endblock title %}
+{% block headline %}
+    {% translate "Request vital records: Complete" %}
+{% endblock headline %}
+{% block inner-content %}
+    <p>{% translate "Your request has been submitted." %}</p>
+    <p>
+        <a class="btn btn-secondary" href="{% url 'oauth:logout' %}">Sign out of Login.gov</a>
+    </p>
+{% endblock inner-content %}

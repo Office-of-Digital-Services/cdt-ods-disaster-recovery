@@ -1,5 +1,5 @@
 """
-Django URL configuration for Digital Disaster Recovery Center (DDRC) project.
+Django root URL configuration.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -12,5 +12,4 @@ urlpatterns = [
     path("", include("web.core.urls")),
     path("admin/", admin.site.urls),
     path("oauth/", include("web.oauth.urls")),
-    path("vital-records/", include("web.vital_records.urls")),
 ]

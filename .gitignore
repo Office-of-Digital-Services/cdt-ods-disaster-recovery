@@ -6,6 +6,7 @@
 *.egg-info
 *fixtures.json
 !web/oauth/migrations/sample_fixtures.json
+!web/vital_records/migrations/sample_fixtures.json
 dist/
 static/
 !web/static
