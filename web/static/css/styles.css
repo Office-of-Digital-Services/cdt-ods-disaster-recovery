@@ -133,26 +133,12 @@ header {
     }
   }
   > div.navigation-search {
-    > div.nav-drawer {
-      padding-bottom: 0;
-    }
     > div.search-container > div.d-block > a.drawer-logo-link {
       outline-offset: -3px;
       > img.drawer-logo {
         width: 232px;
         filter: brightness(0) invert(1);
         aspect-ratio: 18/5;
-      }
-    }
-  }
-  @media (width >= 992px) {
-    > div.full-width-nav > div.featured-search {
-      top: -65px !important;
-      > div.container {
-        display: flex;
-        > form#Search {
-          margin-left: auto;
-        }
       }
     }
   }
