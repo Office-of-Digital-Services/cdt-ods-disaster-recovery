@@ -11,7 +11,7 @@ def main():
     if len(sys.argv) == 2 and sys.argv[1] == "--version" or sys.argv[1] == "-v":
         from web import __version__
 
-        print(f"ddrc-web, {__version__}")
+        print(f"ca-disaster-recovery, {__version__}")
         return
 
     try:
