@@ -111,18 +111,27 @@ if not DEBUG:
 
 ROOT_URLCONF = "web.urls"
 
+template_ctx_processors = [
+    "django.template.context_processors.request",
+    "django.contrib.auth.context_processors.auth",
+    "django.contrib.messages.context_processors.messages",
+    "web.core.context_processors.userflows",
+]
+
+if DEBUG:
+    template_ctx_processors.extend(
+        [
+            "django.template.context_processors.debug",
+        ]
+    )
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
+            "context_processors": template_ctx_processors,
         },
     },
 ]
