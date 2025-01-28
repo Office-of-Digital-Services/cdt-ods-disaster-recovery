@@ -192,19 +192,3 @@ header {
     }
   }
 }
-
-.bg-p2-dark {
-  background-color: var(--color-p2-dark, #035376) !important;
-}
-.bg-p2-darker {
-  background-color: var(--color-p2-darker) !important;
-}
-.no-icon {
-  > span.external-link-icon {
-    display: none;
-  }
-}
-
-.color-p2-darker {
-  color: var(--color-p2-darker, #214a68) !important;
-}
