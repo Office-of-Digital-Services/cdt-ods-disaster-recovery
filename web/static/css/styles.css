@@ -110,51 +110,16 @@ header {
         height: 60px;
         aspect-ratio: 18/5;
       }
-      > div.logo-text {
-        > span.color-primary {
-          color: var(--color-p2, #046b99);
-        }
-        > span.logo-state {
-          font-size: 1.4rem;
-          font-weight: 700;
-          position: relative;
-          top: -5px;
-        }
-        > span.logo-dept {
-          font-size: 2.4rem;
-          height: 2.5rem;
-        }
-      }
+
       @media (width <= 991px) {
         > img.logo-img {
           max-height: 50px;
-        }
-        > div.logo-text {
-          > span.logo-state {
-            font-size: 1.3rem;
-            top: -2px;
-          }
-          > span.logo-dept {
-            font-size: 1.8rem;
-            height: 2.2rem;
-          }
         }
       }
     }
     @media (width <= 575px) {
       margin-right: 15%;
       > a > div.logo-assets {
-        > div.logo-text {
-          > span.logo-dept {
-            font-size: 1.6rem;
-            height: 2.2rem;
-          }
-          > span.logo-state {
-            font-size: 1rem;
-            position: relative;
-            top: -2px;
-          }
-        }
         > img.logo-img {
           max-height: 50px;
         }
