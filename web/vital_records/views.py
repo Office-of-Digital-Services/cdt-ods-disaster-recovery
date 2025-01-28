@@ -10,7 +10,8 @@ def index(request: HttpRequest):
 
 
 def request(request: HttpRequest):
-    return TemplateResponse(request, "vital_records/request.html")
+    session = Session(request)
+    return TemplateResponse(request, "vital_records/request.html", {"email": session.verified_email})
 
 
 def submitted(request: HttpRequest):

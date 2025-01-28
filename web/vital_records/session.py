@@ -18,3 +18,12 @@ class Session(CoreSession):
                 self.oauth_claims_eligibility = self.userflow.eligibility_claim
                 self.oauth_redirect_failure = self.userflow.redirect_failure
                 self.oauth_redirect_success = self.userflow.redirect_success
+
+    @property
+    def verified_email(self):
+        claims = self.oauth_claims_verified.split(" ")
+        if "email_verified" in claims:
+            for claim in claims:
+                if claim.startswith("email:"):
+                    return claim.split(":")[1]
+        return ""
