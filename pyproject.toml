@@ -8,7 +8,7 @@ classifiers = ["Programming Language :: Python :: 3 :: Only"]
 requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
 dependencies = [
-    "Authlib==1.4.1",
+    "Authlib==1.5.1",
     "azure-keyvault-secrets==4.9.0",
     "azure-identity==1.19.0",
     "Django==5.1.6",
