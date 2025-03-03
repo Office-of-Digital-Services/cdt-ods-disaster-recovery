@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from django.db import models
 
-from web.oauth.models.config import ClientConfig
+from cdt_identity.models import IdentityGatewayConfig
 
 
 class UserFlow(models.Model):
@@ -27,7 +27,7 @@ class UserFlow(models.Model):
         max_length=100,
     )
     oauth_config = models.ForeignKey(
-        ClientConfig,
+        IdentityGatewayConfig,
         on_delete=models.PROTECT,
         help_text="The IdG connection details for this flow.",
     )

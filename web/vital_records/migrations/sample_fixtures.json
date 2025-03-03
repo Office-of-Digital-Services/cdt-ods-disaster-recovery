@@ -1,5 +1,15 @@
 [
   {
+    "model": "cdt_identity.identitygatewayconfig",
+    "pk": "6915939f-a852-441e-aec6-9fb225156656",
+    "fields": {
+      "client_name": "dev",
+      "client_id": "5d649d28-2b43-4e76-91c8-3353b99311da",
+      "authority": "https://dev.cdt.ca.gov",
+      "scheme": "dev"
+    }
+  },
+  {
     "model": "core.userflow",
     "pk": "d6cc5fda-f494-4ece-af4c-e05601cd570e",
     "fields": {

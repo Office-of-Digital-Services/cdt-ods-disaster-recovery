@@ -9,8 +9,6 @@ requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
 dependencies = [
     "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@main",
-    "azure-keyvault-secrets==4.9.0",
-    "azure-identity==1.19.0",
     "Django==5.1.6",
     "gunicorn==23.0.0",
     "requests==2.32.3",

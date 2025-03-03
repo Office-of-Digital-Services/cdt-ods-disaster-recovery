@@ -3,7 +3,7 @@ import logging
 from django.db import models
 from django.http import HttpRequest
 
-from .models import ClientConfig
+from cdt_identity.models import IdentityGatewayConfig as ClientConfig
 
 
 logger = logging.getLogger(__name__)
