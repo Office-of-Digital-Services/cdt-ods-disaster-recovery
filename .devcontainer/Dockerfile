@@ -1,4 +1,4 @@
-FROM cdt/ddrc:app
+FROM cdt/disaster-recovery:app
 
 # install Azure CLI
 # https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt

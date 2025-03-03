@@ -1,5 +1,5 @@
 {
-  "name": "cdt/ddrc",
+  "name": "cdt/disaster-recovery",
   "dockerComposeFile": ["../compose.yml"],
   "service": "dev",
   "runServices": ["dev"],

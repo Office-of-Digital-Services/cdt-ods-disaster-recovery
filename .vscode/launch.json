@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Django: DDRC Client",
+      "name": "Django: disaster recovery",
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/manage.py",
@@ -17,7 +17,7 @@
       }
     },
     {
-      "name": "Django: DDRC Client, Debug=False",
+      "name": "Django: disaster recovery, Debug=False",
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/manage.py",
