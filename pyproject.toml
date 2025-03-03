@@ -8,7 +8,7 @@ classifiers = ["Programming Language :: Python :: 3 :: Only"]
 requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
 dependencies = [
-    "Authlib==1.4.1",
+    "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@main",
     "azure-keyvault-secrets==4.9.0",
     "azure-identity==1.19.0",
     "Django==5.1.6",

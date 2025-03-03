@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "cdt_identity",
     "web.core",
     "web.oauth",
     "web.vital_records",
