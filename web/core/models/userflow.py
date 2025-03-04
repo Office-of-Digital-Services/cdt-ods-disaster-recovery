@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from django.db import models
 
-from cdt_identity.models import IdentityGatewayConfig
+from cdt_identity.models import IdentityGatewayConfig, ClaimsVerificationRequest
 
 
 class UserFlow(models.Model):
@@ -31,41 +31,11 @@ class UserFlow(models.Model):
         on_delete=models.PROTECT,
         help_text="The IdG connection details for this flow.",
     )
-    scopes = models.CharField(
-        help_text="A space-separated list of identifiers used to specify what information is being requested",
-        max_length=200,
+    claims_request = models.ForeignKey(
+        ClaimsVerificationRequest,
+        on_delete=models.PROTECT,
+        help_text="The claims request details for this flow.",
     )
-    eligibility_claim = models.CharField(
-        help_text="The claim that is used to verify eligibility",
-        max_length=50,
-    )
-    extra_claims = models.CharField(
-        blank=True,
-        default="",
-        help_text="A space-separated list of any additional claims",
-        max_length=200,
-    )
-    redirect_failure = models.CharField(
-        default="oauth:error",
-        help_text="A Django route in the form of app:endpoint to redirect to after a successful claims check",
-        max_length=50,
-    )
-    redirect_success = models.CharField(
-        default="oauth:success",
-        help_text="A Django route in the form of app:endpoint to redirect to after a successful claims check",
-        max_length=50,
-    )
-    scheme_override = models.CharField(
-        blank=True,
-        default="",
-        help_text="(Optional) the authentication scheme to use. Defaults to that provided by the OAuth config.",
-        max_length=50,
-        verbose_name="Claims scheme",
-    )
-
-    @property
-    def all_claims(self):
-        return " ".join((self.eligibility_claim, self.extra_claims))
 
     @property
     def index_url(self):
