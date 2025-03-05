@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "system_name",
-                    models.SlugField(help_text="Internal system name for this flow, mapped to the root URL.", unique=True),
+                    models.SlugField(help_text="Internal system name for this flow.", unique=True),
                 ),
                 ("urlconf_path", models.CharField(help_text="Django app path to the URLconf for this flow.", max_length=100)),
                 (
