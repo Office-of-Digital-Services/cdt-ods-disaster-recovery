@@ -9,4 +9,4 @@ logger = logging.getLogger(__name__)
 
 @admin.register(models.UserFlow)
 class UserFlowAdmin(admin.ModelAdmin):
-    list_display = ("label", "oauth_config", "claims_request")
+    list_display = ("system_name", "oauth_config", "claims_request")
