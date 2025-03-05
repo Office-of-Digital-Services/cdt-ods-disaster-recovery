@@ -10,18 +10,22 @@
     }
   },
   {
+    "model": "cdt_identity.claimsverificationrequest",
+    "pk": "db9065ba-c253-4754-b42a-46577239ea0e",
+    "fields": {
+      "system_name": "vital-records",
+      "scopes": "vitalrecords:check",
+      "eligibility_claim": "eligible",
+      "extra_claims": "extra1 extra2"
+    }
+  },
+  {
     "model": "core.userflow",
     "pk": "d6cc5fda-f494-4ece-af4c-e05601cd570e",
     "fields": {
       "system_name": "vital-records",
-      "urlconf_path": "web.vital_records.urls",
-      "label": "Vital records",
       "oauth_config": "6915939f-a852-441e-aec6-9fb225156656",
-      "scopes": "vitalrecords:check",
-      "eligibility_claim": "eligible",
-      "extra_claims": "extra",
-      "redirect_failure": "vital_records:unverified",
-      "redirect_success": "vital_records:request"
+      "claims_request": "db9065ba-c253-4754-b42a-46577239ea0e"
     }
   }
 ]
