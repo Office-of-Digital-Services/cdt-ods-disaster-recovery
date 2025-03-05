@@ -7,7 +7,7 @@ from cdt_identity.models import IdentityGatewayConfig, ClaimsVerificationRequest
 
 
 class UserFlow(models.Model):
-    """Represents a user journey through the DDRC app."""
+    """Represents a user journey through the Disaster Recovery app."""
 
     id = models.UUIDField(
         primary_key=True,
