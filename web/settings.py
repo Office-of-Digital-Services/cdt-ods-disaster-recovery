@@ -138,18 +138,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "web.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-STORAGE_DIR = os.environ.get("DJANGO_STORAGE_DIR", BASE_DIR)
+STORAGE_DIR = Path(os.environ.get("DJANGO_STORAGE_DIR", BASE_DIR))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": Path(STORAGE_DIR) / os.environ.get("DJANGO_DB_FILE", "django.db"),
-    }
+        "NAME": STORAGE_DIR / os.environ.get("DJANGO_DB_FILE", "django.db"),
+    },
+    "tasks": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": STORAGE_DIR / os.environ.get("DJANGO_TASKS_DB_FILE", "tasks.db"),
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
