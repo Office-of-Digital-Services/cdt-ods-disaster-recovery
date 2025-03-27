@@ -5,7 +5,7 @@ locals {
   env_name            = local.is_prod ? "prod" : terraform.workspace
   env_letter          = upper(substr(local.env_name, 0, 1))
   subscription_letter = local.is_prod ? "P" : "D"
-  hostname            = local.is_prod ? "disasterrecovery.ca.gov" : "${local.env_name}.disasterrecovery.ca.gov"
+  hostname            = local.is_prod ? "recovery.cdt.ca.gov" : "${local.env_name}.recovery.cdt.ca.gov"
   secret_prefix       = "@Microsoft.KeyVault(VaultName=KV-CDT-PUB-DDRC-${local.env_letter}-001;SecretName="
 }
 
