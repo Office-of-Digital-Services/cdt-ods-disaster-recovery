@@ -11,13 +11,21 @@ dependencies = [
     "Django==5.1.8",
     "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@2025.04.1",
     "django-fsm-2==4.0.0",
+    "django-q2==1.7.6",
     "gunicorn==23.0.0",
     "psycopg[binary,pool]==3.2.6",
     "requests==2.32.3",
 ]
 
 [project.optional-dependencies]
-dev = ["black", "djlint", "flake8", "pre-commit", "setuptools_scm>=8"]
+dev = [
+    "black",
+    "blessed",
+    "djlint",
+    "flake8",
+    "pre-commit",
+    "setuptools_scm>=8",
+]
 test = ["coverage", "pytest", "pytest-django", "pytest-mock", "pytest-socket"]
 
 [project.urls]

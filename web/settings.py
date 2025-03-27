@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "cdt_identity",
+    "django_q",
     "web.core",
     "web.vital_records",
 ]
