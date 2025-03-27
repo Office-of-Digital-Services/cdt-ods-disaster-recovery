@@ -58,8 +58,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "cdt_identity",
     "web.core",
-    "web.oauth",
     "web.vital_records",
 ]
 
@@ -115,7 +115,6 @@ template_ctx_processors = [
     "django.template.context_processors.request",
     "django.contrib.auth.context_processors.auth",
     "django.contrib.messages.context_processors.messages",
-    "web.core.context_processors.userflows",
 ]
 
 if DEBUG:

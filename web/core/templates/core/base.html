@@ -179,11 +179,9 @@
             <li class="nav-item">
               <a class="first-level-link" href="{% url 'core:index' %}">Home</a>
             </li>
-            {% for flow in userflows %}
-              <li class="nav-item">
-                <a class="first-level-link" href="{% url flow.index_url %}">{{ flow.label }}</a>
-              </li>
-            {% endfor %}
+            <li class="nav-item">
+              <a class="first-level-link" href="{% url 'vital_records:index' %}">Vital records</a>
+            </li>
           </ul>
         </nav>
       </div>
