@@ -138,32 +138,38 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "web.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# In Azure, the Postgres server is running in a container app inside the same
+# container app environment as the web container app (Django)
+#
+# The Postgres container doesn't allow ingress from the public Internet, only
+# from within the container app environment, and all traffic stays within Azure
+# (i.e. doesn't travel over the public Internet)
+#
+# The Postgres container is also not setup for SSL connections right now
+PG_CONFIG = {
+    "ENGINE": "django.db.backends.postgresql",
+    "HOST": os.environ.get("POSTGRES_HOSTNAME", "postgres"),
+    "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+    # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+    "OPTIONS": {"sslmode": "disable"},
+}
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
+    "default": PG_CONFIG
+    | {
         "NAME": os.environ.get("DJANGO_DB_NAME", "django"),
         "USER": os.environ.get("DJANGO_DB_USER", "django"),
         "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD"),
-        "HOST": os.environ.get("POSTGRES_HOSTNAME", "postgres"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-        # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
-        #
-        # In Azure, the Postgres server is running in a container app inside the same
-        # container app environment as the web container app (Django)
-        #
-        # The Postgres container doesn't allow ingress from the public Internet, only
-        # from within the container app environment, and all traffic stays within Azure
-        # (i.e. doesn't travel over the public Internet)
-        #
-        # The Postgres container is also not setup for SSL connections right now
-        "OPTIONS": {"sslmode": "disable"},
-    }
+    },
+    "tasks": PG_CONFIG
+    | {
+        "NAME": os.environ.get("TASKS_DB_NAME", "tasks"),
+        "USER": os.environ.get("TASKS_DB_USER", "tasks"),
+        "PASSWORD": os.environ.get("TASKS_DB_PASSWORD"),
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
