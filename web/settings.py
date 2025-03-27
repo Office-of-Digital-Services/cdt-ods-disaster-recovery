@@ -262,3 +262,26 @@ LOGGING = {
         },
     },
 }
+
+# django-q2 configuration
+# https://django-q2.readthedocs.io/en/stable/configure.html
+Q_CLUSTER = {
+    # The label used for the Django Admin page.
+    "label": "Tasks",
+    # Used to differentiate between projects using the same broker.
+    # On most broker types this will be used as the queue name.
+    "name": "disaster-recovery",
+    # Use Django’s database backend as a message broker, set the `orm` keyword to the database connection.
+    "orm": "tasks",
+    # Queue polling interval (seconds) for database brokers.
+    "poll": int(os.environ.get("Q_POLL", 5)),
+    # The number of seconds a broker will wait for a cluster to finish a task, before it’s presented again.
+    # Only works with brokers that support delivery receipts. Defaults to 60.
+    # The value must be bigger than the time it takes to complete the longest task.
+    "retry": int(os.environ.get("Q_RETRY", 300)),
+    # The number of seconds a worker is allowed to spend on a task before it’s terminated. Defaults to ... never time out.
+    # Timeout must be less than retry value (default 60) and all tasks must complete in less time than the ... retry time.
+    "timeout": int(os.environ.get("Q_TIMEOUT", 150)),
+    # The number of workers to use in the cluster.
+    "workers": int(os.environ.get("Q_WORKERS", 1)),
+}
