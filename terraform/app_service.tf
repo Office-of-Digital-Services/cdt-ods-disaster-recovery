@@ -45,7 +45,6 @@ resource "azurerm_linux_web_app" "main" {
   }
 
   app_settings = {
-    "DOCKER_REGISTRY_SERVER_URL"          = "https://ghcr.io/"
     "WEBSITE_TIME_ZONE"                   = "America/Los_Angeles",
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "true",
     "WEBSITES_PORT"                       = "8000",
