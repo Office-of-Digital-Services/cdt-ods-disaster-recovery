@@ -111,3 +111,13 @@ class EmailTask(Task):
         email.attach_file(package, "application/pdf")
 
         return email.send()
+
+
+def submit_request(requestor_email: str):
+    """Submit a user request to the task queue for processing."""
+    # create a new task instance
+    task = PackageTask(requestor_email)
+    # calling task.run() submits the task to the queue for processing
+    task.run()
+    # if callers want to interrogate the status, etc.
+    return task
