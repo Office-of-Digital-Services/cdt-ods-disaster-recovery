@@ -219,6 +219,9 @@ STORAGES = {
 }
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+# Storage for e.g. generated files, not routable from the website
+STORAGE_DIR = os.environ.get("DJANGO_STORAGE_DIR", BASE_DIR)
+
 # Email
 # https://docs.djangoproject.com/en/5.1/ref/settings/#email-backend
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
