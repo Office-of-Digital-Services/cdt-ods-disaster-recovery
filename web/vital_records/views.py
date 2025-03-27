@@ -7,6 +7,7 @@ from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
+from web.vital_records import tasks
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
 from web.vital_records.forms import (
@@ -246,6 +247,11 @@ class SubmitView(UpdateView):
 
 class SubmittedView(TemplateView):
     template_name = "vital_records/submitted.html"
+
+    def get(self, request, *args, **kwargs):
+        session = Session(request)
+        tasks.submit_request(session.verified_email)
+        return super().get(request, *args, **kwargs)
 
 
 class UnverifiedView(TemplateView):
