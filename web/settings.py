@@ -201,6 +201,12 @@ STORAGES = {
 }
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+# Email
+# https://docs.djangoproject.com/en/5.1/ref/settings/#email-backend
+EMAIL_BACKEND = os.environ.get("DJANGO_EMAIL_BACKEND", "django.core.mail.backends.filebased.EmailBackend")
+EMAIL_FILE_PATH = os.path.join(STORAGE_DIR, "inbox")
+Path(EMAIL_FILE_PATH).mkdir(parents=True, exist_ok=True)
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
