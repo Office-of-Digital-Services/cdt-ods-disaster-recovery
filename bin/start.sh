@@ -3,7 +3,7 @@ set -eu
 
 # initialize Django
 
-bin/reset_db.sh
+bin/init.sh
 
 # start the web server
 
