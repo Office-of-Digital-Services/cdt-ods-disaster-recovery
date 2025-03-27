@@ -12,6 +12,7 @@ dependencies = [
     "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@main",
     "django-q2==1.7.6",
     "gunicorn==23.0.0",
+    "pypdf==5.4.0",
     "requests==2.32.3",
 ]
 
