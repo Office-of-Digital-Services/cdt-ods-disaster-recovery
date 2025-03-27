@@ -8,6 +8,7 @@
 !web/oauth/migrations/sample_fixtures.json
 !web/vital_records/migrations/sample_fixtures.json
 dist/
+inbox/
 static/
 !web/static
 __pycache__/

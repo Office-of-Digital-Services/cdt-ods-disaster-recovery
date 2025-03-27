@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass
 from typing import Optional
 
 from django.conf import settings
+from django.core.mail import EmailMessage
 
 from pypdf import PdfReader, PdfWriter
 
@@ -81,5 +82,32 @@ class PackageTask(Task):
         requestor_email = package_task.kwargs.get("requestor_email")
         if package_task.success:
             logger.debug(f"Sending request package for: {requestor_email}")
+            email_task = EmailTask(requestor_email, package_task.result)
+            email_task.run()
         else:
             logger.error(f"Package creation failed for: {requestor_email}")
+
+
+class EmailTask(Task):
+    group = "vital-records"
+    name = "email"
+
+    def __init__(self, requestor_email: str, package: str):
+        super().__init__(
+            subject="Vital records request",
+            body="A new request is attached.",
+            requestor_email=requestor_email,
+            package=package,
+        )
+
+    def handler(self, subject: str, body: str, requestor_email: str, package: str):
+        email = EmailMessage(
+            subject=subject,
+            body=body,
+            from_email="noreply@example.gov",
+            to=["records@example.gov"],
+            cc=[requestor_email],
+        )
+        email.attach_file(package, "application/pdf")
+
+        return email.send()
