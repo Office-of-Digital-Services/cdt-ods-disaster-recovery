@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "cdt_identity",
+    "django_q",
     "web.core",
     "web.vital_records",
 ]
@@ -137,18 +138,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "web.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-STORAGE_DIR = os.environ.get("DJANGO_STORAGE_DIR", BASE_DIR)
+STORAGE_DIR = Path(os.environ.get("DJANGO_STORAGE_DIR", BASE_DIR))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": Path(STORAGE_DIR) / os.environ.get("DJANGO_DB_FILE", "django.db"),
-    }
+        "NAME": STORAGE_DIR / os.environ.get("DJANGO_DB_FILE", "django.db"),
+    },
+    "tasks": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": STORAGE_DIR / os.environ.get("DJANGO_TASKS_DB_FILE", "tasks.db"),
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -198,6 +201,12 @@ STORAGES = {
 }
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+# Email
+# https://docs.djangoproject.com/en/5.1/ref/settings/#email-backend
+EMAIL_BACKEND = os.environ.get("DJANGO_EMAIL_BACKEND", "django.core.mail.backends.filebased.EmailBackend")
+EMAIL_FILE_PATH = os.path.join(STORAGE_DIR, "inbox")
+Path(EMAIL_FILE_PATH).mkdir(parents=True, exist_ok=True)
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -231,4 +240,27 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+# django-q2 configuration
+# https://django-q2.readthedocs.io/en/stable/configure.html
+Q_CLUSTER = {
+    # The label used for the Django Admin page.
+    "label": "Tasks",
+    # Used to differentiate between projects using the same broker.
+    # On most broker types this will be used as the queue name.
+    "name": "disaster-recovery",
+    # Use Django’s database backend as a message broker, set the `orm` keyword to the database connection.
+    "orm": "tasks",
+    # Queue polling interval (seconds) for database brokers.
+    "poll": 5,
+    # The number of seconds a broker will wait for a cluster to finish a task, before it’s presented again.
+    # Only works with brokers that support delivery receipts. Defaults to 60.
+    # The value must be bigger than the time it takes to complete the longest task.
+    "retry": os.environ.get("DJANGO_Q_RETRY", 300),
+    # The number of seconds a worker is allowed to spend on a task before it’s terminated. Defaults to ... never time out.
+    # Timeout must be less than retry value (default 60) and all tasks must complete in less time than the ... retry time.
+    "timeout": os.environ.get("DJANGO_Q_TIMEOUT", None),
+    # The number of workers to use in the cluster.
+    "workers": 3,
 }

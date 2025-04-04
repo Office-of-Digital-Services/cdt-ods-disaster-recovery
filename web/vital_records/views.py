@@ -2,6 +2,7 @@ from django.http import HttpRequest
 from django.template.response import TemplateResponse
 
 from web.vital_records.session import Session
+from web.vital_records import tasks
 
 
 def index(request: HttpRequest):
@@ -15,6 +16,8 @@ def request(request: HttpRequest):
 
 
 def submitted(request: HttpRequest):
+    session = Session(request)
+    tasks.submit_request(session.verified_email)
     return TemplateResponse(request, "vital_records/submitted.html")
 
 

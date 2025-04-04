@@ -27,6 +27,30 @@
         "DJANGO_DEBUG": "false",
         "DJANGO_STATICFILES_STORAGE": "django.contrib.staticfiles.storage.StaticFilesStorage"
       }
+    },
+    {
+      "name": "Django: QCluster once",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["qcluster", "--run-once"],
+      "django": true,
+      "env": {
+        "DJANGO_DEBUG": "true",
+        "PYTHONWARNINGS": "default"
+      }
+    },
+    {
+      "name": "Django: QCluster",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["qcluster"],
+      "django": true,
+      "env": {
+        "DJANGO_DEBUG": "true",
+        "PYTHONWARNINGS": "default"
+      }
     }
   ]
 }
