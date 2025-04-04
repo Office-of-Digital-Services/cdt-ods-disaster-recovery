@@ -9,7 +9,7 @@ requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
 dependencies = [
     "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@main",
-    "Django==5.1.6",
+    "Django==5.1.8",
     "gunicorn==23.0.0",
     "requests==2.32.3",
 ]
