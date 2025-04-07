@@ -6,8 +6,8 @@ app_name = "vital_records"
 
 # /vital-records
 urlpatterns = [
-    path("", views.index, name="index"),
-    path("request", views.request, name="request"),
-    path("submitted", views.submitted, name="submitted"),
-    path("unverified", views.unverified, name="unverified"),
+    path("", views.IndexView.as_view(), name="index"),
+    path("request", views.RequestView.as_view(), name="request"),
+    path("submitted", views.SubmittedView.as_view(), name="submitted"),
+    path("unverified", views.UnverifiedView.as_view(), name="unverified"),
 ]
