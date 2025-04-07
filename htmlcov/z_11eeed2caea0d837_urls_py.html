@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_11eeed2caea0d837_views_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-04-04 14:32 +0000
+            created at 2025-04-07 22:25 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -90,10 +90,10 @@
     <p class="pln"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="com"># /vital-records</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="nam">urlpatterns</span> <span class="op">=</span> <span class="op">[</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t">    <span class="nam">path</span><span class="op">(</span><span class="str">""</span><span class="op">,</span> <span class="nam">views</span><span class="op">.</span><span class="nam">index</span><span class="op">,</span> <span class="nam">name</span><span class="op">=</span><span class="str">"index"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t">    <span class="nam">path</span><span class="op">(</span><span class="str">"request"</span><span class="op">,</span> <span class="nam">views</span><span class="op">.</span><span class="nam">request</span><span class="op">,</span> <span class="nam">name</span><span class="op">=</span><span class="str">"request"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">    <span class="nam">path</span><span class="op">(</span><span class="str">"submitted"</span><span class="op">,</span> <span class="nam">views</span><span class="op">.</span><span class="nam">submitted</span><span class="op">,</span> <span class="nam">name</span><span class="op">=</span><span class="str">"submitted"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">    <span class="nam">path</span><span class="op">(</span><span class="str">"unverified"</span><span class="op">,</span> <span class="nam">views</span><span class="op">.</span><span class="nam">unverified</span><span class="op">,</span> <span class="nam">name</span><span class="op">=</span><span class="str">"unverified"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t">    <span class="nam">path</span><span class="op">(</span><span class="str">""</span><span class="op">,</span> <span class="nam">views</span><span class="op">.</span><span class="nam">IndexView</span><span class="op">.</span><span class="nam">as_view</span><span class="op">(</span><span class="op">)</span><span class="op">,</span> <span class="nam">name</span><span class="op">=</span><span class="str">"index"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t">    <span class="nam">path</span><span class="op">(</span><span class="str">"request"</span><span class="op">,</span> <span class="nam">views</span><span class="op">.</span><span class="nam">RequestView</span><span class="op">.</span><span class="nam">as_view</span><span class="op">(</span><span class="op">)</span><span class="op">,</span> <span class="nam">name</span><span class="op">=</span><span class="str">"request"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">    <span class="nam">path</span><span class="op">(</span><span class="str">"submitted"</span><span class="op">,</span> <span class="nam">views</span><span class="op">.</span><span class="nam">SubmittedView</span><span class="op">.</span><span class="nam">as_view</span><span class="op">(</span><span class="op">)</span><span class="op">,</span> <span class="nam">name</span><span class="op">=</span><span class="str">"submitted"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">    <span class="nam">path</span><span class="op">(</span><span class="str">"unverified"</span><span class="op">,</span> <span class="nam">views</span><span class="op">.</span><span class="nam">UnverifiedView</span><span class="op">.</span><span class="nam">as_view</span><span class="op">(</span><span class="op">)</span><span class="op">,</span> <span class="nam">name</span><span class="op">=</span><span class="str">"unverified"</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
@@ -104,7 +104,7 @@
             <a class="nav" href="z_11eeed2caea0d837_views_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-04-04 14:32 +0000
+            created at 2025-04-07 22:25 +0000
         </p>
     </div>
 </footer>
