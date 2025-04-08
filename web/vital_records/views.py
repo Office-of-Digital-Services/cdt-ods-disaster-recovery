@@ -1,6 +1,8 @@
 from typing import Any
 
 from django.http import HttpRequest
+from django.shortcuts import redirect
+from django.views import View
 from django.views.generic import TemplateView
 
 from web.vital_records.session import Session
@@ -12,6 +14,12 @@ class IndexView(TemplateView):
     def get(self, request: HttpRequest, *args, **kwargs):
         Session(request, reset=True)
         return super().get(request, *args, **kwargs)
+
+
+class LoginView(View):
+    def get(self, request: HttpRequest):
+        Session(request, reset=True)
+        return redirect("cdt:login")
 
 
 class RequestView(TemplateView):
