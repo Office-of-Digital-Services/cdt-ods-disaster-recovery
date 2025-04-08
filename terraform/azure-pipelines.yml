@@ -15,9 +15,6 @@ stages:
     pool:
       vmImage: ubuntu-latest
     jobs:
-      # the service connection name must be hard-coded, so the workaround to make it dynamic is to use multiple jobs with conditions
-      # https://stackoverflow.com/a/57520153/358804
-      # https://developercommunity.visualstudio.com/t/using-a-variable-for-the-service-connection-result/676259#T-N1183768
       - job: environment
         variables:
           - name: OTHER_SOURCE
@@ -36,19 +33,8 @@ stages:
             name: env_select
             env:
               REASON: $(Build.Reason)
-      - job: dev
+      - job: terraform
         dependsOn: environment
-        condition: ne(dependencies.environment.outputs['env_select.workspace'], 'default')
-        variables:
-          workspace: $[ dependencies.environment.outputs['env_select.workspace'] ]
-        steps:
-          - template: pipeline/deploy.yml
-            parameters:
-              service_connection: Production
-              workspace: $(workspace)
-      - job: prod
-        dependsOn: environment
-        condition: eq(dependencies.environment.outputs['env_select.workspace'], 'default')
         variables:
           workspace: $[ dependencies.environment.outputs['env_select.workspace'] ]
         steps:
