@@ -9,8 +9,9 @@ if [[ $DB_RESET = true ]]; then
     DB_DIR="${DJANGO_STORAGE_DIR:-.}"
     DB_FILE="${DJANGO_DB_FILE:-django.db}"
     DB_PATH="${DB_DIR}/${DB_FILE}"
+    TASK_DB_PATH="${DB_DIR}/${DJANGO_TASKS_DB_FILE:-tasks.db}"
 
-    rm -f "${DB_PATH}"
+    rm -f "${DB_PATH}" "${TASK_DB_PATH}"
 
     # run database migrations and other initialization
     bin/init.sh

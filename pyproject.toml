@@ -8,14 +8,23 @@ classifiers = ["Programming Language :: Python :: 3 :: Only"]
 requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
 dependencies = [
-    "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@main",
     "Django==5.1.8",
+    "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@main",
+    "django-q2==1.7.6",
     "gunicorn==23.0.0",
+    "pypdf==5.4.0",
     "requests==2.32.3",
 ]
 
 [project.optional-dependencies]
-dev = ["black", "djlint", "flake8", "pre-commit", "setuptools_scm>=8"]
+dev = [
+    "black",
+    "blessed",
+    "djlint",
+    "flake8",
+    "pre-commit",
+    "setuptools_scm>=8",
+]
 test = ["coverage", "pytest", "pytest-django", "pytest-mock", "pytest-socket"]
 
 [project.urls]
