@@ -36,9 +36,10 @@ steps:
       workingDirectory: "$(System.DefaultWorkingDirectory)/terraform"
       # service connection
       environmentServiceNameAzureRM: "${{ parameters.service_connection }}"
-  - bash: python terraform/pipeline/tag.py
-    displayName: Set tag-type variable
+  - bash: python terraform/pipeline/tags.py
+    displayName: Set env variables
     env:
+      COMMIT_SHA: $(Build.SourceVersion)
       REASON: $(Build.Reason)
       INDIVIDUAL_SOURCE: $(Build.SourceBranchName)
       SOURCE_BRANCH: $(Build.SourceBranch)
