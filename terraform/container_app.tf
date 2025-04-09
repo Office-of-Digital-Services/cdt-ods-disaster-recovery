@@ -75,7 +75,7 @@ resource "azurerm_container_app" "web" {
       name    = "web"
       command = []
       args    = []
-      image   = "ghcr.io/office-of-digital-services/cdt-ods-disaster-recovery:main"
+      image   = "${var.container_registry}/${var.container_repository}:${var.container_tag}"
       cpu     = 0.5
       memory  = "1Gi"
       readiness_probe {
