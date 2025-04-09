@@ -66,7 +66,7 @@ resource "azurerm_container_app" "main" {
     min_replicas = 0
     container {
       name   = "web"
-      image  = "ghcr.io/office-of-digital-services/cdt-ods-disaster-recovery:main"
+      image  = "${var.container_registry}/${var.container_repository}:${var.container_tag}"
       cpu    = 0.5
       memory = "1.0Gi"
       readiness_probe {
