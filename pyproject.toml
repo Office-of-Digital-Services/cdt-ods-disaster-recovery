@@ -39,7 +39,7 @@ relative_files = true
 source = ["web"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "web.settings"
+DJANGO_SETTINGS_MODULE = "tests.pytest.settings"
 
 [tool.setuptools.packages.find]
 include = ["web*"]
