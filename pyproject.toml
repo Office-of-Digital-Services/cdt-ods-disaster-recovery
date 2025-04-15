@@ -11,6 +11,7 @@ dependencies = [
     "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@main",
     "Django==5.1.8",
     "gunicorn==23.0.0",
+    "psycopg[binary,pool]==3.2.6",
     "requests==2.32.3",
 ]
 
