@@ -8,11 +8,12 @@ classifiers = ["Programming Language :: Python :: 3 :: Only"]
 requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
 dependencies = [
-    "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@main",
     "Django==5.1.8",
+    "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@main",
+    "django-fsm-2==4.0.0",
     "gunicorn==23.0.0",
+    "psycopg[binary,pool]==3.2.6",
     "requests==2.32.3",
-    "django-fsm-2==4.0.0"
 ]
 
 [project.optional-dependencies]

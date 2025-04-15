@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: appcontainer/Dockerfile
     image: cdt/disaster-recovery:web
+    depends_on:
+      - postgres
     env_file: .env
     ports:
       - "${DJANGO_LOCAL_PORT:-8000}:8000"
@@ -15,6 +17,9 @@ services:
       context: .
       dockerfile: .devcontainer/Dockerfile
     image: cdt/disaster-recovery:dev
+    depends_on:
+      - postgres
+      - pgweb
     env_file: .env
     # https://code.visualstudio.com/docs/remote/create-dev-container#_use-docker-compose
     entrypoint: sleep infinity
