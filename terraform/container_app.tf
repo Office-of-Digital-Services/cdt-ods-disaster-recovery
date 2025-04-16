@@ -16,6 +16,11 @@ resource "azurerm_container_app" "web" {
   revision_mode                = "Single"
   max_inactive_revisions       = 10
 
+  identity {
+    identity_ids = []
+    type         = "SystemAssigned"
+  }
+
   secret {
     name                = "requests-connect-timeout"
     key_vault_secret_id = "${local.secret_http_prefix}/requests-connect-timeout"
