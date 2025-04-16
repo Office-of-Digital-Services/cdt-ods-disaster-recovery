@@ -62,6 +62,16 @@ resource "azurerm_container_app" "web" {
     identity            = "System"
   }
 
+  ingress {
+    external_enabled = true
+    target_port      = 8000
+    transport        = "auto"
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
+    }
+  }
+
   template {
     min_replicas = 1
     max_replicas = 3
@@ -122,16 +132,6 @@ resource "azurerm_container_app" "web" {
         secret_name = local.is_dev ? null : "healthcheck-user-agents"
       }
     }
-  }
-
-  ingress {
-    traffic_weight {
-      percentage      = 100
-      latest_revision = true
-    }
-    external_enabled = true
-    target_port      = 8000
-    transport        = "auto"
   }
 
   lifecycle {
