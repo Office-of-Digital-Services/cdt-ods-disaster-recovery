@@ -15,7 +15,6 @@ resource "azurerm_container_app" "web" {
   resource_group_name          = data.azurerm_resource_group.main.name
   revision_mode                = "Single"
   max_inactive_revisions       = 10
-  workload_profile_name        = "Consumption"
 
   secret {
     name                = "requests-connect-timeout"
