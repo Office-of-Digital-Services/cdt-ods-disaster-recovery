@@ -87,12 +87,7 @@ resource "azurerm_container_app" "web" {
       image   = "${var.container_registry}/${var.container_repository}:${var.container_tag}"
       cpu     = 0.5
       memory  = "1Gi"
-      readiness_probe {
-        path      = "/healthcheck"
-        port      = 8000
-        timeout   = 5
-        transport = "HTTP"
-      }
+
       # Requests
       env {
         name        = "REQUESTS_CONNECT_TIMEOUT"
