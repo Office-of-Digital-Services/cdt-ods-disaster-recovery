@@ -108,8 +108,8 @@
         </div>
       </div>
     </header>
-    <div id="main-content" class="main-content">
-      <div class="p-t-md bg-primary">
+    <main id="main-content" class="main-content">
+      <div class="main-header p-t-md bg-primary">
         <div class="container">
           <nav aria-label="You are here" class="breadcrumbs">
             <ol>
@@ -125,12 +125,12 @@
         </div>
       </div>
       <div class="container">
-        <main class="main-primary">
+        <div class="main-primary">
           {% block inner-content %}
           {% endblock inner-content %}
-        </main>
+        </div>
       </div>
-    </div>
+    </main>
     <!-- global footer goes here -->
     <footer id="footer" class="global-footer">
       <div class="container">
