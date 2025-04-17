@@ -54,12 +54,12 @@ class VitalRecordsRequest(models.Model):
     ]
 
     status = FSMField(default="started", choices=STATUS_CHOICES)
-    fire = models.CharField(max_length=50, choices=FIRE_CHOICES, blank=True)
-    relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES, blank=True)
-    legal_attestation = models.CharField(max_length=100, blank=True)
-    first_name = models.CharField(max_length=100, blank=True)
+    fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
+    relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
+    legal_attestation = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, blank=True)
-    last_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100)
 
     # Transitions from state to state
     @transition(field=status, target="eligibility_completed")
