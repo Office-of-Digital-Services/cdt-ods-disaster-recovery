@@ -16,16 +16,11 @@ resource "azurerm_container_app" "web" {
   revision_mode                = "Single"
   max_inactive_revisions       = 10
 
-  secret {
-    name                = "requests-connect-timeout"
-    key_vault_secret_id = "${local.secret_http_prefix}/requests-connect-timeout"
-    identity            = "System"
+  identity {
+    identity_ids = []
+    type         = "SystemAssigned"
   }
-  secret {
-    name                = "requests-read-timeout"
-    key_vault_secret_id = "${local.secret_http_prefix}/requests-read-timeout"
-    identity            = "System"
-  }
+
   secret {
     name                = "django-allowed-hosts"
     key_vault_secret_id = "${local.secret_http_prefix}/django-allowed-hosts"
@@ -56,16 +51,13 @@ resource "azurerm_container_app" "web" {
     key_vault_secret_id = "${local.secret_http_prefix}/django-trusted-origins"
     identity            = "System"
   }
-  secret {
-    name                = "healthcheck-user-agents"
-    key_vault_secret_id = "${local.secret_http_prefix}/healthcheck-user-agents"
-    identity            = "System"
-  }
 
   ingress {
-    external_enabled = true
-    target_port      = 8000
-    transport        = "auto"
+    client_certificate_mode = "ignore"
+    external_enabled        = true
+
+    target_port = 8000
+    transport   = "auto"
     traffic_weight {
       percentage      = 100
       latest_revision = true
@@ -90,12 +82,12 @@ resource "azurerm_container_app" "web" {
 
       # Requests
       env {
-        name        = "REQUESTS_CONNECT_TIMEOUT"
-        secret_name = "requests-connect-timeout"
+        name  = "REQUESTS_CONNECT_TIMEOUT"
+        value = "5"
       }
       env {
-        name        = "REQUESTS_READ_TIMEOUT"
-        secret_name = "requests-read-timeout"
+        name  = "REQUESTS_READ_TIMEOUT"
+        value = "20"
       }
       # Django settings
       env {
@@ -109,6 +101,7 @@ resource "azurerm_container_app" "web" {
       env {
         name        = "DJANGO_DEBUG"
         secret_name = local.is_prod ? null : "django-debug"
+        value       = local.is_prod ? "False" : null
       }
       env {
         name        = "DJANGO_LOG_LEVEL"
@@ -121,10 +114,6 @@ resource "azurerm_container_app" "web" {
       env {
         name        = "DJANGO_TRUSTED_ORIGINS"
         secret_name = "django-trusted-origins"
-      }
-      env {
-        name        = "HEALTHCHECK_USER_AGENTS"
-        secret_name = local.is_dev ? null : "healthcheck-user-agents"
       }
     }
   }
