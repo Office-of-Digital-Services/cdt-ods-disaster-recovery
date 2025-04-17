@@ -7,12 +7,22 @@
     {% translate "Replacement birth record" %}
 {% endblock headline %}
 {% block inner-content %}
-    <small>Step 1 of 6</small>
-    <h2>What is the name on the birth certificate?</h2>
-    <p>Please write the information as it appears on the birth certificate.</p>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Continue</button>
-    </form>
+    <div class="row">
+        <div class="col-3">
+            <ol class="cagov-step-list">
+                <li data-status="{% if request.resolver_match.url_name == 'request_name' %}current{% endif %}">Name</li>
+                <li data-status="{% if request.resolver_match.url_name == 'request_detail' %}current{% endif %}">Preview</li>
+            </ol>
+        </div>
+        <div class="col-9">
+            <small>Step 1 of 6</small>
+            <h2>What is the name on the birth certificate?</h2>
+            <p>Please write the information as it appears on the birth certificate.</p>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Continue</button>
+            </form>
+        </div>
+    </div>
 {% endblock inner-content %}

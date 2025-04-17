@@ -18,7 +18,7 @@ class StatementForm(forms.ModelForm):
     relationship = forms.ChoiceField(
         choices=VitalRecordsRequest.RELATIONSHIP_CHOICES,
         label="Select your relationship",
-        widget=forms.Select(attrs={"class": "form-control"}),
+        widget=forms.Select(attrs={"class": "form-select"}),
     )
     legal_attestation = forms.CharField(label="Type your full name to sign", max_length=100, widget=forms.TextInput())
 

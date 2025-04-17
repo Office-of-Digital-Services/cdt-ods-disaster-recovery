@@ -143,3 +143,6 @@ header {
     }
   }
 }
+li[data-status="current"]:before {
+  background: blue;
+}

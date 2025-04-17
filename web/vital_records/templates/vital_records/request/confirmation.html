@@ -7,36 +7,46 @@
     {% translate "Replacement birth record" %}
 {% endblock headline %}
 {% block inner-content %}
-    <h2>Confirm your order</h2>
-    <p>
-        If everything looks accurate, press “Submit” below to finish your request. If you need to edit request, you can go back without losing your progress.
-    </p>
-    <hr>
-    <ul>
-        <li>
-            <strong>Fire:</strong> {{ vital_records_request.fire }}
-        </li>
-        <li>
-            <strong>ID:</strong>
-            {{ vital_records_request.id }}
-        </li>
-        <li>
-            <strong>Status:</strong> {{ vital_records_request.get_status_display }}
-        </li>
-        <li>
-            <strong>Relationship:</strong> {{ vital_records_request.relationship }}
-        </li>
-        <li>
-            <strong>Legal Attestation:</strong> {{ vital_records_request.legal_attestation }}
-        </li>
-    </ul>
-    <hr>
-    <h3>Birth record details</h3>
-    <p>This is the information that will be printed on the replacement birth record.</p>
-    <ul>
-        <li>
-            <strong>Name:</strong> {{ vital_records_request.first_name }} {{ vital_records_request.middle_name }} {{ vital_records_request.last_name }}
-        </li>
-    </ul>
-    <hr>
+    <div class="row">
+        <div class="col-3">
+            <ol class="cagov-step-list">
+                <li data-status="{% if request.resolver_match.url_name == 'request_name' %}current{% endif %}">Name</li>
+                <li data-status="{% if request.resolver_match.url_name == 'request_detail' %}current{% endif %}">Preview</li>
+            </ol>
+        </div>
+        <div class="col-9">
+            <h2>Confirm your order</h2>
+            <p>
+                If everything looks accurate, press “Submit” below to finish your request. If you need to edit request, you can go back without losing your progress.
+            </p>
+            <hr>
+            <ul>
+                <li>
+                    <strong>Fire:</strong> {{ vital_records_request.fire }}
+                </li>
+                <li>
+                    <strong>ID:</strong>
+                    {{ vital_records_request.id }}
+                </li>
+                <li>
+                    <strong>Status:</strong> {{ vital_records_request.get_status_display }}
+                </li>
+                <li>
+                    <strong>Relationship:</strong> {{ vital_records_request.relationship }}
+                </li>
+                <li>
+                    <strong>Legal Attestation:</strong> {{ vital_records_request.legal_attestation }}
+                </li>
+            </ul>
+            <hr>
+            <h3>Birth record details</h3>
+            <p>This is the information that will be printed on the replacement birth record.</p>
+            <ul>
+                <li>
+                    <strong>Name:</strong> {{ vital_records_request.first_name }} {{ vital_records_request.middle_name }} {{ vital_records_request.last_name }}
+                </li>
+            </ul>
+            <hr>
+        </div>
+    </div>
 {% endblock inner-content %}
