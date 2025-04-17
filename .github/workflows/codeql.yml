@@ -3,28 +3,24 @@ name: CodeQL
 
 on:
   push:
-    paths:
-      - "**.py"
+    branches: ["main"]
   pull_request:
-    branches: [main]
-    paths:
-      - "**.py"
+    branches: ["main"]
   schedule:
     - cron: "24 9 * * 6"
 
 jobs:
   codeql:
-    name: CodeQL Analyze
+    name: CodeQL Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     permissions:
-      actions: read
-      contents: read
+      # required for all workflows
       security-events: write
 
     strategy:
       fail-fast: false
       matrix:
-        language: ["python"]
+        language: ["actions", "python"]
 
     steps:
       - name: Checkout repository
@@ -34,10 +30,8 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          # https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning#specifying-configuration-details-using-the-config-input
-          config: |
-            paths-ignore:
-              - tests
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
