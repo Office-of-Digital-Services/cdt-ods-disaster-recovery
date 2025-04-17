@@ -61,7 +61,7 @@
     <!-- END Google Tag Manager -->
   </head>
   <body class="primary">
-    <header role="banner" id="header" class="global-header fixed">
+    <header role="banner" id="header" class="global-header">
       <div id="skip-to-content">
         <a href="#main-content">Skip to Main Content</a>
       </div>
@@ -90,40 +90,6 @@
                 </div>
               </div>
             </div>
-            <div class="settings-links ms-auto align-items-start pt-2">
-              <a href="{% url 'core:index' %}"
-                 class="m-l-0 underline cursor-pointer"
-                 lang="es"
-                 hreflang="es"
-                 translate="no"
-                 rel="alternate">Español</a>
-              <a href="{% url 'core:index' %}"
-                 lang="ko"
-                 hreflang="ko"
-                 translate="no"
-                 rel="alternate"
-                 class="underline cursor-pointer">한국어</a>
-              <a href="{% url 'core:index' %}"
-                 lang="tl"
-                 hreflang="tl"
-                 translate="no"
-                 rel="alternate"
-                 class="underline cursor-pointer">Tagalog</a>
-              <a href="{% url 'core:index' %}"
-                 lang="vi"
-                 hreflang="vi"
-                 translate="no"
-                 rel="alternate"
-                 class="underline cursor-pointer">Tiếng Việt</a>
-              <a href="{% url 'core:index' %}"
-                 lang="zh-hant"
-                 hreflang="zh-hant"
-                 translate="no"
-                 rel="alternate"
-                 class="underline cursor-pointer">繁體中文</a>
-              <a class="translate notranslate pos-rel top-minus-2"
-                 href="https:www.ca.gov/translate/"><span class="ca-gov-icon-globe" aria-hidden="true"></span><span class="sr-only">Translate</span></a>
-            </div>
           </div>
         </div>
       </div>
@@ -141,62 +107,29 @@
           </div>
         </div>
       </div>
-      <!-- mobile navigation controls -->
-      <div class="mobile-controls">
-        <span class="mobile-control-group mobile-header-icons">
-          <!-- Add more mobile controls here. These will be on the right side of the mobile page header section -->
-        </span>
-        <div class="mobile-control-group main-nav-icons">
-          <button id="nav-icon3"
-                  type="button"
-                  class="mobile-control toggle-menu"
-                  aria-expanded="false"
-                  aria-controls="navigation">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span class="sr-only">Menu</span>
-          </button>
-        </div>
-      </div>
-      <div class="navigation-search full-width-nav container">
-        <div id="head-search" class="search-container featured-search">
-          <div class="d-block d-lg-none">
-            <a href="{% url 'core:index' %}"
-               class="drawer-logo-link first-level-link">
-              <img src="https://cdn.cdt.ca.gov/cdt/cagov/cagov-lockup/cagov-lockup-flag/cagov-lockup-flag-gradient/cagov-lockup-flag-gradient.svg"
-                   alt="CA.gov official logo"
-                   class="drawer-logo mb-4" />
-            </a>
-          </div>
-        </div>
-        <!-- navigation types -->
-        <nav id="navigation"
-             class="main-navigation dropdown"
-             aria-label="Main navigation">
-          <ul id="nav_list" class="top-level-nav">
-            <li class="nav-item">
-              <a class="first-level-link" href="{% url 'core:index' %}">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="first-level-link" href="{% url 'vital_records:index' %}">Vital records</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-    <div id="main-content" class="main-content">
-      <div class="container">
-        <main class="main-primary">
-          <h1>
+      <!-- Top level header -->
+      <div class="p-t-md bg-primary">
+        <div class="container">
+          <nav aria-label="You are here" class="breadcrumbs">
+            <ol>
+              <li>
+                <a href="{% url 'vital_records:request_eligibility' %}"
+                   title="Home page">< Go back to vital records home</a>
+              </li>
+            </ol>
+          </nav>
+          <h1 class="m-t-0 p-b-lg">
             {% block headline %}
             {% endblock headline %}
           </h1>
-          {% block inner-content %}
-          {% endblock inner-content %}
-        </main>
+        </div>
       </div>
+    </header>
+    <div id="main-content" class="main-content container">
+      <main class="main-primary">
+        {% block inner-content %}
+        {% endblock inner-content %}
+      </main>
     </div>
     <!-- global footer goes here -->
     <footer id="footer" class="global-footer">

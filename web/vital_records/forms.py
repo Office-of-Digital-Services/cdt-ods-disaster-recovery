@@ -12,9 +12,11 @@ class RequestEligibilityForm(forms.ModelForm):
 
 class StatementForm(forms.ModelForm):
     relationship = forms.ChoiceField(
-        choices=VitalRecordsRequest.RELATIONSHIP_CHOICES, widget=forms.Select(attrs={"class": "form-control"})
+        choices=VitalRecordsRequest.RELATIONSHIP_CHOICES,
+        label="Select your relationship",
+        widget=forms.Select(attrs={"class": "form-control"}),
     )
-    legal_attestation = forms.CharField(label="Legal attestation", max_length=100, widget=forms.TextInput())
+    legal_attestation = forms.CharField(label="Type your full name to sign", max_length=100, widget=forms.TextInput())
 
     class Meta:
         model = VitalRecordsRequest

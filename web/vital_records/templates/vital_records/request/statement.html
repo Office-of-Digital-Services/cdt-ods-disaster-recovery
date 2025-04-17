@@ -7,9 +7,33 @@
     {% translate "Replacement birth record" %}
 {% endblock headline %}
 {% block inner-content %}
-    <form method="post">
+    <h2>Confirm your eligibility for an authorized copy</h2>
+    <p>
+        To get an authorized copy, you must be the person named on the record or someone legally allowed to request it — like a parent, guardian, or close relative.
+    </p>
+    {% comment %} <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
+        <button type="submit">Confirm and continue to order</button>
+    </form> {% endcomment %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.relationship.id_for_label }}">{{ form.relationship.label }}</label>
+            {{ form.relationship }}
+        </div>
+        <p>Legal attestation</p>
+        <div class="form-group border b-1 rounded bg-gray-light p-a-md">
+            <label for="{{ form.legal_attestation.id_for_label }}">{{ form.legal_attestation.label }}</label>
+            <!-- Custom wrapper with text -->
+            <div class="custom-wrapper">
+                <p class="form-help">
+                    By typing your full name below, you confirm under penalty of perjury under California law that you’re eligible to request this record.
+                </p>
+                {{ form.legal_attestation }}
+            </div>
+            {% if form.legal_attestation.errors %}<div class="error">{{ form.legal_attestation.errors }}</div>{% endif %}
+        </div>
         <button type="submit">Confirm and continue to order</button>
     </form>
 {% endblock inner-content %}
