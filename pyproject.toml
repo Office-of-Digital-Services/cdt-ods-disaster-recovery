@@ -12,7 +12,7 @@ dependencies = [
     "Django==5.1.8",
     "gunicorn==23.0.0",
     "requests==2.32.3",
-    "django-fsm==4.0.0"
+    "django-fsm-2==4.0.0"
 ]
 
 [project.optional-dependencies]
