@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from django.db import models
-from django_fsm import FSMField
+from django_fsm import FSMField, transition
 
 from cdt_identity.models import IdentityGatewayConfig, ClaimsVerificationRequest
 
@@ -41,3 +41,8 @@ class VitalRecordsRequest(models.Model):
 
     status = FSMField(default="started", choices=STATUS_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
+
+    # Transitions from state to state
+    @transition(field=status, target="eligibility_completed")
+    def complete_eligibility(self):
+        pass

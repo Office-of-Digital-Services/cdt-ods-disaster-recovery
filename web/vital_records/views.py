@@ -2,10 +2,15 @@ from typing import Any
 
 from django.http import HttpRequest
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView
+from django.views.generic.edit import CreateView
+
+from web.core.models import VitalRecordsRequest
 
 from web.vital_records.session import Session
+from web.vital_records.forms import RequestEligibilityForm
 
 
 class IndexView(TemplateView):
@@ -30,6 +35,24 @@ class RequestView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["email"] = session.verified_email
         return context
+
+
+class EligibilityView(CreateView):
+    model = VitalRecordsRequest
+    form_class = RequestEligibilityForm
+    template_name = "vital_records/request/eligibility.html"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Move form state to next state
+        self.object.complete_eligibility()
+        self.object.save()
+
+        return response
+
+    def get_success_url(self):
+        return reverse("vital_records:submitted")
 
 
 class SubmittedView(TemplateView):
