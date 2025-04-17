@@ -1,0 +1,16 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+{% block title %}
+    {% translate "Replacement birth record" %}
+{% endblock title %}
+{% block headline %}
+    {% translate "Replacement birth record" %}
+{% endblock headline %}
+{% block inner-content %}
+    <p>
+        <strong>Fire:</strong> {{ vital_records_request.fire }}
+    </p>
+    <p>
+        <strong>Status:</strong> {{ vital_records_request.get_status_display }}
+    </p>
+{% endblock inner-content %}
