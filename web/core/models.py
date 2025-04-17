@@ -31,30 +31,45 @@ class UserFlow(models.Model):
 
 
 class VitalRecordsRequest(models.Model):
-    STARTED = "started"
-    ELIGIBILITY_COMPLETED = "eligibility_completed"
-    SWORN_STATEMENT_COMPLETED = "sworn_statement_completed"
-    SUBMITTED = "submitted"
-
     STATUS_CHOICES = [
-        (STARTED, "Started"),
-        (ELIGIBILITY_COMPLETED, "Eligibility Completed"),
-        (SWORN_STATEMENT_COMPLETED, "Sworn Statement Completed"),
-        (SUBMITTED, "Request Submitted"),
+        ("started", "Started"),
+        ("eligibility_completed", "Eligibility Completed"),
+        ("sworn_statement_completed", "Sworn Statement Completed"),
+        ("name_completed", "Name Completed"),
+        ("submitted", "Request Submitted"),
     ]
 
-    PALISADES_FIRE = "palisades"
-    EATON_FIRE = "eaton"
+    FIRE_CHOICES = [("palisades", "Palisades fire"), ("eaton", "Eaton fire")]
 
-    FIRE_CHOICES = [(PALISADES_FIRE, "Palisades fire"), (EATON_FIRE, "Eaton fire")]
+    RELATIONSHIP_CHOICES = [
+        ("self", "Self"),
+        ("parent", "Parent"),
+        ("legal guardian", "Legal guardian"),
+        ("child", "Child"),
+        ("grandparent", "Grandparent"),
+        ("grandchild", "Grandchild"),
+        ("sibling", "Sibling"),
+        ("spouse", "Spouse"),
+        ("domestic_partner", "Domestic partner"),
+    ]
 
-    status = FSMField(default=STARTED, choices=STATUS_CHOICES)
-    fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
+    status = FSMField(default="started", choices=STATUS_CHOICES)
+    fire = models.CharField(max_length=50, choices=FIRE_CHOICES, blank=True)
+    relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES, blank=True)
+    legal_attestation = models.CharField(max_length=100, blank=True)
+    first_name = models.CharField(max_length=100, blank=True)
+    middle_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
 
     # Transitions from state to state
-    @transition(field=status, target=ELIGIBILITY_COMPLETED)
+    @transition(field=status, target="eligibility_completed")
     def complete_eligibility(self):
-        # User arrives at Elig form
-        # Completes Elig form
-        # Redirected to Sworn Statement form
+        pass
+
+    @transition(field=status, target="sworn_statement_completed")
+    def complete_statement(self):
+        pass
+
+    @transition(field=status, target="name_completed")
+    def complete_name(self):
         pass

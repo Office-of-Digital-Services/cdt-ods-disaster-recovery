@@ -7,13 +7,12 @@
     {% translate "Replacement birth record" %}
 {% endblock headline %}
 {% block inner-content %}
-    <p>You’re eligible for free replacement records</p>
-    <p>
-        We’re offering free replacement records for those impacted by recent wildfires. Your information helps us process your request and deliver the benefit.
-    </p>
+    <small>Step 1 of 6</small>
+    <h2>What is the name on the birth certificate?</h2>
+    <p>Please write the information as it appears on the birth certificate.</p>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Confirm</button>
+        <button type="submit">Continue</button>
     </form>
 {% endblock inner-content %}

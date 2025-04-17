@@ -4,12 +4,12 @@ from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.views import View
 from django.urls import reverse
-from django.views.generic.edit import FormView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import TemplateView, DetailView
 
 from web.core.models import VitalRecordsRequest
 from web.vital_records.session import Session
-from web.vital_records.forms import RequestEligibilityForm
+from web.vital_records.forms import RequestEligibilityForm, StatementForm, NameForm
 
 
 class IndexView(TemplateView):
@@ -26,19 +26,58 @@ class LoginView(View):
         return redirect("cdt:login")
 
 
-class EligibilityView(FormView):
-    template_name = "vital_records/request/eligibility.html"
+class EligibilityView(CreateView):
+    model = VitalRecordsRequest
     form_class = RequestEligibilityForm
+    template_name = "vital_records/request/eligibility.html"
 
     def form_valid(self, form):
-        # Save vital record request form data
-        self.object = form.save()
+        response = super().form_valid(form)
 
         # Move form state to next state
         self.object.complete_eligibility()
-
         self.object.save()
-        return redirect(reverse("vital_records:request_detail", kwargs={"pk": self.object.pk}))
+
+        return response
+
+    def get_success_url(self):
+        return reverse("vital_records:request_statement", kwargs={"pk": self.object.pk})
+
+
+class StatementView(UpdateView):
+    model = VitalRecordsRequest
+    form_class = StatementForm
+    template_name = "vital_records/request/statement.html"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Move form state to next state
+        self.object.complete_statement()
+        self.object.save()
+
+        return response
+
+    def get_success_url(self):
+        return reverse("vital_records:request_name", kwargs={"pk": self.object.pk})
+
+
+class NameView(UpdateView):
+    model = VitalRecordsRequest
+    form_class = NameForm
+    template_name = "vital_records/request/name.html"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Move form state to next state
+        self.object.complete_name()
+        self.object.save()
+
+        return response
+
+    def get_success_url(self):
+        return reverse("vital_records:request_detail", kwargs={"pk": self.object.pk})
 
 
 class VitalRecordsRequestDetailView(DetailView):
