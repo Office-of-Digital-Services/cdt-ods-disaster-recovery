@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from django.db import models
+from django.utils import timezone
 from django_fsm import FSMField, transition
 
 from cdt_identity.models import IdentityGatewayConfig, ClaimsVerificationRequest
@@ -44,8 +45,13 @@ class VitalRecordsRequest(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     status = FSMField(default="started", choices=STATUS_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
+    submitted_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
-    @transition(field=status, target="eligibility_completed")
+    @transition(field=status, source="*", target="eligibility_completed")
     def complete_eligibility(self):
         pass
+
+    @transition(field=status, source="eligibility_completed", target="submitted")
+    def complete_submit(self):
+        self.submitted_at = timezone.now()

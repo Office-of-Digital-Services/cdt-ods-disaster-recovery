@@ -1,13 +1,16 @@
 {% extends "core/base.html" %}
 {% load i18n %}
 {% block title %}
-    {% translate "Request vital records: Complete" %}
+    {% translate "Replacement birth record" %}
 {% endblock title %}
 {% block headline %}
-    {% translate "Request vital records: Complete" %}
+    {% translate "Replacement birth record" %}
 {% endblock headline %}
 {% block inner-content %}
-    <p>{% translate "Your request has been submitted." %}</p>
+    <h2>We received your request</h2>
+    <p>
+        {% translate "We’ll process your request within 1-2 business days and notify you by email once it’s complete." %}
+    </p>
     <p>
         <a class="btn btn-secondary" href="{% url 'cdt:logout' %}">Sign out of Login.gov</a>
     </p>
