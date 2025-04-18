@@ -41,6 +41,7 @@ class VitalRecordsRequest(models.Model):
 
     FIRE_CHOICES = [("palisades", "Palisades fire"), ("eaton", "Eaton fire")]
 
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     status = FSMField(default="started", choices=STATUS_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
 
