@@ -10,7 +10,7 @@ from django.views.generic.edit import CreateView
 from web.core.models import VitalRecordsRequest
 
 from web.vital_records.session import Session
-from web.vital_records.forms import RequestEligibilityForm
+from web.vital_records.forms import EligibilityForm
 
 
 class IndexView(TemplateView):
@@ -39,7 +39,7 @@ class RequestView(TemplateView):
 
 class EligibilityView(CreateView):
     model = VitalRecordsRequest
-    form_class = RequestEligibilityForm
+    form_class = EligibilityForm
     template_name = "vital_records/request/eligibility.html"
 
     def form_valid(self, form):

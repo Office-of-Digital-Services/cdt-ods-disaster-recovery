@@ -2,7 +2,7 @@ from django import forms
 from web.core.models import VitalRecordsRequest
 
 
-class RequestEligibilityForm(forms.ModelForm):
+class EligibilityForm(forms.ModelForm):
     fire = forms.ChoiceField(
         choices=VitalRecordsRequest.FIRE_CHOICES,
         label="Please confirm the fire you were impacted by",
