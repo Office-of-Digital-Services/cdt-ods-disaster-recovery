@@ -17,11 +17,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Install system packages
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y gettext
-
       - uses: actions/setup-python@v5
         with:
           python-version-file: .github/workflows/.python-version
@@ -30,9 +25,6 @@ jobs:
 
       - name: Install Python dependencies
         run: pip install -e .[test]
-
-      - name: Run setup
-        run: ./bin/init.sh
 
       - name: Run tests
         run: ./tests/pytest/run.sh
