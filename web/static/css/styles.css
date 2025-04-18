@@ -130,5 +130,9 @@ header {
 }
 
 #main-content {
-  min-height: calc(100vh - 245px); /* Temporary fix for footer issue */
+  min-height: calc(100vh - 190px); /* Temporary fix for footer issue */
+}
+
+li[data-status="current"]:before {
+  background: gold;
 }
