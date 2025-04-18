@@ -31,6 +31,8 @@ class UserFlow(models.Model):
 
 
 class VitalRecordsRequest(models.Model):
+    """Represents a request to order a vital record through the Disaster Recovery app."""
+
     STATUS_CHOICES = [
         ("started", "Started"),
         ("eligibility_completed", "Eligibility Completed"),
