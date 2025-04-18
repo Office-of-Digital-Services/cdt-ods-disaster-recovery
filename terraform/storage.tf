@@ -23,3 +23,13 @@ resource "azurerm_storage_account" "main" {
     ignore_changes = [tags]
   }
 }
+
+resource "azurerm_storage_share" "postgres" {
+  name               = lower("sts-cdt-pub-vip-ddrc-${local.env_letter}-postgres")
+  storage_account_id = azurerm_storage_account.main.id
+  # in GB
+  quota = 5
+  # Access Tier can be TransactionOptimized, Hot, Cool.
+  # TransactionOptimized is good for frequent access.
+  access_tier = "TransactionOptimized"
+}

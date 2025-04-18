@@ -78,6 +78,12 @@ resource "azurerm_key_vault" "main" {
   }
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = azurerm_container_app.db.identity.0.principal_id
+
+    secret_permissions = ["Get"]
+  }
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = azurerm_container_app.web.identity.0.principal_id
 
     secret_permissions = ["Get"]
