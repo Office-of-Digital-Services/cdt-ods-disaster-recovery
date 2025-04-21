@@ -20,7 +20,7 @@ terraform init -upgrade -backend-config="subscription_id=$PROD_ID"
 if [ "$ENV" = "prod" ]; then
   terraform workspace select default
 else
-  terraform workspace select "$ENV"
+  terraform workspace select -or-create "$ENV"
 fi
 
 echo "Setting the subscription for the Azure CLI..."
