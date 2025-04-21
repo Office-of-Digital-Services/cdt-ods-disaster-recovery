@@ -1,0 +1,23 @@
+{% extends "vital_records/base.html" %}
+{% load i18n %}
+{% block inner-content %}
+    <h2 class="m-t-80">You’re eligible for free replacement records</h2>
+    <div class="row">
+        <div class="col-lg-10">
+            <p>
+                We’re offering free replacement records for those impacted by recent wildfires. Your information helps us process your request and deliver the benefit.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <form method="post">
+                <div class="m-y-md p-y-sm">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary">Confirm</button>
+            </form>
+        </div>
+    </div>
+{% endblock inner-content %}
