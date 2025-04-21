@@ -10,7 +10,8 @@
         <ol>
           <li>
             {% comment %} This is a placeholder link for now {% endcomment %}
-            <a href="/vital-records/request" class="no-underline underline-hover">< Go back to vital records home</a>
+            <a href="{% url 'vital_records:request_eligibility' %}"
+               class="no-underline underline-hover">< Go back to vital records home</a>
           </li>
         </ol>
       </nav>
