@@ -12,3 +12,10 @@ class EligibilityForm(forms.ModelForm):
     class Meta:
         model = VitalRecordsRequest
         fields = ["fire"]
+
+
+class SubmitForm(forms.ModelForm):
+
+    class Meta:
+        model = VitalRecordsRequest
+        fields = []

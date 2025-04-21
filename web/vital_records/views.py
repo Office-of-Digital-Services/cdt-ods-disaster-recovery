@@ -1,15 +1,15 @@
 from typing import Any
 
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
-from web.vital_records.forms import EligibilityForm
+from web.vital_records.forms import EligibilityForm, SubmitForm
 
 
 class IndexView(TemplateView):
@@ -49,6 +49,28 @@ class EligibilityView(CreateView):
         self.object.save()
 
         return response
+
+    def get_success_url(self):
+        return reverse("vital_records:request_submit", kwargs={"pk": self.object.pk})
+
+
+class SubmitView(UpdateView):
+    model = VitalRecordsRequest
+    form_class = SubmitForm
+    template_name = "vital_records/request/confirm.html"
+    context_object_name = "vital_records_request"
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+
+        if self.object.status != "submitted":
+            self.object.complete_submit()
+        else:
+            form.add_error(None, "This request has already been submitted.")
+            return self.form_invalid(form)
+
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse("vital_records:submitted")
