@@ -1,11 +1,11 @@
 name: cdt/disaster-recovery
 
 services:
-  app:
+  web:
     build:
       context: .
       dockerfile: appcontainer/Dockerfile
-    image: cdt/disaster-recovery:app
+    image: cdt/disaster-recovery:web
     env_file: .env
     ports:
       - "${DJANGO_LOCAL_PORT:-8000}:8000"
