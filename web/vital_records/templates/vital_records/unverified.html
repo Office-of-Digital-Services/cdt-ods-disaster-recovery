@@ -1,11 +1,4 @@
-{% extends "core/base.html" %}
-{% load i18n %}
-{% block title %}
-    {% translate "Request vital records: Not verified" %}
-{% endblock title %}
-{% block headline %}
-    {% translate "Request vital records: Not verified" %}
-{% endblock headline %}
+{% extends "vital_records/base.html" %}
 {% block inner-content %}
     <p>{% translate "We could not verify if you are in a disaster affected area." %}</p>
     <p>

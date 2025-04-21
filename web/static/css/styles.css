@@ -126,20 +126,4 @@ header {
       }
     }
   }
-  > div.mobile-controls > div.main-nav-icons {
-    top: -5rem;
-    > button.toggle-menu {
-      margin-top: 1rem;
-    }
-  }
-  > div.navigation-search {
-    > div.search-container > div.d-block > a.drawer-logo-link {
-      outline-offset: -3px;
-      > img.drawer-logo {
-        width: 232px;
-        filter: brightness(0) invert(1);
-        aspect-ratio: 18/5;
-      }
-    }
-  }
 }
