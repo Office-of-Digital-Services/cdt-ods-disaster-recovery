@@ -3,10 +3,9 @@
 {% block inner-content %}
     <div class="row">
         <div class="col-md-3">
-            <ol class="cagov-step-list">
-                <li data-status="{% if request.resolver_match.url_name == 'request_name' %}current{% endif %}">Name</li>
-                <li data-status="{% if request.resolver_match.url_name == 'request_detail' %}current{% endif %}">Preview</li>
-            </ol>
+            {% with request.resolver_match.url_name as url_name %}
+                {% include "vital_records/_form_progress.html" with url_name=url_name %}
+            {% endwith %}
         </div>
         <div class="col-md-9">
             <small>Step 1 of 6</small>
