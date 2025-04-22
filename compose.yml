@@ -36,6 +36,8 @@ services:
       - POSTGRES_PASSWORD
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   pgweb:
     container_name: pgweb
