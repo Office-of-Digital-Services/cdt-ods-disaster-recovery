@@ -1,0 +1,35 @@
+{% extends "vital_records/base.html" %}
+{% load i18n %}
+{% block inner-content %}
+    <h2 class="m-t-80">Confirm your eligibility for an authorized copy</h2>
+    <div class="row">
+        <div class="col-lg-10">
+            <p>
+                To get an authorized copy, you must be the person named on the record or someone legally allowed to request it — like a parent, guardian, or close relative.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-10">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group w-50">
+                    <label for="{{ form.relationship.id_for_label }}">{{ form.relationship.label }}</label>
+                    {{ form.relationship }}
+                </div>
+                <p>Legal attestation</p>
+                <div class="form-group border b-1 rounded bg-gray-light p-a-md">
+                    <div class="custom-wrapper">
+                        <p class="form-help">
+                            By typing your full name below, you confirm under penalty of perjury under California law that you’re eligible to request this record.
+                        </p>
+                        <label for="{{ form.legal_attestation.id_for_label }}">{{ form.legal_attestation.label }}</label>
+                        {{ form.legal_attestation }}
+                    </div>
+                    {% if form.legal_attestation.errors %}<div class="error">{{ form.legal_attestation.errors }}</div>{% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Confirm and continue to order</button>
+            </form>
+        </div>
+    </div>
+{% endblock inner-content %}
