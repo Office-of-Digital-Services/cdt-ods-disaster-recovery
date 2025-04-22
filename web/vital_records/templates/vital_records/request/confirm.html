@@ -1,0 +1,40 @@
+{% extends "vital_records/base.html" %}
+{% load i18n %}
+{% block inner-content %}
+    <div class="row">
+        <div class="col-3">
+            <ol class="cagov-step-list">
+                <li data-status="{% if request.resolver_match.url_name == 'request_submit' %}current{% endif %}">Preview & submit</li>
+            </ol>
+        </div>
+        <div class="col-9">
+            <h2>Confirm your order</h2>
+            <p>
+                If everything looks accurate, press “Submit” below to finish your request. If you need to edit request, you can go back without losing your progress.
+            </p>
+            <hr>
+            <ul>
+                <li>
+                    <strong>State:</strong>
+                    {{ vital_records_request.status }}
+                </li>
+                <li>
+                    <strong>ID:</strong>
+                    {{ vital_records_request.id }}
+                </li>
+                <li>
+                    <strong>Fire:</strong> {{ vital_records_request.fire }}
+                </li>
+            </ul>
+            <hr>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Submit order</button>
+            </form>
+            <p>
+                or <a href="{% url 'vital_records:request_eligibility' %}">go back</a>
+            </p>
+        </div>
+    </div>
+{% endblock inner-content %}

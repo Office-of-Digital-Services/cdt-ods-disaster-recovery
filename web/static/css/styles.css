@@ -127,3 +127,11 @@ header {
     }
   }
 }
+
+#main-content {
+  min-height: calc(100vh - 190px); /* Temporary fix for footer issue */
+}
+
+li[data-status="current"]:before {
+  background: gold; /* Temporary style for form debugging */
+}
