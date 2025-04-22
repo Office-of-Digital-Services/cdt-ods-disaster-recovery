@@ -34,6 +34,9 @@ class VitalRecordsRequest(models.Model):
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
     relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
     legal_attestation = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100)
+    middle_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
@@ -45,6 +48,10 @@ class VitalRecordsRequest(models.Model):
     def complete_statement(self):
         pass
 
-    @transition(field=status, source="statement_completed", target="submitted")
+    @transition(field=status, target="name_completed")
+    def complete_name(self):
+        pass
+
+    @transition(field=status, source="name_completed", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
