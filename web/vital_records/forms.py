@@ -30,6 +30,22 @@ class StatementForm(forms.ModelForm):
         fields = ["relationship", "legal_attestation"]
 
 
+class NameForm(forms.ModelForm):
+    first_name = forms.CharField(
+        label="First name at birth", max_length=100, widget=forms.TextInput(attrs={"class": "form-control"})
+    )
+    middle_name = forms.CharField(
+        label="Middle name at birth", max_length=100, widget=forms.TextInput(attrs={"class": "form-control"}), required=False
+    )
+    last_name = forms.CharField(
+        label="Last name at birth", max_length=100, widget=forms.TextInput(attrs={"class": "form-control"})
+    )
+
+    class Meta:
+        model = VitalRecordsRequest
+        fields = ["first_name", "middle_name", "last_name"]
+
+
 class SubmitForm(forms.ModelForm):
 
     class Meta:
