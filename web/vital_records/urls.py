@@ -12,6 +12,7 @@ urlpatterns = [
     path("request/eligibility/", views.EligibilityView.as_view(), name="request_eligibility"),
     path("request/<uuid:pk>/", views.SubmitView.as_view(), name="request_submit"),
     path("request/<uuid:pk>/statement/", views.StatementView.as_view(), name="request_statement"),
+    path("request/<uuid:pk>/name/", views.NameView.as_view(), name="request_name"),
     path("submitted", views.SubmittedView.as_view(), name="submitted"),
     path("unverified", views.UnverifiedView.as_view(), name="unverified"),
 ]

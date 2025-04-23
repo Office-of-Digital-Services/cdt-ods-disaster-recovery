@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
-from web.vital_records.forms import EligibilityForm, StatementForm, SubmitForm
+from web.vital_records.forms import EligibilityForm, StatementForm, NameForm, SubmitForm
 
 
 class IndexView(TemplateView):
@@ -64,6 +64,24 @@ class StatementView(UpdateView):
 
         # Move form state to next state
         self.object.complete_statement()
+        self.object.save()
+
+        return response
+
+    def get_success_url(self):
+        return reverse("vital_records:request_name", kwargs={"pk": self.object.pk})
+
+
+class NameView(UpdateView):
+    model = VitalRecordsRequest
+    form_class = NameForm
+    template_name = "vital_records/request/name.html"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Move form state to next state
+        self.object.complete_name()
         self.object.save()
 
         return response
