@@ -52,13 +52,6 @@ resource "azurerm_container_app" "db" {
     min_replicas = 1
     max_replicas = 1
 
-    # define the persistent volume using Azure File Share
-    volume {
-      name         = "pgdata-volume"
-      storage_type = "AzureFile"
-      storage_name = azurerm_storage_share.postgres.name
-    }
-
     container {
       name   = "postgres"
       image  = "postgres:17"
@@ -78,30 +71,12 @@ resource "azurerm_container_app" "db" {
         name        = "POSTGRES_PASSWORD"
         secret_name = "postgres-password"
       }
-      env {
-        name = "PGDATA"
-        # Standard location within the volume mount
-        value = "/var/lib/postgresql/data/pgdata"
-      }
-
-      # Mount the persistent volume
-      volume_mounts {
-        # Must match the volume name defined above
-        name = "pgdata-volume"
-        # Standard PostgreSQL data directory
-        path = "/var/lib/postgresql/data"
-      }
     }
   }
 
   lifecycle {
     ignore_changes = [tags]
   }
-
-  depends_on = [
-    azurerm_storage_account.main,
-    azurerm_storage_share.postgres
-  ]
 }
 
 resource "azurerm_container_app" "web" {
@@ -233,6 +208,45 @@ resource "azurerm_container_app" "web" {
         name        = "DJANGO_TRUSTED_ORIGINS"
         secret_name = "django-trusted-origins"
       }
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  depends_on = [
+    azurerm_container_app.db
+  ]
+}
+
+resource "azurerm_container_app" "pgweb" {
+  name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-pgweb")
+  container_app_environment_id = azurerm_container_app_environment.main.id
+  resource_group_name          = data.azurerm_resource_group.main.name
+  revision_mode                = "Single"
+  max_inactive_revisions       = 10
+
+  # external, auto port 8081
+  ingress {
+    external_enabled = true
+    target_port      = 8081
+    transport        = "auto"
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
+    }
+  }
+
+  template {
+    min_replicas = 1
+    max_replicas = 1
+
+    container {
+      name   = "pgweb"
+      image  = "sosedoff/pgweb:latest"
+      cpu    = 0.25
+      memory = "0.5Gi"
     }
   }
 
