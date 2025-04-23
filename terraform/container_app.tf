@@ -52,13 +52,6 @@ resource "azurerm_container_app" "db" {
     min_replicas = 1
     max_replicas = 1
 
-    # define the persistent volume using Azure File Share
-    volume {
-      name         = "pgdata-volume"
-      storage_type = "AzureFile"
-      storage_name = azurerm_storage_share.postgres.name
-    }
-
     container {
       name   = "postgres"
       image  = "postgres:17"
@@ -78,30 +71,12 @@ resource "azurerm_container_app" "db" {
         name        = "POSTGRES_PASSWORD"
         secret_name = "postgres-password"
       }
-      env {
-        name = "PGDATA"
-        # Standard location within the volume mount
-        value = "/var/lib/postgresql/data/pgdata"
-      }
-
-      # Mount the persistent volume
-      volume_mounts {
-        # Must match the volume name defined above
-        name = "pgdata-volume"
-        # Standard PostgreSQL data directory
-        path = "/var/lib/postgresql/data"
-      }
     }
   }
 
   lifecycle {
     ignore_changes = [tags]
   }
-
-  depends_on = [
-    azurerm_storage_account.main,
-    azurerm_storage_share.postgres
-  ]
 }
 
 resource "azurerm_container_app" "web" {
