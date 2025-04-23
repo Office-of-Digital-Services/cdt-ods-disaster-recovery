@@ -46,6 +46,20 @@ class NameForm(forms.ModelForm):
         fields = ["first_name", "middle_name", "last_name"]
 
 
+class CountyForm(forms.ModelForm):
+    label_suffix = ""
+    county_of_birth = forms.ChoiceField(
+        choices=VitalRecordsRequest.COUNTY_CHOICES,
+        label="County of birth",
+        required=True,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+
+    class Meta:
+        model = VitalRecordsRequest
+        fields = ["county_of_birth"]
+
+
 class SubmitForm(forms.ModelForm):
 
     class Meta:
