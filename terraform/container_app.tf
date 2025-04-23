@@ -97,6 +97,11 @@ resource "azurerm_container_app" "web" {
     identity            = "System"
   }
   secret {
+    name                = "django-db-reset"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-db-reset"
+    identity            = "System"
+  }
+  secret {
     name                = "django-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-name"
     identity            = "System"
@@ -127,8 +132,43 @@ resource "azurerm_container_app" "web" {
     identity            = "System"
   }
   secret {
+    name                = "django-superuser-username"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-superuser-username"
+    identity            = "System"
+  }
+  secret {
+    name                = "django-superuser-email"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-superuser-email"
+    identity            = "System"
+  }
+  secret {
+    name                = "django-superuser-password"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-superuser-password"
+    identity            = "System"
+  }
+  secret {
     name                = "django-trusted-origins"
     key_vault_secret_id = "${local.secret_http_prefix}/django-trusted-origins"
+    identity            = "System"
+  }
+  secret {
+    name                = "postgres-db"
+    key_vault_secret_id = "${local.secret_http_prefix}/postgres-db"
+    identity            = "System"
+  }
+  secret {
+    name                = "postgres-user"
+    key_vault_secret_id = "${local.secret_http_prefix}/postgres-user"
+    identity            = "System"
+  }
+  secret {
+    name                = "postgres-password"
+    key_vault_secret_id = "${local.secret_http_prefix}/postgres-password"
+    identity            = "System"
+  }
+  secret {
+    name                = "postgres-options"
+    key_vault_secret_id = "${local.secret_http_prefix}/postgres-options"
     identity            = "System"
   }
 
@@ -150,6 +190,68 @@ resource "azurerm_container_app" "web" {
     http_scale_rule {
       concurrent_requests = "10"
       name                = "http-scaler"
+    }
+
+    init_container {
+      name    = "reset-db"
+      command = []
+      args    = ["bin/reset_db.sh"]
+      image   = "${var.container_registry}/${var.container_repository}:${var.container_tag}"
+      cpu     = 0.25
+      memory  = "0.5Gi"
+      env {
+        name        = "DJANGO_DB_RESET"
+        secret_name = "django-db-reset"
+      }
+      env {
+        name        = "DJANGO_DB_NAME"
+        secret_name = "django-db-name"
+      }
+      env {
+        name        = "DJANGO_DB_USER"
+        secret_name = "django-db-user"
+      }
+      env {
+        name        = "DJANGO_DB_PASSWORD"
+        secret_name = "django-db-password"
+      }
+      env {
+        name        = "DJANGO_SECRET_KEY"
+        secret_name = "django-secret-key"
+      }
+      env {
+        name        = "DJANGO_SUPERUSER_USERNAME"
+        secret_name = "django-superuser-username"
+      }
+      env {
+        name        = "DJANGO_SUPERUSER_EMAIL"
+        secret_name = "django-superuser-email"
+      }
+      env {
+        name        = "DJANGO_SUPERUSER_PASSWORD"
+        secret_name = "django-superuser-password"
+      }
+      env {
+        name        = "POSTGRES_DB"
+        secret_name = "postgres-db"
+      }
+      env {
+        name        = "POSTGRES_USER"
+        secret_name = "postgres-user"
+      }
+      env {
+        name        = "POSTGRES_PASSWORD"
+        secret_name = "postgres-password"
+      }
+      env {
+        name = "POSTGRES_HOSTNAME"
+        # reference the internal name of the database container app
+        value = azurerm_container_app.db.latest_revision_name
+      }
+      env {
+        name        = "POSTGRES_OPTIONS"
+        secret_name = "postgres-options"
+      }
     }
 
     container {
@@ -188,8 +290,12 @@ resource "azurerm_container_app" "web" {
       }
       env {
         name = "POSTGRES_HOSTNAME"
-        # Use the FQDN of the internal database container app
-        value = azurerm_container_app.db.latest_revision_fqdn
+        # reference the internal name of the database container app
+        value = azurerm_container_app.db.latest_revision_name
+      }
+      env {
+        name        = "POSTGRES_OPTIONS"
+        secret_name = "postgres-options"
       }
       env {
         name        = "DJANGO_DEBUG"

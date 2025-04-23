@@ -5,6 +5,7 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.1/topics/settings/
 """
 
+import json
 import os
 from pathlib import Path
 
@@ -141,6 +142,7 @@ WSGI_APPLICATION = "web.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+opts = json.loads(os.environ.get("POSTGRES_OPTIONS", json.dumps({})))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -149,6 +151,8 @@ DATABASES = {
         "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD"),
         "HOST": os.environ.get("POSTGRES_HOSTNAME", "postgres"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+        "OPTIONS": opts,
     }
 }
 
