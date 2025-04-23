@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                     ("spouse", "Spouse"),
                     ("domestic_partner", "Domestic partner"),
                 ],
-                default="Unknown",
+                default="self",
                 max_length=50,
             ),
             preserve_default=False,
