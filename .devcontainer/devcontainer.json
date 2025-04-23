@@ -2,7 +2,7 @@
   "name": "cdt/disaster-recovery",
   "dockerComposeFile": ["../compose.yml"],
   "service": "dev",
-  "runServices": ["dev"],
+  "runServices": ["dev", "pgweb"],
   "workspaceFolder": "/cdt/app",
   "postStartCommand": ["/bin/bash", "bin/reset_db.sh"],
   "postAttachCommand": ["/bin/bash", ".devcontainer/postAttach.sh"],

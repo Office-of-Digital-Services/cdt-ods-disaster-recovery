@@ -1,11 +1,13 @@
 name: cdt/disaster-recovery
 
 services:
-  app:
+  web:
     build:
       context: .
       dockerfile: appcontainer/Dockerfile
-    image: cdt/disaster-recovery:app
+    image: cdt/disaster-recovery:web
+    depends_on:
+      - postgres
     env_file: .env
     ports:
       - "${DJANGO_LOCAL_PORT:-8000}:8000"
@@ -15,6 +17,9 @@ services:
       context: .
       dockerfile: .devcontainer/Dockerfile
     image: cdt/disaster-recovery:dev
+    depends_on:
+      - postgres
+      - pgweb
     env_file: .env
     # https://code.visualstudio.com/docs/remote/create-dev-container#_use-docker-compose
     entrypoint: sleep infinity
@@ -22,3 +27,28 @@ services:
       - "${DJANGO_LOCAL_PORT:-8000}:8000"
     volumes:
       - ./:/cdt/app
+
+  postgres:
+    image: postgres:17
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgweb:
+    container_name: pgweb
+    image: sosedoff/pgweb
+    ports:
+      - "${PGWEB_PORT:-8081}:8081"
+    depends_on:
+      - postgres
+    environment:
+      - PGWEB_DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable
+
+volumes:
+  pgdata:
+    driver: local
