@@ -1,0 +1,17 @@
+{% extends "vital_records/base.html" %}
+{% load i18n %}
+{% block inner-content %}
+    <div class="row">
+        <div class="col-md-3">
+            {% with request.resolver_match.url_name as url_name %}
+                {% include "vital_records/_form_progress.html" with url_name=url_name %}
+            {% endwith %}
+        </div>
+        <div class="col-md-9">
+            <small>Step 1 of 6</small>
+            <h2>What is the name on the birth certificate?</h2>
+            <p class="mb-3">Please write the information as it appears on the birth certificate.</p>
+            {% include "vital_records/_two_column_form.html" with form=form button_label="Continue" %}
+        </div>
+    </div>
+{% endblock inner-content %}

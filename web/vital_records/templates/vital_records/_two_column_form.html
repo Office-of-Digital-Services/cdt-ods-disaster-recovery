@@ -1,0 +1,14 @@
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="d-flex flex-wrap">
+        {% for field in form %}
+            <div class="form-group width-50pct p-r-md">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<small class="form-help">{{ field.help_text }}</small>{% endif %}
+                {% if field.errors %}<div class="form-error">{{ field.errors }}</div>{% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary mt-4">{{ button_label|default:"Continue" }}</button>
+</form>

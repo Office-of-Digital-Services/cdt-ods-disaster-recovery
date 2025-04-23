@@ -3,9 +3,9 @@
 {% block inner-content %}
     <div class="row">
         <div class="col-3">
-            <ol class="cagov-step-list">
-                <li data-status="{% if request.resolver_match.url_name == 'request_submit' %}current{% endif %}">Preview & submit</li>
-            </ol>
+            {% with request.resolver_match.url_name as url_name %}
+                {% include "vital_records/_form_progress.html" with url_name=url_name %}
+            {% endwith %}
         </div>
         <div class="col-9">
             <h2>Confirm your order</h2>
@@ -30,6 +30,14 @@
                 </li>
                 <li>
                     <strong>Legal attestation:</strong> {{ vital_records_request.legal_attestation }}
+                </li>
+            </ul>
+            <hr>
+            <h3>Birth record details</h3>
+            <p>This is the information that will be printed on the replacement birth record.</p>
+            <ul>
+                <li>
+                    <strong>Name:</strong> {{ vital_records_request.first_name }} {{ vital_records_request.middle_name }} {{ vital_records_request.last_name }}
                 </li>
             </ul>
             <hr>
