@@ -9,13 +9,16 @@
 | web/core/admin.py                                                                         |        7 |        0 |        0 |        0 |    100% |           |
 | web/core/apps.py                                                                          |        5 |        0 |        0 |        0 |    100% |           |
 | web/core/hooks.py                                                                         |       11 |        4 |        0 |        0 |     64% |9-10, 14-15 |
+| web/core/management/\_\_init\_\_.py                                                       |        0 |        0 |        0 |        0 |    100% |           |
+| web/core/management/commands/\_\_init\_\_.py                                              |        0 |        0 |        0 |        0 |    100% |           |
+| web/core/management/commands/reset\_db.py                                                 |       39 |        0 |        4 |        0 |    100% |           |
 | web/core/middleware.py                                                                    |        9 |        1 |        2 |        1 |     82% |        19 |
 | web/core/migrations/0001\_initial.py                                                      |        7 |        0 |        0 |        0 |    100% |           |
 | web/core/migrations/\_\_init\_\_.py                                                       |        0 |        0 |        0 |        0 |    100% |           |
 | web/core/models.py                                                                        |        8 |        0 |        0 |        0 |    100% |           |
 | web/core/session.py                                                                       |       19 |        7 |        4 |        1 |     57% |13-19, 25-26, 30-33 |
 | web/core/urls.py                                                                          |        4 |        0 |        0 |        0 |    100% |           |
-| web/settings.py                                                                           |       60 |        9 |       12 |        3 |     75% |42-49, 94->98, 109->112, 121 |
+| web/settings.py                                                                           |       59 |        9 |       12 |        3 |     75% |42-49, 94->98, 109->112, 121 |
 | web/urls.py                                                                               |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/apps.py                                                                |        5 |        0 |        0 |        0 |    100% |           |
@@ -29,7 +32,7 @@
 | web/vital\_records/urls.py                                                                |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views.py                                                               |       67 |       18 |        2 |        0 |     71% |45-51, 54, 63-69, 72, 82-91, 94 |
 | web/wsgi.py                                                                               |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                 **TOTAL** |  **301** |   **58** |   **22** |    **5** | **77%** |           |
+|                                                                                 **TOTAL** |  **339** |   **58** |   **26** |    **5** | **79%** |           |
 
 
 ## Setup coverage badge
