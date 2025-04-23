@@ -12,6 +12,7 @@ class VitalRecordsRequest(models.Model):
         ("started", "Started"),
         ("eligibility_completed", "Eligibility Completed"),
         ("statement_completed", "Sworn Statement Completed"),
+        ("county_completed", "County Completed"),
         ("submitted", "Request Submitted"),
     ]
 
@@ -29,6 +30,68 @@ class VitalRecordsRequest(models.Model):
         ("domestic_partner", "Domestic partner"),
     ]
 
+    COUNTY_CHOICES = [
+        ("", "Select county"),
+        ("alameda_county", "Alameda County"),
+        ("alpine_county", "Alpine County"),
+        ("amador_county", "Amador County"),
+        ("butte_county", "Butte County"),
+        ("calaveras_county", "Calaveras County"),
+        ("colusa_county", "Colusa County"),
+        ("contra Costa_county", "Contra Costa County"),
+        ("del Norte_county", "Del Norte County"),
+        ("el Dorado_county", "El Dorado County"),
+        ("fresno_county", "Fresno County"),
+        ("glenn_county", "Glenn County"),
+        ("humboldt_county", "Humboldt County"),
+        ("imperial_county", "Imperial County"),
+        ("inyo_county", "Inyo County"),
+        ("kern_county", "Kern County"),
+        ("kings_county", "Kings County"),
+        ("lake_county", "Lake County"),
+        ("lassen_county", "Lassen County"),
+        ("los Angeles_county", "Los Angeles County"),
+        ("madera_county", "Madera County"),
+        ("marin_county", "Marin County"),
+        ("mariposa_county", "Mariposa County"),
+        ("mendocino_county", "Mendocino County"),
+        ("merced_county", "Merced County"),
+        ("modoc_county", "Modoc County"),
+        ("mono_county", "Mono County"),
+        ("monterey_county", "Monterey County"),
+        ("napa_county", "Napa County"),
+        ("nevada_county", "Nevada County"),
+        ("orange_county", "Orange County"),
+        ("placer_county", "Placer County"),
+        ("plumas_county", "Plumas County"),
+        ("riverside_county", "Riverside County"),
+        ("sacramento_county", "Sacramento County"),
+        ("san_Benito_county", "San Benito County"),
+        ("san_Bernardino_county", "San Bernardino County"),
+        ("san_Diego_county", "San Diego County"),
+        ("san_Francisco_county", "San Francisco County"),
+        ("san_Joaquin_county", "San Joaquin County"),
+        ("san_Luis Obispo_county", "San Luis Obispo County"),
+        ("san_Mateo_county", "San Mateo County"),
+        ("santa_Barbara_county", "Santa Barbara County"),
+        ("santa_Clara_county", "Santa Clara County"),
+        ("santa_Cruz_county", "Santa Cruz County"),
+        ("shasta_county", "Shasta County"),
+        ("sierra_county", "Sierra County"),
+        ("siskiyou_county", "Siskiyou County"),
+        ("solano_county", "Solano County"),
+        ("sonoma_county", "Sonoma County"),
+        ("stanislaus_county", "Stanislaus County"),
+        ("sutter_county", "Sutter County"),
+        ("tehama_county", "Tehama County"),
+        ("trinity_county", "Trinity County"),
+        ("tulare_county", "Tulare County"),
+        ("tuolumne_county", "Tuolumne County"),
+        ("ventura_county", "Ventura County"),
+        ("yolo_county", "Yolo County"),
+        ("yuba_county", "Yuba County"),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     status = FSMField(default="started", choices=STATUS_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
@@ -37,6 +100,7 @@ class VitalRecordsRequest(models.Model):
     first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100)
+    county_of_birth = models.CharField(max_length=50, choices=COUNTY_CHOICES)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
@@ -52,6 +116,10 @@ class VitalRecordsRequest(models.Model):
     def complete_name(self):
         pass
 
-    @transition(field=status, source="name_completed", target="submitted")
+    @transition(field=status, target="county_completed")
+    def complete_county(self):
+        pass
+
+    @transition(field=status, source="county_completed", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
