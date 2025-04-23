@@ -101,7 +101,7 @@ class VitalRecordsRequest(models.Model):
     first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100)
-    county_of_birth = models.CharField(max_length=50, choices=COUNTY_CHOICES)
+    county_of_birth = models.CharField(max_length=2, choices=COUNTY_CHOICES)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state

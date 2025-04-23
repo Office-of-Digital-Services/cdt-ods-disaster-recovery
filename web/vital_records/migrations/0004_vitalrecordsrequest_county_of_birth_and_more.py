@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
                     ("58", "Yuba"),
                 ],
                 default="",
-                max_length=50,
+                max_length=2,
             ),
             preserve_default=False,
         ),
