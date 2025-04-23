@@ -219,3 +219,42 @@ resource "azurerm_container_app" "web" {
     azurerm_container_app.db
   ]
 }
+
+resource "azurerm_container_app" "pgweb" {
+  name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-pgweb")
+  container_app_environment_id = azurerm_container_app_environment.main.id
+  resource_group_name          = data.azurerm_resource_group.main.name
+  revision_mode                = "Single"
+  max_inactive_revisions       = 10
+
+  # external, auto port 8081
+  ingress {
+    external_enabled = true
+    target_port      = 8081
+    transport        = "auto"
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
+    }
+  }
+
+  template {
+    min_replicas = 1
+    max_replicas = 1
+
+    container {
+      name   = "pgweb"
+      image  = "sosedoff/pgweb:latest"
+      cpu    = 0.25
+      memory = "0.5Gi"
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  depends_on = [
+    azurerm_container_app.db
+  ]
+}
