@@ -47,7 +47,6 @@ class NameForm(forms.ModelForm):
 
 
 class CountyForm(forms.ModelForm):
-    label_suffix = ""
     county_of_birth = forms.ChoiceField(
         choices=VitalRecordsRequest.COUNTY_CHOICES,
         label="County of birth",
