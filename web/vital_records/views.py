@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
-from web.vital_records.forms import EligibilityForm, StatementForm, NameForm, SubmitForm
+from web.vital_records.forms import EligibilityForm, StatementForm, NameForm, CountyForm, SubmitForm
 
 
 class IndexView(TemplateView):
@@ -87,6 +87,24 @@ class NameView(UpdateView):
         return response
 
     def get_success_url(self):
+        return reverse("vital_records:request_county", kwargs={"pk": self.object.pk})
+
+
+class CountyView(UpdateView):
+    model = VitalRecordsRequest
+    form_class = CountyForm
+    template_name = "vital_records/request/county.html"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Move form state to next state
+        self.object.complete_county()
+        self.object.save()
+
+        return response
+
+    def get_success_url(self):
         return reverse("vital_records:request_submit", kwargs={"pk": self.object.pk})
 
 
@@ -107,6 +125,21 @@ class SubmitView(UpdateView):
 
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
+    def get_display_county(self, context):
+        counties = VitalRecordsRequest.COUNTY_CHOICES
+        county_of_birth_id = context["vital_records_request"].county_of_birth
+
+        # Make sure the ID is not blank ("") and ID is in the county options list
+        if county_of_birth_id != "" and county_of_birth_id in dict(counties):
+            return dict(counties)[county_of_birth_id]
+        else:
+            return ""
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["county_display"] = self.get_display_county(context)
+        return context
 
     def get_success_url(self):
         return reverse("vital_records:submitted")
