@@ -131,6 +131,11 @@ resource "azurerm_container_app" "web" {
     key_vault_secret_id = "${local.secret_http_prefix}/django-trusted-origins"
     identity            = "System"
   }
+  secret {
+    name                = "postgres-options"
+    key_vault_secret_id = "${local.secret_http_prefix}/postgres-options"
+    identity            = "System"
+  }
 
   # external, auto port 8000
   ingress {
@@ -188,8 +193,12 @@ resource "azurerm_container_app" "web" {
       }
       env {
         name = "POSTGRES_HOSTNAME"
-        # Use the FQDN of the internal database container app
-        value = azurerm_container_app.db.latest_revision_fqdn
+        # reference the internal name of the database container app
+        value = azurerm_container_app.db.latest_revision_name
+      }
+      env {
+        name        = "POSTGRES_OPTIONS"
+        secret_name = "postgres-options"
       }
       env {
         name        = "DJANGO_DEBUG"
