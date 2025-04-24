@@ -8,7 +8,6 @@ resource "azurerm_log_analytics_workspace" "main" {
   }
 }
 
-
 resource "azurerm_application_insights" "main" {
   name                = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   application_type    = "web"
