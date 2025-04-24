@@ -15,6 +15,7 @@ class VitalRecordsRequest(models.Model):
         ("name_completed", "Name Completed"),
         ("county_completed", "County Completed"),
         ("dob_completed", "Date of Birth Completed"),
+        ("parents_names_completed", "Parents Names Completed"),
         ("submitted", "Request Submitted"),
     ]
 
@@ -104,6 +105,10 @@ class VitalRecordsRequest(models.Model):
     last_name = models.CharField(max_length=100)
     county_of_birth = models.CharField(max_length=2, choices=COUNTY_CHOICES)
     date_of_birth = models.DateField(null=True)
+    parent_1_first_name = models.CharField(max_length=100)
+    parent_1_last_name = models.CharField(max_length=100)
+    parent_2_first_name = models.CharField(max_length=100, blank=True)
+    parent_2_last_name = models.CharField(max_length=100, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
@@ -125,6 +130,10 @@ class VitalRecordsRequest(models.Model):
 
     @transition(field=status, target="dob_completed")
     def complete_dob(self):
+        pass
+
+    @transition(field=status, target="parents_names_completed")
+    def complete_parents_names(self):
         pass
 
     @transition(field=status, source="dob_completed", target="submitted")
