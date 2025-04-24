@@ -182,11 +182,7 @@ resource "azurerm_container_app" "web" {
 
   template {
     min_replicas = 1
-    max_replicas = 3
-    http_scale_rule {
-      concurrent_requests = "10"
-      name                = "http-scaler"
-    }
+    max_replicas = 1
 
     container {
       name    = "web"
