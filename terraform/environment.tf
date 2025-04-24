@@ -11,3 +11,14 @@ locals {
 data "azurerm_resource_group" "main" {
   name = "RG-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
 }
+
+resource "azurerm_container_app_environment" "main" {
+  name                       = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
+  location                   = data.azurerm_resource_group.main.location
+  resource_group_name        = data.azurerm_resource_group.main.name
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
