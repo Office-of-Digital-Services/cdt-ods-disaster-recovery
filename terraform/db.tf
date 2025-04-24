@@ -96,6 +96,11 @@ resource "azurerm_container_app" "pgweb" {
       image  = "sosedoff/pgweb:latest"
       cpu    = 0.25
       memory = "0.5Gi"
+
+      env {
+        name = "PGWEB_SESSIONS"
+        value = "1"
+      }
     }
   }
 
