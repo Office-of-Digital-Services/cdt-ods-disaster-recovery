@@ -23,3 +23,18 @@ resource "azurerm_storage_account" "main" {
     ignore_changes = [tags]
   }
 }
+
+resource "azurerm_storage_share" "web" {
+  name               = "web"
+  storage_account_id = azurerm_storage_account.main.id
+  quota              = 1
+}
+
+resource "azurerm_container_app_environment_storage" "web" {
+  account_name                 = azurerm_storage_account.main.name
+  access_key                   = azurerm_storage_account.main.primary_access_key
+  access_mode                  = "ReadOnly"
+  container_app_environment_id = azurerm_container_app_environment.main.id
+  name                         = azurerm_storage_share.web.name
+  share_name                   = azurerm_storage_share.web.name
+}
