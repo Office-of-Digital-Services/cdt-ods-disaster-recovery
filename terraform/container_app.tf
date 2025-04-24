@@ -187,64 +187,6 @@ resource "azurerm_container_app" "web" {
       name                = "http-scaler"
     }
 
-    init_container {
-      name    = "reset-db"
-      command = []
-      args    = ["bin/reset_db.sh"]
-      image   = "${var.container_registry}/${var.container_repository}:${var.container_tag}"
-      cpu     = 0.25
-      memory  = "0.5Gi"
-      env {
-        name        = "DJANGO_DB_RESET"
-        secret_name = "django-db-reset"
-      }
-      env {
-        name        = "DJANGO_DB_NAME"
-        secret_name = "django-db-name"
-      }
-      env {
-        name        = "DJANGO_DB_USER"
-        secret_name = "django-db-user"
-      }
-      env {
-        name        = "DJANGO_DB_PASSWORD"
-        secret_name = "django-db-password"
-      }
-      env {
-        name        = "DJANGO_SECRET_KEY"
-        secret_name = "django-secret-key"
-      }
-      env {
-        name        = "DJANGO_SUPERUSER_USERNAME"
-        secret_name = "django-superuser-username"
-      }
-      env {
-        name        = "DJANGO_SUPERUSER_EMAIL"
-        secret_name = "django-superuser-email"
-      }
-      env {
-        name        = "DJANGO_SUPERUSER_PASSWORD"
-        secret_name = "django-superuser-password"
-      }
-      env {
-        name        = "POSTGRES_DB"
-        secret_name = "postgres-db"
-      }
-      env {
-        name        = "POSTGRES_USER"
-        secret_name = "postgres-user"
-      }
-      env {
-        name        = "POSTGRES_PASSWORD"
-        secret_name = "postgres-password"
-      }
-      env {
-        name = "POSTGRES_HOSTNAME"
-        # reference the internal name of the database container app
-        value = azurerm_container_app.db.latest_revision_name
-      }
-    }
-
     container {
       name    = "web"
       command = []
