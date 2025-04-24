@@ -18,7 +18,7 @@
 | web/core/models.py                                                                        |        8 |        0 |        0 |        0 |    100% |           |
 | web/core/session.py                                                                       |       19 |        7 |        4 |        1 |     57% |13-19, 25-26, 30-33 |
 | web/core/urls.py                                                                          |        4 |        0 |        0 |        0 |    100% |           |
-| web/settings.py                                                                           |       61 |        9 |       12 |        3 |     75% |43-50, 95->99, 110->113, 122 |
+| web/settings.py                                                                           |       59 |        9 |       12 |        3 |     75% |42-49, 94->98, 109->112, 121 |
 | web/urls.py                                                                               |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/apps.py                                                                |        5 |        0 |        0 |        0 |    100% |           |
@@ -33,7 +33,7 @@
 | web/vital\_records/urls.py                                                                |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views.py                                                               |       78 |       23 |        2 |        0 |     69% |45-51, 54, 63-69, 72, 81-87, 90, 100-109, 112 |
 | web/wsgi.py                                                                               |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                 **TOTAL** |  **370** |   **64** |   **26** |    **5** | **80%** |           |
+|                                                                                 **TOTAL** |  **368** |   **64** |   **26** |    **5** | **79%** |           |
 
 
 ## Setup coverage badge
