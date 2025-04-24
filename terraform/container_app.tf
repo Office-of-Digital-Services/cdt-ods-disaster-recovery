@@ -240,6 +240,17 @@ resource "azurerm_container_app" "web" {
         name        = "DJANGO_TRUSTED_ORIGINS"
         secret_name = "django-trusted-origins"
       }
+
+      volume_mounts {
+        name = "config"
+        path = "/cdt/app/config"
+      }
+    }
+
+    volume {
+      name         = "config"
+      storage_name = azurerm_storage_share.web.name
+      storage_type = "AzureFile"
     }
   }
 
