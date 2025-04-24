@@ -8,15 +8,16 @@
             {% endwith %}
         </div>
         <div class="col-md-9">
-            <small>Step 1 of 6</small>
+            <small>Step 4 of 6</small>
             <form method="post" class="form">
-                <fieldset role="group" aria-describedby="name-hint">
+                <fieldset role="group" aria-describedby="parents-hint">
                     <legend>
-                        <h2>What is the name on the birth certificate?</h2>
+                        <h2>What were the names of the registrant’s parents at the time of the registrant’s birth?</h2>
                     </legend>
-                    <p id="name-hint" class="mb-3">Please write the information as it appears on the birth certificate.</p>
+                    <p id="parents-hint" class="mb-3">Please write the information as it appears on the birth certificate.</p>
                     {% csrf_token %}
-                    {% include "vital_records/_two_column_form.html" with form=form fields=name_fields %}
+                    {% include "vital_records/_two_column_form.html" with form=form fields=parent_1_fields label="Parent 1" label_id="parent_1_helptext" %}
+                    {% include "vital_records/_two_column_form.html" with form=form fields=parent_2_fields label="Parent 2" label_id="parent_2_helptext" %}
                 </fieldset>
                 <button type="submit" class="btn btn-primary mt-4">Continue</button>
             </form>
