@@ -17,7 +17,6 @@ locals {
     "SetIssuers",
     "DeleteIssuers",
   ]
-
   all_key_permissions = [
     "Get",
     "List",
@@ -32,7 +31,6 @@ locals {
     "SetRotationPolicy",
     "Rotate",
   ]
-
   all_secret_permissions = [
     "Get",
     "List",
@@ -70,12 +68,6 @@ resource "azurerm_key_vault" "main" {
   }
 
   # https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?tabs=azure-cli#granting-your-app-access-to-key-vault
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = azurerm_linux_web_app.main.identity.0.principal_id
-
-    secret_permissions = ["Get"]
-  }
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = azurerm_container_app.db.identity.0.principal_id
