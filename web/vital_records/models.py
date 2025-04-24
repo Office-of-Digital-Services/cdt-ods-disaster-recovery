@@ -14,6 +14,7 @@ class VitalRecordsRequest(models.Model):
         ("statement_completed", "Sworn Statement Completed"),
         ("name_completed", "Name Completed"),
         ("county_completed", "County Completed"),
+        ("dob_completed", "Date of Birth Completed"),
         ("submitted", "Request Submitted"),
     ]
 
@@ -102,6 +103,7 @@ class VitalRecordsRequest(models.Model):
     middle_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100)
     county_of_birth = models.CharField(max_length=2, choices=COUNTY_CHOICES)
+    date_of_birth = models.DateField(null=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
@@ -121,6 +123,10 @@ class VitalRecordsRequest(models.Model):
     def complete_county(self):
         pass
 
-    @transition(field=status, source="county_completed", target="submitted")
+    @transition(field=status, target="dob_completed")
+    def complete_dob(self):
+        pass
+
+    @transition(field=status, source="dob_completed", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
