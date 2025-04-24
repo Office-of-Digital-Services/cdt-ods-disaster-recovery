@@ -40,6 +40,7 @@ resource "azurerm_container_app" "db" {
   # internal only, TCP port 5432
   ingress {
     external_enabled = false
+    exposed_port     = 5432
     target_port      = 5432
     transport        = "tcp"
     traffic_weight {
