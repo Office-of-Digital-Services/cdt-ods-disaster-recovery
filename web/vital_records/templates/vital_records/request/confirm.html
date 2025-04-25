@@ -53,6 +53,21 @@
                 </li>
             </ul>
             <hr>
+            <h3>Order information</h3>
+            <ul>
+                <li>
+                    <strong>Number of replacements:</strong> {{ vital_records_request.number_of_records }}
+                </li>
+                <li>
+                    <strong>Mailing address</strong> {{ vital_records_request.first_name }}{{ vital_records_request.last_name }} {{ vital_records_request.address }} {{ vital_records_request.city }}, {{ vital_records_request.state }} {{ vital_records_request.zip_code }} United States
+                </li>
+                <li>
+                    <strong>Email address:</strong> {{ vital_records_request.email_address }}
+                </li>
+                <li>
+                    <strong>Phone number:</strong> {{ vital_records_request.phone_number }}
+                </li>
+            </ul>
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
