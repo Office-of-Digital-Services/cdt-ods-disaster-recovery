@@ -16,6 +16,7 @@ class VitalRecordsRequest(models.Model):
         ("county_completed", "County Completed"),
         ("dob_completed", "Date of Birth Completed"),
         ("parents_names_completed", "Parents Names Completed"),
+        ("order_info_completed", "Order Info Completed"),
         ("submitted", "Request Submitted"),
     ]
 
@@ -95,6 +96,71 @@ class VitalRecordsRequest(models.Model):
         ("58", "Yuba"),
     ]
 
+    NUMBER_CHOICES = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)]
+
+    STATE_CHOICES = [
+        ("", "Select state"),
+        ("AK", "Alaska"),
+        ("AL", "Alabama"),
+        ("AR", "Arkansas"),
+        ("AS", "American Samoa"),
+        ("AZ", "Arizona"),
+        ("CA", "California"),
+        ("CO", "Colorado"),
+        ("CT", "Connecticut"),
+        ("DC", "District of Columbia"),
+        ("DE", "Delaware"),
+        ("FL", "Florida"),
+        ("FM", "Federated States of Micronesia"),
+        ("GA", "Georgia"),
+        ("GU", "Guam"),
+        ("HI", "Hawaii"),
+        ("IA", "Iowa"),
+        ("ID", "Idaho"),
+        ("IL", "Illinois"),
+        ("IN", "Indiana"),
+        ("KS", "Kansas"),
+        ("KY", "Kentucky"),
+        ("LA", "Louisiana"),
+        ("MA", "Massachusetts"),
+        ("MD", "Maryland"),
+        ("ME", "Maine"),
+        ("MH", "Marshall Islands"),
+        ("MI", "Michigan"),
+        ("MN", "Minnesota"),
+        ("MO", "Missouri"),
+        ("MP", "Northern Mariana Islands"),
+        ("MS", "Mississippi"),
+        ("MT", "Montana"),
+        ("NC", "North Carolina"),
+        ("ND", "North Dakota"),
+        ("NE", "Nebraska"),
+        ("NH", "New Hampshire"),
+        ("NJ", "New Jersey"),
+        ("NM", "New Mexico"),
+        ("NV", "Nevada"),
+        ("NY", "New York"),
+        ("OH", "Ohio"),
+        ("OK", "Oklahoma"),
+        ("OR", "Oregon"),
+        ("PA", "Pennsylvania"),
+        ("PR", "Puerto Rico"),
+        ("PW", "Palau"),
+        ("RI", "Rhode Island"),
+        ("SC", "South Carolina"),
+        ("SD", "South Dakota"),
+        ("TN", "Tennessee"),
+        ("TX", "Texas"),
+        ("UT", "Utah"),
+        ("VA", "Virginia"),
+        ("VI", "Virgin Islands"),
+        ("VT", "Vermont"),
+        ("WA", "Washington"),
+        ("WI", "Wisconsin"),
+        ("WV", "West Virginia"),
+        ("WY", "Wyoming"),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     status = FSMField(default="started", choices=STATUS_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
@@ -109,6 +175,15 @@ class VitalRecordsRequest(models.Model):
     parent_1_last_name = models.CharField(max_length=100)
     parent_2_first_name = models.CharField(max_length=100, blank=True)
     parent_2_last_name = models.CharField(max_length=100, blank=True)
+    number_of_records = models.IntegerField(choices=NUMBER_CHOICES, null=True)
+    order_first_name = models.CharField(max_length=50)
+    order_last_name = models.CharField(max_length=50)
+    address = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=2, choices=STATE_CHOICES)
+    zip_code = models.CharField(max_length=5)
+    email_address = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=10)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
@@ -136,6 +211,10 @@ class VitalRecordsRequest(models.Model):
     def complete_parents_names(self):
         pass
 
-    @transition(field=status, source="dob_completed", target="submitted")
+    @transition(field=status, target="order_info_completed")
+    def complete_order_info(self):
+        pass
+
+    @transition(field=status, source="order_info_completed", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
