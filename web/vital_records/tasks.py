@@ -1,7 +1,7 @@
 import logging
 import os
 import random
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from dataclasses import asdict, dataclass
 from typing import Optional
@@ -12,6 +12,7 @@ from django.core.mail import EmailMessage
 from pypdf import PdfReader, PdfWriter
 
 from web.core.tasks import Task
+from web.vital_records.models import VitalRecordsRequest
 
 logger = logging.getLogger(__name__)
 
@@ -53,39 +54,57 @@ class Package:
         return {k: v for k, v in d.items() if v}
 
 
+def get_request_with_status(request_id: UUID, required_status: str):
+    request = VitalRecordsRequest.objects.filter(pk=request_id).first()
+
+    if request is None:
+        raise RuntimeError(f"Couldn't find VitalRecordsRequest: {request_id}")
+    if request.status != required_status:
+        raise RuntimeError(
+            f"VitalRecordsRequest: {request_id} has an invalid status. Expected: {required_status}, Actual: {request.status}"
+        )
+
+    return request
+
+
 class PackageTask(Task):
     group = "vital-records"
     name = "package"
 
-    def __init__(self, requestor_email: str):
-        super().__init__(requestor_email=requestor_email)
+    def __init__(self, request_id: UUID):
+        super().__init__(request_id=request_id)
 
-    def handler(self, requestor_email: str):
-        logger.debug(f"Creating request package for: {requestor_email}")
+    def handler(self, request_id: UUID):
+        logger.debug(f"Creating request package for: {request_id}")
+        request = get_request_with_status(request_id, "enqueued")
 
-        package = Package(RequestorEmail=requestor_email)
-        package_data = package.dict()
+        package = Package(
+            package_id=request_id,
+        )
 
         reader = PdfReader(TEMPLATE)
         writer = PdfWriter()
-
         writer.append(reader)
-        writer.update_page_form_field_values(writer.pages[0], package_data, auto_regenerate=False)
+        writer.update_page_form_field_values(writer.pages[0], package.dict(), auto_regenerate=False)
 
         filename = os.path.join(settings.STORAGE_DIR, f"vital-records-{package.package_id}.pdf")
         with open(filename, "wb") as output_stream:
             writer.write(output_stream)
 
+        request.complete_package()
+        request.save()
+
+        logger.debug(f"Request package created for: {request_id}")
         return filename
 
     def post_handler(self, package_task):
-        requestor_email = package_task.kwargs.get("requestor_email")
+        request_id = package_task.kwargs.get("request_id")
         if package_task.success:
-            logger.debug(f"Sending request package for: {requestor_email}")
-            email_task = EmailTask(requestor_email, package_task.result)
+            logger.debug(f"Creating email task for: {request_id}")
+            email_task = EmailTask(request_id, package_task.result)
             email_task.run()
         else:
-            logger.error(f"Package creation failed for: {requestor_email}")
+            logger.error(f"Package creation failed for: {request_id}")
 
 
 class EmailTask(Task):
@@ -113,10 +132,11 @@ class EmailTask(Task):
         return email.send()
 
 
-def submit_request(requestor_email: str):
+def submit_request(request_id: UUID):
     """Submit a user request to the task queue for processing."""
+    logger.debug(f"Creating package task for: {request_id}")
     # create a new task instance
-    task = PackageTask(requestor_email)
+    task = PackageTask(request_id)
     # calling task.run() submits the task to the queue for processing
     task.run()
     # if callers want to interrogate the status, etc.
