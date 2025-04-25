@@ -1,6 +1,5 @@
 import logging
 import os
-import random
 from uuid import UUID, uuid4
 
 from dataclasses import asdict, dataclass
@@ -23,7 +22,7 @@ TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", 
 class Package:
     package_id: str = str(uuid4())
     CDPH_VR_FORMTYPE: str = "WILDFIRE"
-    WildfireName: Optional[str] = random.choice(["Eaton Fire", "Palisades Fire"])
+    WildfireName: Optional[str] = None
     CopyType: Optional[str] = "/WLDFREAUTH"
     RelationshipToRegistrant: Optional[str] = "/1"
     NumberOfCopies: Optional[int] = 1
@@ -80,6 +79,26 @@ class PackageTask(Task):
 
         package = Package(
             package_id=request_id,
+            WildfireName=request.fire.capitalize(),
+            NumberOfCopies=request.number_of_records,
+            RegFirstName=request.first_name,
+            RegMiddleName=request.middle_name,
+            RegLastName=request.last_name,
+            County=request.county_of_birth,
+            RegDOE=request.date_of_birth.strftime("%m/%d/%Y"),
+            Parent1FirstName=request.parent_1_first_name,
+            Parent1LastName=request.parent_1_last_name,
+            Parent2FirstName=request.parent_2_first_name,
+            Parent2LastName=request.parent_2_last_name,
+            RequestorFirstName=request.order_first_name,
+            RequestorLastName=request.order_last_name,
+            RequestorMailingAddress=request.address,
+            RequestorCity=request.city,
+            RequestorStateProvince=request.state,
+            RequestorZipCode=request.zip_code,
+            RequestorCountry="United States",
+            RequestorEmail=request.email_address,
+            RequestorTelephone=request.phone_number,
         )
 
         reader = PdfReader(TEMPLATE)
