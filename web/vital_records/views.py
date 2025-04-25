@@ -16,6 +16,7 @@ from web.vital_records.forms import (
     CountyForm,
     DateOfBirthForm,
     ParentsNamesForm,
+    OrderInfoForm,
     SubmitForm,
 )
 
@@ -170,6 +171,34 @@ class ParentsNamesView(UpdateView):
         context["parent_2_fields"] = [
             form["parent_2_first_name"],
             form["parent_2_last_name"],
+        ]
+
+        return context
+
+    def get_success_url(self):
+        return reverse("vital_records:request_order", kwargs={"pk": self.object.pk})
+
+
+class OrderInfoView(UpdateView):
+    model = VitalRecordsRequest
+    form_class = OrderInfoForm
+    template_name = "vital_records/request/order.html"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Move form state to next state
+        self.object.complete_order_info()
+        self.object.save()
+
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = context["form"]
+        context["name_fields"] = [
+            form["order_first_name"],
+            form["order_last_name"],
         ]
 
         return context

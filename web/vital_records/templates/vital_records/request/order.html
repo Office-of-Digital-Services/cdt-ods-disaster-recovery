@@ -1,0 +1,77 @@
+{% extends "vital_records/base.html" %}
+{% load i18n %}
+{% block inner-content %}
+    <div class="row">
+        <div class="col-md-3">
+            {% with request.resolver_match.url_name as url_name %}
+                {% include "vital_records/_form_progress.html" with url_name=url_name %}
+            {% endwith %}
+        </div>
+        <div class="col-md-9">
+            <small>Step 5 of 6</small>
+            <form method="post" class="form">
+                <fieldset role="group" aria-describedby="orders-hint">
+                    <legend>
+                        <h2>Order information</h2>
+                    </legend>
+                    <hr>
+                    {% csrf_token %}
+                    <h3>How many replacements do you need?</h3>
+                    <div class="row">
+                        <div class="col-md-3">
+                            {{ form.number_of_records.label_tag }}
+                            {{ form.number_of_records }}
+                            {{ form.number_of_records.errors }}
+                        </div>
+                    </div>
+                    <hr>
+                    <h3>Where should we mail your order?</h3>
+                    <p>
+                        Please enter an address in the United States. If you would like to request documents to an international address, please complete your request with a notary.
+                    </p>
+                    {% include "vital_records/_two_column_form.html" with form=form fields=name_fields %}
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            {{ form.address.label_tag }}
+                            {{ form.address }}
+                            {{ form.address.errors }}
+                        </div>
+                        <div class="form-group col-md-5">
+                            {{ form.city.label_tag }}
+                            {{ form.city }}
+                            {{ form.city.errors }}
+                        </div>
+                        <div class="form-group col-md-4">
+                            {{ form.state.label_tag }}
+                            {{ form.state }}
+                            {{ form.state.errors }}
+                        </div>
+                        <div class="form-group col-md-3">
+                            {{ form.zip_code.label_tag }}
+                            {{ form.zip_code }}
+                            {{ form.zip_code.errors }}
+                        </div>
+                    </div>
+                    <hr>
+                    <h3>Contact information</h3>
+                    <div class="row">
+                        <div class="form-group col-md-5">
+                            {{ form.email_address.label_tag }}
+                            {{ form.email_address }}
+                            {{ form.email_address.errors }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-5">
+                            {{ form.phone_number.label_tag }}
+                            {{ form.phone_number }}
+                            {{ form.phone_number.errors }}
+                        </div>
+                    </div>
+                    <p>By providing your information, you consent to being contacted regarding your order.</p>
+                </fieldset>
+                <button type="submit" class="btn btn-primary">Preview your order</button>
+            </form>
+        </div>
+    </div>
+{% endblock inner-content %}
