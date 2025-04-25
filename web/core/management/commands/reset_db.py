@@ -3,22 +3,22 @@ import os
 import psycopg
 
 from django.core.management.base import BaseCommand
-from django.db import connection
+from django.db import connections
 
 
 class Command(BaseCommand):
     help = "Completely resets the database (DESTRUCTIVE)."
 
     def admin_connection(self) -> psycopg.Connection:
-        db_host = connection.settings_dict["HOST"]
-        db_port = connection.settings_dict["PORT"]
+        db_host = connections["default"].settings_dict["HOST"]
+        db_port = connections["default"].settings_dict["PORT"]
 
         postgres_db = os.environ.get("POSTGRES_DB", "postgres")
         admin_name = os.environ.get("POSTGRES_USER", "postgres")
         admin_password = os.environ.get("POSTGRES_PASSWORD")
 
         if not admin_password:
-            self.stderr.write(self.style.ERROR("POSTGRES_PASSWORD environment variable not set."))
+            self.stderr.write(self.style.ERROR("POSTGRES_PASSWORD environment variable not set"))
             return
 
         return psycopg.connect(
@@ -31,15 +31,7 @@ class Command(BaseCommand):
             autocommit=True,
         )
 
-    def handle(self, *args, **options):
-        db_name = connection.settings_dict["NAME"]
-        db_user = connection.settings_dict["USER"]
-        db_password = connection.settings_dict["PASSWORD"]
-
-        if not db_password:
-            self.stderr.write(self.style.ERROR("DJANGO_DB_PASSWORD environment variable not set."))
-            return
-
+    def reset_db(self, db_name, db_user, db_password):
         try:
             with self.admin_connection() as conn:
                 cursor = conn.cursor()
@@ -54,7 +46,7 @@ class Command(BaseCommand):
                     """,
                     [db_name],
                 )
-                self.stdout.write(self.style.SUCCESS(f"Terminated existing connections to '{db_name}'."))
+                self.stdout.write(self.style.SUCCESS(f"Terminated existing connections to '{db_name}'"))
 
                 # Drop database
                 cursor.execute(f"DROP DATABASE IF EXISTS {db_name}")
@@ -63,13 +55,22 @@ class Command(BaseCommand):
                 # Create Django user
                 cursor.execute(f"DROP USER IF EXISTS {db_user}")
                 cursor.execute(f"CREATE USER {db_user} WITH PASSWORD '{db_password}'")
-                self.stdout.write(self.style.SUCCESS(f"Django user '{db_user}' created."))
+                self.stdout.write(self.style.SUCCESS(f"Django user '{db_user}' created"))
 
                 # Create Django database with Django user as owner
                 cursor.execute(f"CREATE DATABASE {db_name} WITH OWNER {db_user} ENCODING 'UTF-8'")
-                self.stdout.write(self.style.SUCCESS(f"Database '{db_name}' created and owned by '{db_user}'."))
-
-                self.stdout.write(self.style.SUCCESS("Database reset and user setup complete."))
-
+                self.stdout.write(self.style.SUCCESS(f"Database '{db_name}' created and owned by '{db_user}'"))
         except Exception as e:
             self.stderr.write(self.style.ERROR(f"Error during database reset: {e}"))
+
+    def handle(self, *args, **options):
+        for db in connections:
+            db_name = connections[db].settings_dict["NAME"]
+            db_user = connections[db].settings_dict["USER"]
+            db_password = connections[db].settings_dict["PASSWORD"]
+
+            if not db_password:
+                self.stderr.write(self.style.ERROR(f"Password for db '{db}' not set"))
+                return
+
+            self.reset_db(db_name, db_user, db_password)
