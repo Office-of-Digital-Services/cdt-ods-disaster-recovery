@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -34,16 +32,6 @@ class LoginView(View):
     def get(self, request: HttpRequest):
         Session(request, reset=True)
         return redirect("cdt:login")
-
-
-class RequestView(TemplateView):
-    template_name = "vital_records/request.html"
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        session = Session(self.request)
-        context = super().get_context_data(**kwargs)
-        context["email"] = session.verified_email
-        return context
 
 
 class EligibilityView(CreateView):

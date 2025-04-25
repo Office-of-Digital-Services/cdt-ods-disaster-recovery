@@ -48,24 +48,6 @@ class TestLoginView:
         assert response.url == reverse("cdt:login")
 
 
-class TestRequestView:
-    @pytest.fixture
-    def view(app_request):
-        v = views.RequestView()
-        v.setup(app_request)
-        return v
-
-    def test_get_context_data(self, view, mock_Session_cls):
-        mock_Session_cls.return_value.verified_email = "test@example.com"
-
-        context = view.get_context_data()
-
-        assert context["email"] == "test@example.com"
-
-    def test_template_name(self, view):
-        assert view.template_name == "vital_records/request.html"
-
-
 class TestSubmittedView:
     @pytest.fixture
     def view(app_request):
