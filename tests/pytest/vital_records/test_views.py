@@ -36,13 +36,13 @@ class TestLoginView:
         v.setup(app_request)
         return v
 
-    def test_get_creates_new_session(self, view, app_request, mock_Session_cls):
-        view.get(app_request)
+    def test_dispatch_creates_new_session(self, view, app_request, mock_Session_cls):
+        view.dispatch(app_request)
 
         mock_Session_cls.assert_called_once_with(app_request, reset=True)
 
-    def test_get_redirects_to_login(self, view, app_request):
-        response = view.get(app_request)
+    def test_dispatch_redirects_to_login(self, view, app_request):
+        response = view.dispatch(app_request)
 
         assert response.status_code == 302
         assert response.url == reverse("cdt:login")

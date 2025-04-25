@@ -1,8 +1,7 @@
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.views import View
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView, RedirectView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
 from web.vital_records import tasks
@@ -28,10 +27,14 @@ class IndexView(TemplateView):
         return super().get(request, *args, **kwargs)
 
 
-class LoginView(View):
-    def get(self, request: HttpRequest):
+class LoginView(RedirectView):
+    permanent = False
+    query_string = False
+    pattern_name = "cdt:login"
+
+    def dispatch(self, request, *args, **kwargs):
         Session(request, reset=True)
-        return redirect("cdt:login")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EligibilityView(CreateView):
