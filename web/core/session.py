@@ -1,7 +1,8 @@
+from cdt_identity.session import Session as OAuthSession
 from django.http import HttpRequest
+from django.shortcuts import redirect
 
 from web.core.models import UserFlow
-from cdt_identity.session import Session as OAuthSession
 
 
 class Session(OAuthSession):
@@ -31,3 +32,15 @@ class Session(OAuthSession):
             self.session[self._keys_userflow] = str(value.pk)
         else:
             self.session[self._keys_userflow] = None
+
+    def has_verified_eligibility(self):
+        predicates = [
+            lambda: self.has_verified_claims(),
+            lambda: self.claims_request,
+            lambda: self.claims_request.eligibility_claim,
+            lambda: self.claims_request.eligibility_claim in self.claims_result,
+        ]
+        try:
+            return all([p() for p in predicates])
+        except Exception:
+            return False
