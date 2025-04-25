@@ -1,5 +1,6 @@
 {% extends "vital_records/base.html" %}
 {% load i18n %}
+{% load form_helpers %}
 {% block inner-content %}
     <h2 class="m-t-80">Confirm your eligibility for an authorized copy</h2>
     <div class="row">
@@ -14,7 +15,7 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="form-group w-50">
-                    {{ form.relationship.label_tag }}
+                    {{ form.relationship|label_with_required }}
                     {{ form.relationship }}
                 </div>
                 <p class="fw-semibold">Legal attestation</p>
@@ -23,7 +24,7 @@
                         <p class="form-help">
                             By typing your full name below, you confirm under penalty of perjury under California law that you’re eligible to request this record.
                         </p>
-                        {{ form.legal_attestation.label_tag }}
+                        {{ form.legal_attestation|label_with_required }}
                         {{ form.legal_attestation }}
                     </div>
                     {% if form.legal_attestation.errors %}<div class="error">{{ form.legal_attestation.errors }}</div>{% endif %}

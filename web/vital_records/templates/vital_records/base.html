@@ -4,28 +4,30 @@
   {% translate "Replacement birth record" %}
 {% endblock title %}
 {% block main-content %}
-  <div class="main-header p-t-md bg-primary">
-    <div class="container">
-      <nav aria-label="You are here" class="breadcrumbs">
-        <ol>
-          <li>
-            {% comment %} This is a placeholder link for now {% endcomment %}
-            <a href="{% url 'vital_records:request_eligibility' %}"
-               class="no-underline underline-hover">< Go back to vital records home</a>
-          </li>
-        </ol>
-      </nav>
-      <h1 class="m-t-0 p-b-lg">
-        {% block headline %}
-          {% translate "Replacement birth record" %}
-        {% endblock headline %}
-      </h1>
+  <div id="vital-records">
+    <div class="main-header p-t-md bg-primary">
+      <div class="container">
+        <nav aria-label="You are here" class="breadcrumbs">
+          <ol>
+            <li>
+              {% comment %} This is a placeholder link for now {% endcomment %}
+              <a href="{% url 'vital_records:request_eligibility' %}"
+                 class="no-underline underline-hover">< Go back to vital records home</a>
+            </li>
+          </ol>
+        </nav>
+        <h1>
+          {% block headline %}
+            {% translate "Replacement birth record" %}
+          {% endblock headline %}
+        </h1>
+      </div>
     </div>
-  </div>
-  <div class="container">
-    <div class="main-primary">
-      {% block inner-content %}
-      {% endblock inner-content %}
+    <div class="container">
+      <div class="main-primary">
+        {% block inner-content %}
+        {% endblock inner-content %}
+      </div>
     </div>
   </div>
 {% endblock main-content %}

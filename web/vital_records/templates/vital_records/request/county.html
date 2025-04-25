@@ -1,5 +1,6 @@
 {% extends "vital_records/base.html" %}
 {% load i18n %}
+{% load form_helpers %}
 {% block inner-content %}
     <div class="row">
         <div class="col-md-3">
@@ -16,7 +17,9 @@
             <form method="post">
                 <div class="w-50 m-y-md p-y-sm">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {{ form.county_of_birth|label_with_required }}
+                    {{ form.county_of_birth }}
+                    {{ form.county_of_birth.errors }}
                 </div>
                 <button type="submit" class="btn btn-primary">Confirm</button>
             </form>

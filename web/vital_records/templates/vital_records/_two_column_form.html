@@ -1,3 +1,4 @@
+{% load form_helpers %}
 <div class="row">
     {% if label %}
         <div class="col-12">
@@ -7,7 +8,7 @@
     {% endif %}
     {% for field in fields %}
         <div class="form-group col-md-6 p-r-md">
-            {{ field.label_tag }}
+            {{ field|label_with_required }}
             {{ field }}
             {% if field.help_text %}<small class="form-help">{{ field.help_text }}</small>{% endif %}
             {% if field.errors %}<div class="form-error">{{ field.errors }}</div>{% endif %}
