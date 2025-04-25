@@ -130,25 +130,30 @@ class EmailTask(Task):
     group = "vital-records"
     name = "email"
 
-    def __init__(self, requestor_email: str, package: str):
-        super().__init__(
+    def __init__(self, request_id: UUID, package: str):
+        super().__init__(request_id=request_id, package=package)
+
+    def handler(self, request_id: UUID, package: str):
+        logger.debug(f"Sending request package for: {request_id}")
+        request = get_request_with_status(request_id, "packaged")
+
+        email = EmailMessage(
             subject="Vital records request",
             body="A new request is attached.",
-            requestor_email=requestor_email,
-            package=package,
-        )
-
-    def handler(self, subject: str, body: str, requestor_email: str, package: str):
-        email = EmailMessage(
-            subject=subject,
-            body=body,
-            from_email="noreply@example.gov",
-            to=["records@example.gov"],
-            cc=[requestor_email],
+            from_email=settings.VITAL_RECORDS_EMAIL_FROM,
+            to=[settings.VITAL_RECORDS_EMAIL_TO],
+            cc=[request.email_address],
         )
         email.attach_file(package, "application/pdf")
+        result = email.send()
 
-        return email.send()
+        request.complete_send()
+        request.finish()
+        request.save()
+
+        logger.debug(f"Request package sent for: {request_id} with response {result}")
+
+        return result
 
 
 def submit_request(request_id: UUID):
