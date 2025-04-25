@@ -18,6 +18,10 @@ class VitalRecordsRequest(models.Model):
         ("parents_names_completed", "Parents Names Completed"),
         ("order_info_completed", "Order Info Completed"),
         ("submitted", "Request Submitted"),
+        ("enqueued", "Request Enqueued"),
+        ("packaged", "Request Packaged"),
+        ("sent", "Request Sent"),
+        ("finished", "Finished"),
     ]
 
     FIRE_CHOICES = [("palisades", "Palisades fire"), ("eaton", "Eaton fire")]
@@ -185,6 +189,9 @@ class VitalRecordsRequest(models.Model):
     email_address = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=10)
     submitted_at = models.DateTimeField(null=True, blank=True)
+    enqueued_at = models.DateTimeField(null=True, blank=True)
+    packaged_at = models.DateTimeField(null=True, blank=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
     @transition(field=status, source="*", target="eligibility_completed")
@@ -218,3 +225,19 @@ class VitalRecordsRequest(models.Model):
     @transition(field=status, source="order_info_completed", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
+
+    @transition(field=status, source="submitted", target="enqueued")
+    def complete_enqueue(self):
+        self.enqueued_at = timezone.now()
+
+    @transition(field=status, source="enqueued", target="packaged")
+    def complete_package(self):
+        self.packaged_at = timezone.now()
+
+    @transition(field=status, source="packaged", target="sent")
+    def complete_send(self):
+        self.sent_at = timezone.now()
+
+    @transition(field=status, source="sent", target="finished")
+    def finish(self):
+        pass
