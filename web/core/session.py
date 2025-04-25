@@ -1,6 +1,5 @@
 from cdt_identity.session import Session as OAuthSession
 from django.http import HttpRequest
-from django.shortcuts import redirect
 
 from web.core.models import UserFlow
 
