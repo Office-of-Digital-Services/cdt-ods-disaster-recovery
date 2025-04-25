@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.views.generic import DetailView, RedirectView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
+from web.core.views import EligibilityMixin
 from web.vital_records import tasks
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
@@ -37,7 +38,7 @@ class LoginView(RedirectView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class EligibilityView(CreateView):
+class EligibilityView(EligibilityMixin, CreateView):
     model = VitalRecordsRequest
     form_class = EligibilityForm
     template_name = "vital_records/request/eligibility.html"
@@ -55,7 +56,7 @@ class EligibilityView(CreateView):
         return reverse("vital_records:request_statement", kwargs={"pk": self.object.pk})
 
 
-class StatementView(UpdateView):
+class StatementView(EligibilityMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = StatementForm
     template_name = "vital_records/request/statement.html"
@@ -73,7 +74,7 @@ class StatementView(UpdateView):
         return reverse("vital_records:request_name", kwargs={"pk": self.object.pk})
 
 
-class NameView(UpdateView):
+class NameView(EligibilityMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = NameForm
     template_name = "vital_records/request/name.html"
@@ -102,7 +103,7 @@ class NameView(UpdateView):
         return reverse("vital_records:request_county", kwargs={"pk": self.object.pk})
 
 
-class CountyView(UpdateView):
+class CountyView(EligibilityMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = CountyForm
     template_name = "vital_records/request/county.html"
@@ -120,7 +121,7 @@ class CountyView(UpdateView):
         return reverse("vital_records:request_dob", kwargs={"pk": self.object.pk})
 
 
-class DateOfBirthView(UpdateView):
+class DateOfBirthView(EligibilityMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = DateOfBirthForm
     template_name = "vital_records/request/dob.html"
@@ -139,7 +140,7 @@ class DateOfBirthView(UpdateView):
         return reverse("vital_records:request_parents", kwargs={"pk": self.object.pk})
 
 
-class ParentsNamesView(UpdateView):
+class ParentsNamesView(EligibilityMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = ParentsNamesForm
     template_name = "vital_records/request/parents.html"
@@ -171,7 +172,7 @@ class ParentsNamesView(UpdateView):
         return reverse("vital_records:request_order", kwargs={"pk": self.object.pk})
 
 
-class OrderInfoView(UpdateView):
+class OrderInfoView(EligibilityMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = OrderInfoForm
     template_name = "vital_records/request/order.html"
@@ -199,7 +200,7 @@ class OrderInfoView(UpdateView):
         return reverse("vital_records:request_submit", kwargs={"pk": self.object.pk})
 
 
-class SubmitView(UpdateView):
+class SubmitView(EligibilityMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = SubmitForm
     template_name = "vital_records/request/confirm.html"
@@ -236,7 +237,7 @@ class SubmitView(UpdateView):
         return reverse("vital_records:submitted", kwargs={"pk": self.object.pk})
 
 
-class SubmittedView(DetailView):
+class SubmittedView(EligibilityMixin, DetailView):
     model = VitalRecordsRequest
     template_name = "vital_records/submitted.html"
 
