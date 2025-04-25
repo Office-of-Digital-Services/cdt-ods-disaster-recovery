@@ -48,6 +48,9 @@ class EligibilityView(CreateView):
         self.object.complete_eligibility()
         self.object.save()
 
+        session = Session(self.request)
+        session.vital_records_request = self.object
+
         return response
 
     def get_success_url(self):
