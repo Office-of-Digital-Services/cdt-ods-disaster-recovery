@@ -1,10 +1,10 @@
 from typing import Any
 
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
 from web.vital_records import tasks
@@ -224,7 +224,7 @@ class SubmitView(UpdateView):
             return self.form_invalid(form)
 
         self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
+        return redirect(self.get_success_url())
 
     def get_display_county(self, context):
         counties = VitalRecordsRequest.COUNTY_CHOICES
@@ -242,16 +242,22 @@ class SubmitView(UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("vital_records:submitted")
+        return reverse("vital_records:submitted", kwargs={"pk": self.object.pk})
 
 
-class SubmittedView(TemplateView):
+class SubmittedView(DetailView):
+    model = VitalRecordsRequest
     template_name = "vital_records/submitted.html"
 
     def get(self, request, *args, **kwargs):
-        session = Session(request)
-        tasks.submit_request(session.verified_email)
-        return super().get(request, *args, **kwargs)
+        # call the super().get() to ensure self.object is initialized
+        response = super().get(request, *args, **kwargs)
+        # only enque a task if the request is in the correct state
+        if self.object and self.object.status == "submitted":
+            tasks.submit_request(self.object.pk)
+            return response
+        else:
+            raise ValueError("Can't process request: '{}' with status: '{}'")
 
 
 class UnverifiedView(TemplateView):
