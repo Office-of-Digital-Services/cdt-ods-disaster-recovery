@@ -250,14 +250,19 @@ class SubmittedView(DetailView):
     template_name = "vital_records/submitted.html"
 
     def get(self, request, *args, **kwargs):
-        # call the super().get() to ensure self.object is initialized
+        # Ensure self.object is initialized
         response = super().get(request, *args, **kwargs)
         # only enque a task if the request is in the correct state
-        if self.object and self.object.status == "submitted":
+        if self.object.status == "submitted":
+            # Move to next state *before* putting task on the queue
+            # Want to avoid race condition where the task is processed
+            # off the queue before the state update is saved in DB!
+            self.object.complete_enqueue()
+            self.object.save()
             tasks.submit_request(self.object.pk)
             return response
         else:
-            raise ValueError("Can't process request: '{}' with status: '{}'")
+            raise ValueError("Can't enqueue request: {} with status: {}")
 
 
 class UnverifiedView(TemplateView):
