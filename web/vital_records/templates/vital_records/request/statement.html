@@ -14,7 +14,7 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="form-group w-50">
-                    <label for="{{ form.relationship.id_for_label }}">{{ form.relationship.label }}</label>
+                    {{ form.relationship.label_tag }}
                     {{ form.relationship }}
                 </div>
                 <p class="fw-semibold">Legal attestation</p>
@@ -23,7 +23,7 @@
                         <p class="form-help">
                             By typing your full name below, you confirm under penalty of perjury under California law that you’re eligible to request this record.
                         </p>
-                        <label for="{{ form.legal_attestation.id_for_label }}">{{ form.legal_attestation.label }}</label>
+                        {{ form.legal_attestation.label_tag }}
                         {{ form.legal_attestation }}
                     </div>
                     {% if form.legal_attestation.errors %}<div class="error">{{ form.legal_attestation.errors }}</div>{% endif %}
