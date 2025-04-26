@@ -212,6 +212,15 @@ STORAGES = {
 }
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+# Email
+# https://docs.djangoproject.com/en/5.1/ref/settings/#email-backend
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("DJANGO_EMAIL_HOST")
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get("DJANGO_EMAIL_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_PASSWORD")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
