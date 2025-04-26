@@ -17,8 +17,8 @@
 | web/core/migrations/\_\_init\_\_.py                                                       |        0 |        0 |        0 |        0 |    100% |           |
 | web/core/models.py                                                                        |        8 |        0 |        0 |        0 |    100% |           |
 | web/core/session.py                                                                       |       19 |        7 |        4 |        1 |     57% |13-19, 25-26, 30-33 |
-| web/core/urls.py                                                                          |        4 |        0 |        0 |        0 |    100% |           |
-| web/settings.py                                                                           |       59 |        9 |       12 |        3 |     75% |42-49, 94->98, 109->112, 121 |
+| web/core/urls.py                                                                          |       11 |        3 |        0 |        0 |     73% |     12-20 |
+| web/settings.py                                                                           |       65 |        9 |       12 |        3 |     77% |42-49, 94->98, 109->112, 121 |
 | web/urls.py                                                                               |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/apps.py                                                                |        5 |        0 |        0 |        0 |    100% |           |
@@ -34,7 +34,7 @@
 | web/vital\_records/urls.py                                                                |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views.py                                                               |       99 |       36 |        4 |        0 |     61% |45-51, 54, 63-69, 72, 81-87, 90, 99-105, 108, 118-127, 130-137, 140-142, 145 |
 | web/wsgi.py                                                                               |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                 **TOTAL** |  **404** |   **78** |   **28** |    **5** | **78%** |           |
+|                                                                                 **TOTAL** |  **417** |   **81** |   **28** |    **5** | **78%** |           |
 
 
 ## Setup coverage badge
