@@ -29,3 +29,9 @@ resource "azurerm_storage_share" "config" {
   storage_account_id = azurerm_storage_account.main.id
   quota              = 1
 }
+
+resource "azurerm_storage_share" "requests" {
+  name               = "requests"
+  storage_account_id = azurerm_storage_account.main.id
+  quota              = 5
+}
