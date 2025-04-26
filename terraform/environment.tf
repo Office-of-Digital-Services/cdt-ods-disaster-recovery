@@ -22,3 +22,12 @@ resource "azurerm_container_app_environment" "main" {
     ignore_changes = [tags]
   }
 }
+
+resource "azurerm_container_app_environment_storage" "config" {
+  account_name                 = azurerm_storage_account.main.name
+  access_key                   = azurerm_storage_account.main.primary_access_key
+  access_mode                  = "ReadOnly"
+  container_app_environment_id = azurerm_container_app_environment.main.id
+  name                         = azurerm_storage_share.config.name
+  share_name                   = azurerm_storage_share.config.name
+}
