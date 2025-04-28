@@ -212,7 +212,7 @@ class OrderInfoForm(forms.ModelForm):
         ),
     )
     email_address = forms.CharField(
-        label="E-mail address",
+        label="Email address",
         required=True,
         max_length=50,
         widget=forms.TextInput(attrs={"class": "form-control", "type": "email"}),
