@@ -7,7 +7,7 @@
     {% endif %}
     {% for field in fields %}
         <div class="form-group col-md-6 p-r-md">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field.label_tag }}
             {{ field }}
             {% if field.help_text %}<small class="form-help">{{ field.help_text }}</small>{% endif %}
             {% if field.errors %}<div class="form-error">{{ field.errors }}</div>{% endif %}

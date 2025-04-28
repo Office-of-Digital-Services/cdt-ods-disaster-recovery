@@ -13,46 +13,54 @@
                 If everything looks accurate, press “Submit” below to finish your request. If you need to edit request, you can go back without losing your progress.
             </p>
             <hr>
-            <ul>
-                <li>
-                    <strong>State:</strong>
-                    {{ vital_records_request.status }}
-                </li>
-                <li>
-                    <strong>ID:</strong>
-                    {{ vital_records_request.id }}
-                </li>
-                <li>
-                    <strong>Fire:</strong> {{ vital_records_request.fire }}
-                </li>
-                <li>
-                    <strong>Relationship:</strong> {{ vital_records_request.relationship }}
-                </li>
-                <li>
-                    <strong>Legal attestation:</strong> {{ vital_records_request.legal_attestation }}
-                </li>
-            </ul>
-            <hr>
             <h3>Birth record details</h3>
             <p>This is the information that will be printed on the replacement birth record.</p>
-            <ul>
-                <li>
-                    <strong>Name:</strong> {{ vital_records_request.first_name }} {{ vital_records_request.middle_name }} {{ vital_records_request.last_name }}
-                </li>
-                <li>
-                    <strong>County of birth:</strong> {{ county_display }}
-                </li>
-                <li>
-                    <strong>Date of birth:</strong> {{ vital_records_request.date_of_birth }}
-                </li>
-                <li>
-                    <strong>Parent 1 name:</strong> {{ vital_records_request.parent_1_first_name }} {{ vital_records_request.parent_1_last_name }}
-                </li>
-                <li>
-                    <strong>Parent 2 name:</strong> {{ vital_records_request.parent_2_first_name }} {{ vital_records_request.parent_2_last_name }}
-                </li>
-            </ul>
+            <dl>
+                <dt>Name</dt>
+                <dd>
+                    {{ vital_records_request.first_name }} {{ vital_records_request.middle_name }} {{ vital_records_request.last_name }}
+                </dd>
+                <dt>County of birth</dt>
+                <dd>
+                    {{ county_display }}
+                </dd>
+                <dt>Date of birth</dt>
+                <dd>
+                    {{ vital_records_request.date_of_birth }}
+                </dd>
+                <dt>Parents’ names</dt>
+                <dd>
+                    {{ vital_records_request.parent_1_first_name }} {{ vital_records_request.parent_1_last_name }}
+                    <br>
+                    {{ vital_records_request.parent_2_first_name }} {{ vital_records_request.parent_2_last_name }}
+                </dd>
+            </dl>
             <hr>
+            <h3>Order information</h3>
+            <dl>
+                <dt>Number of replacements:</dt>
+                <dd>
+                    {{ vital_records_request.number_of_records }}
+                </dd>
+                <dt>Mailing address</dt>
+                <dd>
+                    {{ vital_records_request.order_first_name }} {{ vital_records_request.order_last_name }}
+                    <br>
+                    {{ vital_records_request.address }}
+                    <br>
+                    {{ vital_records_request.city }}, {{ vital_records_request.state }} {{ vital_records_request.zip_code }}
+                    <br>
+                    United States
+                </dd>
+                <dt>Email address:</dt>
+                <dd>
+                    {{ vital_records_request.email_address }}
+                </dd>
+                <dt>Phone number:</dt>
+                <dd>
+                    {{ vital_records_request.phone_number }}
+                </dd>
+            </dl>
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}

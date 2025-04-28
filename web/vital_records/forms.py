@@ -177,6 +177,77 @@ class ParentsNamesForm(forms.ModelForm):
         fields = ["parent_1_first_name", "parent_1_last_name", "parent_2_first_name", "parent_2_last_name"]
 
 
+class OrderInfoForm(forms.ModelForm):
+    number_of_records = forms.ChoiceField(
+        choices=VitalRecordsRequest.NUMBER_CHOICES,
+        label="Number of records",
+        required=True,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    order_first_name = forms.CharField(
+        label="First name", required=True, max_length=50, widget=forms.TextInput(attrs={"class": "form-control"})
+    )
+    order_last_name = forms.CharField(
+        label="Last name", required=True, max_length=50, widget=forms.TextInput(attrs={"class": "form-control"})
+    )
+    address = forms.CharField(label="Street address", max_length=50, widget=forms.TextInput(attrs={"class": "form-control"}))
+    city = forms.CharField(label="City", max_length=50, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    state = forms.ChoiceField(
+        choices=VitalRecordsRequest.STATE_CHOICES,
+        label="State",
+        required=True,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    zip_code = forms.CharField(
+        label="Zip code",
+        max_length=5,
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "inputmode": "numeric",
+                "minlength": "5",
+                "maxlength": "5",
+            }
+        ),
+    )
+    email_address = forms.CharField(
+        label="Email address",
+        required=True,
+        max_length=50,
+        widget=forms.TextInput(attrs={"class": "form-control", "type": "email"}),
+    )
+    phone_number = forms.CharField(
+        label="Phone number",
+        required=True,
+        max_length=10,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "inputmode": "numeric",
+                "pattern": "^[0-9]+$",
+                "type": "tel",
+                "minlength": "10",
+                "maxlength": "10",
+            }
+        ),
+    )
+
+    class Meta:
+        model = VitalRecordsRequest
+        fields = [
+            "number_of_records",
+            "order_first_name",
+            "order_last_name",
+            "address",
+            "city",
+            "state",
+            "zip_code",
+            "email_address",
+            "phone_number",
+        ]
+
+
 class SubmitForm(forms.ModelForm):
 
     class Meta:
