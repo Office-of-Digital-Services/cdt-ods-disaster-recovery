@@ -187,6 +187,10 @@ header {
     font-size: 23px;
   }
 
+  p {
+    font-size: 18px;
+  }
+
   .main-primary {
     margin-top: 80px;
   }
@@ -213,6 +217,10 @@ header {
     margin-top: 4px;
   }
 
+  .form-group {
+    margin-bottom: 24px;
+  }
+
   .form-control {
     border-radius: 0;
     font-size: 18px;
@@ -221,6 +229,7 @@ header {
 
   label {
     margin-bottom: 12px;
+    font-weight: 700;
   }
 
   .label {

@@ -13,13 +13,13 @@
             <form method="post" class="form">
                 <fieldset role="group" aria-describedby="orders-hint">
                     <legend>
-                        <h2>Order information</h2>
+                        <h2 class="m-b-md p-b">Order information</h2>
                     </legend>
                     <hr>
                     {% csrf_token %}
                     <h3>How many replacements do you need?</h3>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-3 p-b m-b-md">
                             {{ form.number_of_records|label_with_required }}
                             {{ form.number_of_records }}
                             {{ form.number_of_records.errors }}
@@ -27,7 +27,7 @@
                     </div>
                     <hr>
                     <h3>Where should we mail your order?</h3>
-                    <p>
+                    <p class="p-b-md m-b-0">
                         Please enter an address in the United States. If you would like to request documents to an international address, please <strong><a href="https://www.ca.gov/lafires/vital-records/#Records-from-California"
    target="_blank">complete your request with a notary</a></strong>.
                     </p>
@@ -62,6 +62,7 @@
                     </div>
                     <hr>
                     <h3>Contact information</h3>
+                    <p class="m-b-md">By providing your information, you consent to being contacted regarding your order.</p>
                     <div class="row">
                         <div class="form-group col-md-5">
                             {{ form.email_address|label_with_required }}
@@ -76,7 +77,6 @@
                             {{ form.phone_number.errors }}
                         </div>
                     </div>
-                    <p>By providing your information, you consent to being contacted regarding your order.</p>
                 </fieldset>
                 <button type="submit" class="btn btn-primary">Preview your order</button>
             </form>
