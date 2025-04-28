@@ -238,7 +238,7 @@ class SubmitView(EligibilityMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("vital_records:submitted", kwargs={"pk": self.object.pk})
+        return reverse("vital_records:request_submitted", kwargs={"pk": self.object.pk})
 
 
 class SubmittedView(EligibilityMixin, DetailView):
