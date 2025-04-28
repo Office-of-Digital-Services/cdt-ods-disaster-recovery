@@ -2,41 +2,42 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                                                                                          |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|---------------------------------------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| web/\_\_init\_\_.py                                                                           |        5 |        0 |        0 |        0 |    100% |           |
-| web/core/\_\_init\_\_.py                                                                      |        0 |        0 |        0 |        0 |    100% |           |
-| web/core/admin.py                                                                             |        7 |        0 |        0 |        0 |    100% |           |
-| web/core/apps.py                                                                              |        5 |        0 |        0 |        0 |    100% |           |
-| web/core/hooks.py                                                                             |       11 |        4 |        0 |        0 |     64% |9-10, 14-15 |
-| web/core/management/\_\_init\_\_.py                                                           |        0 |        0 |        0 |        0 |    100% |           |
-| web/core/management/commands/\_\_init\_\_.py                                                  |        0 |        0 |        0 |        0 |    100% |           |
-| web/core/management/commands/reset\_db.py                                                     |       39 |        0 |        4 |        0 |    100% |           |
-| web/core/middleware.py                                                                        |        9 |        1 |        2 |        1 |     82% |        19 |
-| web/core/migrations/0001\_initial.py                                                          |        7 |        0 |        0 |        0 |    100% |           |
-| web/core/migrations/\_\_init\_\_.py                                                           |        0 |        0 |        0 |        0 |    100% |           |
-| web/core/models.py                                                                            |        8 |        0 |        0 |        0 |    100% |           |
-| web/core/session.py                                                                           |       19 |        7 |        4 |        1 |     57% |13-19, 25-26, 30-33 |
-| web/core/urls.py                                                                              |       11 |        3 |        0 |        0 |     73% |     12-20 |
-| web/settings.py                                                                               |       65 |        9 |       12 |        3 |     77% |42-49, 94->98, 109->112, 121 |
-| web/urls.py                                                                                   |        4 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/\_\_init\_\_.py                                                            |        0 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/apps.py                                                                    |        5 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/forms.py                                                                   |       70 |       22 |        6 |        0 |     63% |113-120, 123-133, 136-144 |
-| web/vital\_records/hooks.py                                                                   |       15 |        6 |        0 |        0 |     60% |9-10, 14-15, 19-20 |
-| web/vital\_records/migrations/0001\_initial.py                                                |        7 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/migrations/0002\_vitalrecordsrequest\_legal\_attestation\_and\_more.py     |        5 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/migrations/0003\_vitalrecordsrequest\_first\_name\_and\_more.py            |        5 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/migrations/0004\_vitalrecordsrequest\_county\_of\_birth\_and\_more.py      |        5 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/migrations/0005\_vitalrecordsrequest\_date\_of\_birth\_and\_more.py        |        5 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/migrations/0006\_vitalrecordsrequest\_parent\_1\_first\_name\_and\_more.py |        5 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/migrations/\_\_init\_\_.py                                                 |        0 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/models.py                                                                  |       45 |        7 |        0 |        0 |     84% |117, 121, 125, 129, 133, 137, 141 |
-| web/vital\_records/session.py                                                                 |       13 |        4 |        2 |        0 |     60% |     15-18 |
-| web/vital\_records/urls.py                                                                    |        4 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/views.py                                                                   |      133 |       55 |        4 |        0 |     57% |53-59, 62, 71-77, 80, 89-95, 98-106, 109, 118-124, 127, 137-143, 146, 155-161, 164-175, 178, 188-197, 200-207, 210-212, 215 |
-| web/wsgi.py                                                                                   |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                     **TOTAL** |  **513** |  **124** |   **34** |    **5** | **73%** |           |
+| Name                                                                                                      |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
+|---------------------------------------------------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
+| web/\_\_init\_\_.py                                                                                       |        5 |        0 |        0 |        0 |    100% |           |
+| web/core/\_\_init\_\_.py                                                                                  |        0 |        0 |        0 |        0 |    100% |           |
+| web/core/admin.py                                                                                         |        7 |        0 |        0 |        0 |    100% |           |
+| web/core/apps.py                                                                                          |        5 |        0 |        0 |        0 |    100% |           |
+| web/core/hooks.py                                                                                         |       11 |        4 |        0 |        0 |     64% |9-10, 14-15 |
+| web/core/management/\_\_init\_\_.py                                                                       |        0 |        0 |        0 |        0 |    100% |           |
+| web/core/management/commands/\_\_init\_\_.py                                                              |        0 |        0 |        0 |        0 |    100% |           |
+| web/core/management/commands/reset\_db.py                                                                 |       39 |        0 |        4 |        0 |    100% |           |
+| web/core/middleware.py                                                                                    |        9 |        1 |        2 |        1 |     82% |        19 |
+| web/core/migrations/0001\_initial.py                                                                      |        7 |        0 |        0 |        0 |    100% |           |
+| web/core/migrations/\_\_init\_\_.py                                                                       |        0 |        0 |        0 |        0 |    100% |           |
+| web/core/models.py                                                                                        |        8 |        0 |        0 |        0 |    100% |           |
+| web/core/session.py                                                                                       |       19 |        7 |        4 |        1 |     57% |13-19, 25-26, 30-33 |
+| web/core/urls.py                                                                                          |       11 |        3 |        0 |        0 |     73% |     12-20 |
+| web/settings.py                                                                                           |       65 |        9 |       12 |        3 |     77% |42-49, 94->98, 109->112, 121 |
+| web/urls.py                                                                                               |        4 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/\_\_init\_\_.py                                                                        |        0 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/apps.py                                                                                |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/forms.py                                                                               |       83 |       22 |        6 |        0 |     69% |113-120, 123-133, 136-144 |
+| web/vital\_records/hooks.py                                                                               |       15 |        6 |        0 |        0 |     60% |9-10, 14-15, 19-20 |
+| web/vital\_records/migrations/0001\_initial.py                                                            |        7 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/0002\_vitalrecordsrequest\_legal\_attestation\_and\_more.py                 |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/0003\_vitalrecordsrequest\_first\_name\_and\_more.py                        |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/0004\_vitalrecordsrequest\_county\_of\_birth\_and\_more.py                  |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/0005\_vitalrecordsrequest\_date\_of\_birth\_and\_more.py                    |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/0006\_vitalrecordsrequest\_parent\_1\_first\_name\_and\_more.py             |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/0007\_vitalrecordsrequest\_address\_vitalrecordsrequest\_city\_and\_more.py |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/\_\_init\_\_.py                                                             |        0 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/models.py                                                                              |       59 |        8 |        0 |        0 |     86% |192, 196, 200, 204, 208, 212, 216, 220 |
+| web/vital\_records/session.py                                                                             |       13 |        4 |        2 |        0 |     60% |     15-18 |
+| web/vital\_records/urls.py                                                                                |        4 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/views.py                                                                               |      149 |       64 |        4 |        0 |     56% |54-60, 63, 72-78, 81, 90-96, 99-107, 110, 119-125, 128, 138-144, 147, 156-162, 165-176, 179, 188-194, 197-204, 207, 217-226, 229-236, 239-241, 244 |
+| web/wsgi.py                                                                                               |        6 |        6 |        0 |        0 |      0% |      8-16 |
+|                                                                                                 **TOTAL** |  **561** |  **134** |   **34** |    **5** | **73%** |           |
 
 
 ## Setup coverage badge
