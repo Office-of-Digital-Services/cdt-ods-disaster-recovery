@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
-from web.vital_records.forms import EligibilityForm, StatementForm, NameForm, CountyForm, SubmitForm
+from web.vital_records.forms import EligibilityForm, StatementForm, NameForm, CountyForm, DateOfBirthForm, SubmitForm
 
 
 class IndexView(TemplateView):
@@ -100,6 +100,25 @@ class CountyView(UpdateView):
 
         # Move form state to next state
         self.object.complete_county()
+        self.object.save()
+
+        return response
+
+    def get_success_url(self):
+        return reverse("vital_records:request_dob", kwargs={"pk": self.object.pk})
+
+
+class DateOfBirthView(UpdateView):
+    model = VitalRecordsRequest
+    form_class = DateOfBirthForm
+    template_name = "vital_records/request/dob.html"
+    context_object_name = "vital_request"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Move form state to next state
+        self.object.complete_dob()
         self.object.save()
 
         return response

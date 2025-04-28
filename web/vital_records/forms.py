@@ -1,4 +1,6 @@
+import datetime
 from django import forms
+
 from web.vital_records.models import VitalRecordsRequest
 
 
@@ -57,6 +59,93 @@ class CountyForm(forms.ModelForm):
     class Meta:
         model = VitalRecordsRequest
         fields = ["county_of_birth"]
+
+
+class DateOfBirthForm(forms.ModelForm):
+    birth_month = forms.CharField(
+        label="Month",
+        help_text="MM",
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "autocomplete": "bday-month",
+                "required": "",
+                "inputmode": "numeric",
+                "pattern": "[0-9]*",
+                "maxlength": "2",
+                "aria-describedby": "id_birth_month_helptext",
+            },
+        ),
+    )
+    birth_day = forms.CharField(
+        label="Day",
+        help_text="DD",
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "autocomplete": "bday-day",
+                "required": "",
+                "inputmode": "numeric",
+                "pattern": "[0-9]*",
+                "maxlength": "2",
+                "aria-describedby": "id_birth_day_helptext",
+            },
+        ),
+    )
+    birth_year = forms.CharField(
+        label="Year",
+        help_text="YYYY",
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "autocomplete": "bday-year",
+                "required": "",
+                "inputmode": "numeric",
+                "pattern": "[0-9]*",
+                "minlength": "4",
+                "maxlength": "4",
+                "aria-describedby": "id_birth_year_helptext",
+            },
+        ),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Pre-populate form fields from model instance
+        instance = kwargs.get("instance")
+        if instance and instance.date_of_birth:
+            self.fields["birth_month"].initial = instance.date_of_birth.month
+            self.fields["birth_day"].initial = instance.date_of_birth.day
+            self.fields["birth_year"].initial = instance.date_of_birth.year
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        try:
+            month = int(cleaned_data.get("birth_month"))
+            day = int(cleaned_data.get("birth_day"))
+            year = int(cleaned_data.get("birth_year"))
+
+            cleaned_data["date_of_birth"] = datetime.date(year, month, day)
+        except (ValueError, TypeError):
+            raise forms.ValidationError("Enter a valid date.")
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        date_of_birth = self.cleaned_data.get("date_of_birth")
+
+        if date_of_birth:
+            instance.date_of_birth = date_of_birth
+
+        if commit:
+            instance.save()
+        return instance
+
+    class Meta:
+        model = VitalRecordsRequest
+        fields = []
 
 
 class SubmitForm(forms.ModelForm):
