@@ -9,8 +9,8 @@ class VitalRecordsRequest(models.Model):
     """Represents a request to order a vital record through the Disaster Recovery app."""
 
     STATUS_CHOICES = [
+        ("initialized", "Initialized"),
         ("started", "Started"),
-        ("eligibility_completed", "Eligibility Completed"),
         ("statement_completed", "Sworn Statement Completed"),
         ("name_completed", "Name Completed"),
         ("county_completed", "County Completed"),
@@ -166,7 +166,7 @@ class VitalRecordsRequest(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    status = FSMField(default="started", choices=STATUS_CHOICES)
+    status = FSMField(default="initialized", choices=STATUS_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
     relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
     legal_attestation = models.CharField(max_length=100)
@@ -188,17 +188,18 @@ class VitalRecordsRequest(models.Model):
     zip_code = models.CharField(max_length=5)
     email_address = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=10)
+    started_at = models.DateTimeField(null=True, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
     enqueued_at = models.DateTimeField(null=True, blank=True)
     packaged_at = models.DateTimeField(null=True, blank=True)
     sent_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
-    @transition(field=status, source="*", target="eligibility_completed")
-    def complete_eligibility(self):
-        pass
+    @transition(field=status, source="initialized", target="started")
+    def complete_start(self):
+        self.started_at = timezone.now()
 
-    @transition(field=status, target="statement_completed")
+    @transition(field=status, source="started", target="statement_completed")
     def complete_statement(self):
         pass
 

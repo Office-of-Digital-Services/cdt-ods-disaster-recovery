@@ -42,16 +42,16 @@ class LoginView(RedirectView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class EligibilityView(EligibilityMixin, CreateView):
+class StartView(EligibilityMixin, CreateView):
     model = VitalRecordsRequest
     form_class = EligibilityForm
-    template_name = "vital_records/request/eligibility.html"
+    template_name = "vital_records/request/start.html"
 
     def form_valid(self, form):
         response = super().form_valid(form)
 
         # Move form state to next state
-        self.object.complete_eligibility()
+        self.object.complete_start()
         self.object.save()
 
         return response
