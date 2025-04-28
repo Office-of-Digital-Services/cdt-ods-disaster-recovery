@@ -1,7 +1,14 @@
 {% extends "vital_records/base.html" %}
 {% block inner-content %}
-    <p>{% translate "We could not verify if you are in a disaster affected area." %}</p>
-    <p>
-        <a class="btn btn-secondary" href="{% url 'cdt:logout' %}">Sign out of Login.gov</a>
-    </p>
+    <div class="row">
+        <div class="col-lg-9">
+            <h2>This address does not qualify for free replacement records</h2>
+            <p>
+                We checked the verified address associated with your Login.gov account, and it is not in a ZIP code eligible for free replacement records.
+            </p>
+            <p>You can still order a free replacement by applying with a notary.</p>
+            <a class="btn btn-primary m-t-md"
+               href="https://www.ca.gov/lafires/vital-records/#Records-from-California">Apply with a notary</a>
+        </div>
+    </div>
 {% endblock inner-content %}
