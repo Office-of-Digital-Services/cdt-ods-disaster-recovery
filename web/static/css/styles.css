@@ -132,6 +132,10 @@ header {
   min-height: calc(100vh - 190px); /* Temporary fix for footer issue */
 }
 
+.m-b-40 {
+  margin-bottom: 40px;
+}
+
 .cagov-step-list.sm {
   padding-top: 8px;
 }
@@ -167,8 +171,78 @@ header {
 }
 
 #vital-records {
+  h1 {
+    font-size: 47px;
+    padding-top: 20px;
+    padding-bottom: 40px;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 37px;
+    margin: 8px 0;
+  }
+
+  h3 {
+    font-size: 23px;
+  }
+
+  .main-primary {
+    margin-top: 80px;
+  }
+
+  .main-header ol {
+    margin: 0;
+    padding: 0;
+  }
+
+  small,
+  .small {
+    font-size: 14px;
+  }
+
+  small.accent {
+    color: #046b99;
+    font-weight: 700;
+  }
+
+  small.form-help {
+    color: var(--gray-600, #72717c);
+    display: block;
+    font-weight: 400;
+    margin-top: 4px;
+  }
+
+  .form-control {
+    border-radius: 0;
+    font-size: 18px;
+    padding: 9.5px 16px;
+  }
+
+  label {
+    margin-bottom: 12px;
+  }
+
+  .label {
+    font-size: 18px;
+  }
+
   abbr[title="required"] {
     cursor: none;
     text-decoration: none;
+  }
+
+  form select {
+    font-size: 18px;
+    border-radius: 0;
+    padding: 9.5px 2.25rem 9.5px 0.75rem;
+    border-color: var(--gray-200, #d4d4d7);
+  }
+
+  form .btn[type="submit"] {
+    margin-top: 40px;
+    margin-bottom: 80px;
+    font-size: 18px;
+    padding: 8px 16px;
   }
 }
