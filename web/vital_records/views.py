@@ -6,8 +6,6 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from web.core.views import EligibilityMixin as CoreEligibilityMixin
 from web.vital_records import tasks
-from web.vital_records.models import VitalRecordsRequest
-from web.vital_records.session import Session
 from web.vital_records.forms import (
     EligibilityForm,
     StatementForm,
@@ -18,6 +16,9 @@ from web.vital_records.forms import (
     OrderInfoForm,
     SubmitForm,
 )
+from web.vital_records.models import VitalRecordsRequest
+from web.vital_records.routes import Routes
+from web.vital_records.session import Session
 
 
 class EligibilityMixin(CoreEligibilityMixin):
@@ -57,7 +58,7 @@ class StartView(EligibilityMixin, CreateView):
         return response
 
     def get_success_url(self):
-        return reverse("vital_records:request_statement", kwargs={"pk": self.object.pk})
+        return reverse(Routes.app_route(Routes.request_statement), kwargs={"pk": self.object.pk})
 
 
 class StatementView(EligibilityMixin, UpdateView):
@@ -75,7 +76,7 @@ class StatementView(EligibilityMixin, UpdateView):
         return response
 
     def get_success_url(self):
-        return reverse("vital_records:request_name", kwargs={"pk": self.object.pk})
+        return reverse(Routes.app_route(Routes.request_name), kwargs={"pk": self.object.pk})
 
 
 class NameView(EligibilityMixin, UpdateView):
@@ -104,7 +105,7 @@ class NameView(EligibilityMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("vital_records:request_county", kwargs={"pk": self.object.pk})
+        return reverse(Routes.app_route(Routes.request_county), kwargs={"pk": self.object.pk})
 
 
 class CountyView(EligibilityMixin, UpdateView):
@@ -122,7 +123,7 @@ class CountyView(EligibilityMixin, UpdateView):
         return response
 
     def get_success_url(self):
-        return reverse("vital_records:request_dob", kwargs={"pk": self.object.pk})
+        return reverse(Routes.app_route(Routes.request_dob), kwargs={"pk": self.object.pk})
 
 
 class DateOfBirthView(EligibilityMixin, UpdateView):
@@ -141,7 +142,7 @@ class DateOfBirthView(EligibilityMixin, UpdateView):
         return response
 
     def get_success_url(self):
-        return reverse("vital_records:request_parents", kwargs={"pk": self.object.pk})
+        return reverse(Routes.app_route(Routes.request_parents), kwargs={"pk": self.object.pk})
 
 
 class ParentsNamesView(EligibilityMixin, UpdateView):
@@ -173,7 +174,7 @@ class ParentsNamesView(EligibilityMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("vital_records:request_order", kwargs={"pk": self.object.pk})
+        return reverse(Routes.app_route(Routes.request_order), kwargs={"pk": self.object.pk})
 
 
 class OrderInfoView(EligibilityMixin, UpdateView):
@@ -201,7 +202,7 @@ class OrderInfoView(EligibilityMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("vital_records:request_submit", kwargs={"pk": self.object.pk})
+        return reverse(Routes.app_route(Routes.request_submit), kwargs={"pk": self.object.pk})
 
 
 class SubmitView(EligibilityMixin, UpdateView):
@@ -238,7 +239,7 @@ class SubmitView(EligibilityMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("vital_records:request_submitted", kwargs={"pk": self.object.pk})
+        return reverse(Routes.app_route(Routes.request_submitted), kwargs={"pk": self.object.pk})
 
 
 class SubmittedView(EligibilityMixin, DetailView):
