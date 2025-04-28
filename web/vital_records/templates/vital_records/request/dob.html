@@ -17,25 +17,25 @@
                     </legend>
                     <p id="dob-hint">If you’re not sure, enter your approximate date of birth.</p>
                     {% csrf_token %}
-                    <div class="row gap-3">
-                        <div class="col-md-2">
+                    <div class="row gap-md-3">
+                        <div class="col-3 col-md-2">
                             {{ form.birth_month|label_with_required }}
                             {{ form.birth_month }}
-                            {{ form.birth_month.help_text }}
+                            <small class="form-help">{{ form.birth_month.help_text }}</small>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-3 col-md-2">
                             {{ form.birth_day|label_with_required }}
                             {{ form.birth_day }}
-                            {{ form.birth_day.help_text }}
+                            <small class="form-help">{{ form.birth_day.help_text }}</small>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-4 col-md-3">
                             {{ form.birth_year|label_with_required }}
                             {{ form.birth_year }}
-                            {{ form.birth_year.help_text }}
+                            <small class="form-help">{{ form.birth_year.help_text }}</small>
                         </div>
                     </div>
                 </fieldset>
-                <button type="submit" class="btn btn-primary">Confirm</button>
+                <button type="submit" class="btn btn-primary">Continue</button>
             </form>
         </div>
     </div>

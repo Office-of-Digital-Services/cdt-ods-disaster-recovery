@@ -5,7 +5,7 @@
     <h2 class="m-t-80">Confirm your eligibility for an authorized copy</h2>
     <div class="row">
         <div class="col-lg-10">
-            <p>
+            <p class="m-t p-b m-b-sm">
                 To get an authorized copy, you must be the person named on the record or someone legally allowed to request it — like a parent, guardian, or close relative.
             </p>
         </div>
@@ -14,11 +14,11 @@
         <div class="col-lg-10">
             <form method="post">
                 {% csrf_token %}
-                <div class="form-group w-50">
+                <div class="form-group w-50 p-b">
                     {{ form.relationship|label_with_required }}
                     {{ form.relationship }}
                 </div>
-                <p class="fw-semibold">Legal attestation</p>
+                <p class="label fw-semibold">Legal attestation</p>
                 <div class="form-group border b-1 rounded bg-gray-light p-a-md">
                     <div class="custom-wrapper">
                         <p class="form-help">
