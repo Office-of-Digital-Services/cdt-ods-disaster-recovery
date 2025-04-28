@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic import DetailView, RedirectView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
-from web.core.views import EligibilityMixin
+from web.core.views import EligibilityMixin as CoreEligibilityMixin
 from web.vital_records import tasks
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
@@ -18,6 +18,10 @@ from web.vital_records.forms import (
     OrderInfoForm,
     SubmitForm,
 )
+
+
+class EligibilityMixin(CoreEligibilityMixin):
+    redirect_url = "vital_records:login"
 
 
 class IndexView(TemplateView):

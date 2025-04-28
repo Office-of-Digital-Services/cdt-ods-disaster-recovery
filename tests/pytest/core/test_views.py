@@ -5,7 +5,11 @@ import pytest
 from web.core.views import EligibilityMixin
 
 
-class SampleView(EligibilityMixin, View):
+class CustomEligibilityMixin(EligibilityMixin):
+    redirect_url = "https://example.com"
+
+
+class SampleView(CustomEligibilityMixin, View):
     pass
 
 
@@ -25,7 +29,7 @@ class TestEligibilityMixin:
         response = view.dispatch(app_request)
 
         assert response.status_code == 302
-        assert response.url == "/vital-records/login"
+        assert response.url == "https://example.com"
 
     def test_dispatch_with_verified_eligibility(self, view, app_request, mocker):
         """Test EligibilityMixin allows dispatch when eligibility is verified"""
