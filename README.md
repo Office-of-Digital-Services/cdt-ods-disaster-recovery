@@ -34,10 +34,12 @@
 | web/vital\_records/migrations/\_\_init\_\_.py                                                             |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/models.py                                                                              |       59 |        8 |        0 |        0 |     86% |192, 196, 200, 204, 208, 212, 216, 220 |
 | web/vital\_records/session.py                                                                             |       13 |        4 |        2 |        0 |     60% |     15-18 |
+| web/vital\_records/templatetags/\_\_init\_\_.py                                                           |        0 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/templatetags/form\_helpers.py                                                          |       10 |       10 |        2 |        0 |      0% |      1-13 |
 | web/vital\_records/urls.py                                                                                |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views.py                                                                               |      149 |       64 |        4 |        0 |     56% |54-60, 63, 72-78, 81, 90-96, 99-107, 110, 119-125, 128, 138-144, 147, 156-162, 165-176, 179, 188-194, 197-204, 207, 217-226, 229-236, 239-241, 244 |
 | web/wsgi.py                                                                                               |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                                 **TOTAL** |  **561** |  **134** |   **34** |    **5** | **73%** |           |
+|                                                                                                 **TOTAL** |  **571** |  **144** |   **36** |    **5** | **72%** |           |
 
 
 ## Setup coverage badge
