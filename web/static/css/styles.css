@@ -165,3 +165,10 @@ header {
 .cagov-step-list > li:last-child {
   padding-left: 45px;
 }
+
+#vital-records {
+  abbr[title="required"] {
+    cursor: none;
+    text-decoration: none;
+  }
+}

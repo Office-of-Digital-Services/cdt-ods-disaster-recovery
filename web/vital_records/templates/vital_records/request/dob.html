@@ -1,5 +1,6 @@
 {% extends "vital_records/base.html" %}
 {% load i18n %}
+{% load form_helpers %}
 {% block inner-content %}
     <div class="row">
         <div class="col-md-3">
@@ -16,8 +17,22 @@
                     </legend>
                     <p id="dob-hint">If you’re not sure, enter your approximate date of birth.</p>
                     {% csrf_token %}
-                    <div class="row">
-                        <div class="d-flex gap-2 col-md-6 col-lg-4">{{ form.as_p }}</div>
+                    <div class="row gap-3">
+                        <div class="col-md-2">
+                            {{ form.birth_month|label_with_required }}
+                            {{ form.birth_month }}
+                            {{ form.birth_month.help_text }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.birth_day|label_with_required }}
+                            {{ form.birth_day }}
+                            {{ form.birth_day.help_text }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.birth_year|label_with_required }}
+                            {{ form.birth_year }}
+                            {{ form.birth_year.help_text }}
+                        </div>
                     </div>
                 </fieldset>
                 <button type="submit" class="btn btn-primary">Confirm</button>
