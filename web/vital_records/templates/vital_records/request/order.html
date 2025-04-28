@@ -19,7 +19,7 @@
                     {% csrf_token %}
                     <h3>How many replacements do you need?</h3>
                     <div class="row">
-                        <div class="col-md-3 p-b m-b-md">
+                        <div class="col-md-3 p-b-sm m-b-md">
                             {{ form.number_of_records|label_with_required }}
                             {{ form.number_of_records }}
                             {{ form.number_of_records.errors }}
