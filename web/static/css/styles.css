@@ -132,11 +132,32 @@ header {
   min-height: calc(100vh - 190px); /* Temporary fix for footer issue */
 }
 
-li[data-status="current"]:before {
-  background: gold; /* Temporary style for form debugging */
-}
-
 #vital-records {
+  h1 {
+    font-size: 47px;
+    padding-top: 20px;
+    padding-bottom: 40px;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 37px;
+    margin: 8px 0;
+  }
+
+  h3 {
+    font-size: 23px;
+  }
+
+  .main-primary {
+    margin-top: 80px;
+  }
+
+  .main-header ol {
+    margin: 0;
+    padding: 0;
+  }
+
   abbr[title="required"] {
     cursor: none;
     text-decoration: none;
