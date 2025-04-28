@@ -199,13 +199,38 @@ class OrderInfoForm(forms.ModelForm):
         widget=forms.Select(attrs={"class": "form-select"}),
     )
     zip_code = forms.CharField(
-        label="Zip code", max_length=5, required=True, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Zip code",
+        max_length=5,
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "inputmode": "numeric",
+                "minlength": "5",
+                "maxlength": "5",
+            }
+        ),
     )
     email_address = forms.CharField(
-        label="E-mail address", required=True, max_length=50, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="E-mail address",
+        required=True,
+        max_length=50,
+        widget=forms.TextInput(attrs={"class": "form-control", "type": "email"}),
     )
     phone_number = forms.CharField(
-        label="Phone number", required=True, max_length=10, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Phone number",
+        required=True,
+        max_length=10,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "inputmode": "numeric",
+                "pattern": "^[0-9]+$",
+                "type": "tel",
+                "minlength": "10",
+                "maxlength": "10",
+            }
+        ),
     )
 
     class Meta:
