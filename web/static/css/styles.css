@@ -187,8 +187,13 @@ header {
     font-size: 23px;
   }
 
+  h3.md {
+    font-size: 29px;
+  }
+
   p {
     font-size: 18px;
+    line-height: 32px;
   }
 
   .main-primary {
@@ -253,5 +258,17 @@ header {
     margin-bottom: 80px;
     font-size: 18px;
     padding: 8px 16px;
+  }
+
+  dt {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.96875rem;
+    margin-top: 28px;
+  }
+
+  dd {
+    font-size: 18px;
+    line-height: 2rem;
   }
 }
