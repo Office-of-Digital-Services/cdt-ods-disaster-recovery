@@ -158,6 +158,16 @@ header {
     padding: 0;
   }
 
+  small,
+  .small {
+    font-size: 14px;
+  }
+
+  small.accent {
+    color: #046b99;
+    font-weight: 700;
+  }
+
   abbr[title="required"] {
     cursor: none;
     text-decoration: none;
