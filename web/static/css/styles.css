@@ -168,6 +168,11 @@ header {
     font-weight: 700;
   }
 
+  small.form-help {
+    color: var(--gray-600, #72717c);
+    font-weight: 400;
+  }
+
   abbr[title="required"] {
     cursor: none;
     text-decoration: none;
