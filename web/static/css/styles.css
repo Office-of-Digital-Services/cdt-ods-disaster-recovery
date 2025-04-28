@@ -135,3 +135,8 @@ header {
 li[data-status="current"]:before {
   background: gold; /* Temporary style for form debugging */
 }
+
+abbr[title="required"] {
+  cursor: none;
+  text-decoration: none;
+}
