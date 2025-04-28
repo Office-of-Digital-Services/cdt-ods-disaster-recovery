@@ -9,7 +9,15 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
-from web.vital_records.forms import EligibilityForm, StatementForm, NameForm, CountyForm, DateOfBirthForm, SubmitForm
+from web.vital_records.forms import (
+    EligibilityForm,
+    StatementForm,
+    NameForm,
+    CountyForm,
+    DateOfBirthForm,
+    ParentsNamesForm,
+    SubmitForm,
+)
 
 
 class IndexView(TemplateView):
@@ -86,6 +94,17 @@ class NameView(UpdateView):
 
         return response
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = context["form"]
+        context["name_fields"] = [
+            form["first_name"],
+            form["middle_name"],
+            form["last_name"],
+        ]
+
+        return context
+
     def get_success_url(self):
         return reverse("vital_records:request_county", kwargs={"pk": self.object.pk})
 
@@ -122,6 +141,38 @@ class DateOfBirthView(UpdateView):
         self.object.save()
 
         return response
+
+    def get_success_url(self):
+        return reverse("vital_records:request_parents", kwargs={"pk": self.object.pk})
+
+
+class ParentsNamesView(UpdateView):
+    model = VitalRecordsRequest
+    form_class = ParentsNamesForm
+    template_name = "vital_records/request/parents.html"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Move form state to next state
+        self.object.complete_parents_names()
+        self.object.save()
+
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = context["form"]
+        context["parent_1_fields"] = [
+            form["parent_1_first_name"],
+            form["parent_1_last_name"],
+        ]
+        context["parent_2_fields"] = [
+            form["parent_2_first_name"],
+            form["parent_2_last_name"],
+        ]
+
+        return context
 
     def get_success_url(self):
         return reverse("vital_records:request_submit", kwargs={"pk": self.object.pk})
