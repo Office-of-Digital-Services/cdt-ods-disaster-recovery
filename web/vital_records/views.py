@@ -1,12 +1,13 @@
 from typing import Any
 
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
+from web.vital_records import tasks
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
 from web.vital_records.forms import (
@@ -223,7 +224,7 @@ class SubmitView(UpdateView):
             return self.form_invalid(form)
 
         self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
+        return redirect(self.get_success_url())
 
     def get_display_county(self, context):
         counties = VitalRecordsRequest.COUNTY_CHOICES
@@ -241,11 +242,27 @@ class SubmitView(UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("vital_records:submitted")
+        return reverse("vital_records:submitted", kwargs={"pk": self.object.pk})
 
 
-class SubmittedView(TemplateView):
+class SubmittedView(DetailView):
+    model = VitalRecordsRequest
     template_name = "vital_records/submitted.html"
+
+    def get(self, request, *args, **kwargs):
+        # Ensure self.object is initialized
+        response = super().get(request, *args, **kwargs)
+        # only enque a task if the request is in the correct state
+        if self.object.status == "submitted":
+            # Move to next state *before* putting task on the queue
+            # Want to avoid race condition where the task is processed
+            # off the queue before the state update is saved in DB!
+            self.object.complete_enqueue()
+            self.object.save()
+            tasks.submit_request(self.object.pk)
+            return response
+        else:
+            raise ValueError("Can't enqueue request: {} with status: {}")
 
 
 class UnverifiedView(TemplateView):

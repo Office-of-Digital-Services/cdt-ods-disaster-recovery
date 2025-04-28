@@ -49,6 +49,16 @@ services:
     environment:
       - PGWEB_DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable
 
+  worker:
+    build:
+      context: .
+      dockerfile: appcontainer/Dockerfile
+    image: cdt/disaster-recovery:web
+    command: ["bin/worker.sh"]
+    depends_on:
+      - postgres
+    env_file: .env
+
 volumes:
   pgdata:
     driver: local

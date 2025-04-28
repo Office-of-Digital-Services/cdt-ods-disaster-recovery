@@ -17,6 +17,6 @@ urlpatterns = [
     path("request/<uuid:pk>/parents/", views.ParentsNamesView.as_view(), name="request_parents"),
     path("request/<uuid:pk>/order/", views.OrderInfoView.as_view(), name="request_order"),
     path("request/<uuid:pk>/", views.SubmitView.as_view(), name="request_submit"),
-    path("submitted", views.SubmittedView.as_view(), name="submitted"),
+    path("request/<uuid:pk>/submitted", views.SubmittedView.as_view(), name="submitted"),
     path("unverified", views.UnverifiedView.as_view(), name="unverified"),
 ]

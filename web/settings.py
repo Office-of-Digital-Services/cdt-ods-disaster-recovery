@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "cdt_identity",
+    "django_q",
     "web.core",
     "web.vital_records",
 ]
@@ -137,32 +138,38 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "web.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# In Azure, the Postgres server is running in a container app inside the same
+# container app environment as the web container app (Django)
+#
+# The Postgres container doesn't allow ingress from the public Internet, only
+# from within the container app environment, and all traffic stays within Azure
+# (i.e. doesn't travel over the public Internet)
+#
+# The Postgres container is also not setup for SSL connections right now
+PG_CONFIG = {
+    "ENGINE": "django.db.backends.postgresql",
+    "HOST": os.environ.get("POSTGRES_HOSTNAME", "postgres"),
+    "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+    # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+    "OPTIONS": {"sslmode": "disable"},
+}
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
+    "default": PG_CONFIG
+    | {
         "NAME": os.environ.get("DJANGO_DB_NAME", "django"),
         "USER": os.environ.get("DJANGO_DB_USER", "django"),
         "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD"),
-        "HOST": os.environ.get("POSTGRES_HOSTNAME", "postgres"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-        # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
-        #
-        # In Azure, the Postgres server is running in a container app inside the same
-        # container app environment as the web container app (Django)
-        #
-        # The Postgres container doesn't allow ingress from the public Internet, only
-        # from within the container app environment, and all traffic stays within Azure
-        # (i.e. doesn't travel over the public Internet)
-        #
-        # The Postgres container is also not setup for SSL connections right now
-        "OPTIONS": {"sslmode": "disable"},
-    }
+    },
+    "tasks": PG_CONFIG
+    | {
+        "NAME": os.environ.get("TASKS_DB_NAME", "tasks"),
+        "USER": os.environ.get("TASKS_DB_USER", "tasks"),
+        "PASSWORD": os.environ.get("TASKS_DB_PASSWORD"),
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -212,14 +219,26 @@ STORAGES = {
 }
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+# Storage for e.g. generated files, not routable from the website
+STORAGE_DIR = os.environ.get("DJANGO_STORAGE_DIR", BASE_DIR)
+
 # Email
 # https://docs.djangoproject.com/en/5.1/ref/settings/#email-backend
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.environ.get("DJANGO_EMAIL_HOST")
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get("DJANGO_EMAIL_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_PASSWORD")
+
+if all((EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)):
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = 587
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = STORAGE_DIR
+    Path(EMAIL_FILE_PATH).mkdir(parents=True, exist_ok=True)
+
+VITAL_RECORDS_EMAIL_FROM = os.environ.get("VITAL_RECORDS_EMAIL_FROM", "noreply@example.ca.gov")
+VITAL_RECORDS_EMAIL_TO = os.environ.get("VITAL_RECORDS_EMAIL_TO", "example@example.ca.gov")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -254,4 +273,27 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+# django-q2 configuration
+# https://django-q2.readthedocs.io/en/stable/configure.html
+Q_CLUSTER = {
+    # The label used for the Django Admin page.
+    "label": "Tasks",
+    # Used to differentiate between projects using the same broker.
+    # On most broker types this will be used as the queue name.
+    "name": "disaster-recovery",
+    # Use Django’s database backend as a message broker, set the `orm` keyword to the database connection.
+    "orm": "tasks",
+    # Queue polling interval (seconds) for database brokers.
+    "poll": int(os.environ.get("Q_POLL", 5)),
+    # The number of seconds a broker will wait for a cluster to finish a task, before it’s presented again.
+    # Only works with brokers that support delivery receipts. Defaults to 60.
+    # The value must be bigger than the time it takes to complete the longest task.
+    "retry": int(os.environ.get("Q_RETRY", 300)),
+    # The number of seconds a worker is allowed to spend on a task before it’s terminated. Defaults to ... never time out.
+    # Timeout must be less than retry value (default 60) and all tasks must complete in less time than the ... retry time.
+    "timeout": int(os.environ.get("Q_TIMEOUT", 150)),
+    # The number of workers to use in the cluster.
+    "workers": int(os.environ.get("Q_WORKERS", 1)),
 }

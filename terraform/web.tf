@@ -191,7 +191,7 @@ resource "azurerm_container_app" "web" {
 
     volume {
       name         = "config"
-      storage_name = azurerm_storage_share.web.name
+      storage_name = azurerm_storage_share.config.name
       storage_type = "AzureFile"
     }
   }

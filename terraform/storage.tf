@@ -24,17 +24,14 @@ resource "azurerm_storage_account" "main" {
   }
 }
 
-resource "azurerm_storage_share" "web" {
-  name               = "web"
+resource "azurerm_storage_share" "config" {
+  name               = "config"
   storage_account_id = azurerm_storage_account.main.id
   quota              = 1
 }
 
-resource "azurerm_container_app_environment_storage" "web" {
-  account_name                 = azurerm_storage_account.main.name
-  access_key                   = azurerm_storage_account.main.primary_access_key
-  access_mode                  = "ReadOnly"
-  container_app_environment_id = azurerm_container_app_environment.main.id
-  name                         = azurerm_storage_share.web.name
-  share_name                   = azurerm_storage_share.web.name
+resource "azurerm_storage_share" "requests" {
+  name               = "requests"
+  storage_account_id = azurerm_storage_account.main.id
+  quota              = 5
 }

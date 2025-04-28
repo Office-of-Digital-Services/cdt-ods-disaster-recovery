@@ -18,6 +18,10 @@ class VitalRecordsRequest(models.Model):
         ("parents_names_completed", "Parents Names Completed"),
         ("order_info_completed", "Order Info Completed"),
         ("submitted", "Request Submitted"),
+        ("enqueued", "Request Enqueued"),
+        ("packaged", "Request Packaged"),
+        ("sent", "Request Sent"),
+        ("finished", "Finished"),
     ]
 
     FIRE_CHOICES = [("palisades", "Palisades fire"), ("eaton", "Eaton fire")]
@@ -36,64 +40,64 @@ class VitalRecordsRequest(models.Model):
 
     COUNTY_CHOICES = [
         ("", "Select county"),
-        ("01", "Alameda"),
-        ("02", "Alpine"),
-        ("03", "Amador"),
-        ("04", "Butte"),
-        ("05", "Calaveras"),
-        ("06", "Colusa"),
-        ("07", "Contra Costa"),
-        ("08", "Del Norte"),
-        ("09", "El Dorado"),
-        ("10", "Fresno"),
-        ("11", "Glenn"),
-        ("12", "Humboldt"),
-        ("13", "Imperial"),
-        ("14", "Inyo"),
-        ("15", "Kern"),
-        ("16", "Kings"),
-        ("17", "Lake"),
-        ("18", "Lassen"),
-        ("19", "Los Angeles"),
-        ("20", "Madera"),
-        ("21", "Marin"),
-        ("22", "Mariposa"),
-        ("23", "Mendocino"),
-        ("24", "Merced"),
-        ("25", "Modoc"),
-        ("26", "Mono"),
-        ("27", "Monterey"),
-        ("28", "Napa"),
-        ("29", "Nevada"),
-        ("30", "Orange"),
-        ("31", "Placer"),
-        ("32", "Plumas"),
-        ("33", "Riverside"),
-        ("34", "Sacramento"),
-        ("35", "San Benito"),
-        ("36", "San Bernardino"),
-        ("37", "San Diego"),
-        ("38", "San Francisco"),
-        ("39", "San Joaquin"),
-        ("40", "San Luis Obispo"),
-        ("41", "San Mateo"),
-        ("42", "Santa Barbara"),
-        ("43", "Santa Clara"),
-        ("44", "Santa Cruz"),
-        ("45", "Shasta"),
-        ("46", "Sierra"),
-        ("47", "Siskiyou"),
-        ("48", "Solano"),
-        ("49", "Sonoma"),
-        ("50", "Stanislaus"),
-        ("51", "Sutter"),
-        ("52", "Tehama"),
-        ("53", "Trinity"),
-        ("54", "Tulare"),
-        ("55", "Tuolumne"),
-        ("56", "Ventura"),
-        ("57", "Yolo"),
-        ("58", "Yuba"),
+        ("Alameda", "Alameda"),
+        ("Alpine", "Alpine"),
+        ("Amador", "Amador"),
+        ("Butte", "Butte"),
+        ("Calaveras", "Calaveras"),
+        ("Colusa", "Colusa"),
+        ("Contra Costa", "Contra Costa"),
+        ("Del Norte", "Del Norte"),
+        ("El Dorado", "El Dorado"),
+        ("Fresno", "Fresno"),
+        ("Glenn", "Glenn"),
+        ("Humboldt", "Humboldt"),
+        ("Imperial", "Imperial"),
+        ("Inyo", "Inyo"),
+        ("Kern", "Kern"),
+        ("Kings", "Kings"),
+        ("Lake", "Lake"),
+        ("Lassen", "Lassen"),
+        ("Los Angeles", "Los Angeles"),
+        ("Madera", "Madera"),
+        ("Marin", "Marin"),
+        ("Mariposa", "Mariposa"),
+        ("Mendocino", "Mendocino"),
+        ("Merced", "Merced"),
+        ("Modoc", "Modoc"),
+        ("Mono", "Mono"),
+        ("Monterey", "Monterey"),
+        ("Napa", "Napa"),
+        ("Nevada", "Nevada"),
+        ("Orange", "Orange"),
+        ("Placer", "Placer"),
+        ("Plumas", "Plumas"),
+        ("Riverside", "Riverside"),
+        ("Sacramento", "Sacramento"),
+        ("San Benito", "San Benito"),
+        ("San Bernardino", "San Bernardino"),
+        ("San Diego", "San Diego"),
+        ("San Francisco", "San Francisco"),
+        ("San Joaquin", "San Joaquin"),
+        ("San Luis Obispo", "San Luis Obispo"),
+        ("San Mateo", "San Mateo"),
+        ("Santa Barbara", "Santa Barbara"),
+        ("Santa Clara", "Santa Clara"),
+        ("Santa Cruz", "Santa Cruz"),
+        ("Shasta", "Shasta"),
+        ("Sierra", "Sierra"),
+        ("Siskiyou", "Siskiyou"),
+        ("Solano", "Solano"),
+        ("Sonoma", "Sonoma"),
+        ("Stanislaus", "Stanislaus"),
+        ("Sutter", "Sutter"),
+        ("Tehama", "Tehama"),
+        ("Trinity", "Trinity"),
+        ("Tulare", "Tulare"),
+        ("Tuolumne", "Tuolumne"),
+        ("Ventura", "Ventura"),
+        ("Yolo", "Yolo"),
+        ("Yuba", "Yuba"),
     ]
 
     NUMBER_CHOICES = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)]
@@ -169,7 +173,7 @@ class VitalRecordsRequest(models.Model):
     first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100)
-    county_of_birth = models.CharField(max_length=2, choices=COUNTY_CHOICES)
+    county_of_birth = models.CharField(max_length=15, choices=COUNTY_CHOICES)
     date_of_birth = models.DateField(null=True)
     parent_1_first_name = models.CharField(max_length=100)
     parent_1_last_name = models.CharField(max_length=100)
@@ -185,6 +189,9 @@ class VitalRecordsRequest(models.Model):
     email_address = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=10)
     submitted_at = models.DateTimeField(null=True, blank=True)
+    enqueued_at = models.DateTimeField(null=True, blank=True)
+    packaged_at = models.DateTimeField(null=True, blank=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
     @transition(field=status, source="*", target="eligibility_completed")
@@ -218,3 +225,19 @@ class VitalRecordsRequest(models.Model):
     @transition(field=status, source="order_info_completed", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
+
+    @transition(field=status, source="submitted", target="enqueued")
+    def complete_enqueue(self):
+        self.enqueued_at = timezone.now()
+
+    @transition(field=status, source="enqueued", target="packaged")
+    def complete_package(self):
+        self.packaged_at = timezone.now()
+
+    @transition(field=status, source="packaged", target="sent")
+    def complete_send(self):
+        self.sent_at = timezone.now()
+
+    @transition(field=status, source="sent", target="finished")
+    def finish(self):
+        pass
