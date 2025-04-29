@@ -3,7 +3,7 @@ resource "azurerm_container_app_job" "worker" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   location                     = data.azurerm_resource_group.main.location
   resource_group_name          = data.azurerm_resource_group.main.name
-  replica_timeout_in_seconds   = 30
+  replica_timeout_in_seconds   = 45
 
   identity {
     identity_ids = []
