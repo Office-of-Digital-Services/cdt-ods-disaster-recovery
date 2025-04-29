@@ -1,23 +1,14 @@
-resource "azurerm_container_app_job" "worker" {
+resource "azurerm_container_app" "worker" {
   name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-worker")
   container_app_environment_id = azurerm_container_app_environment.main.id
-  location                     = data.azurerm_resource_group.main.location
   resource_group_name          = data.azurerm_resource_group.main.name
-  replica_timeout_in_seconds   = 45
+  revision_mode                = "Single"
+  max_inactive_revisions       = 10
 
   identity {
     identity_ids = []
     type         = "SystemAssigned"
   }
-
-  schedule_trigger_config {
-    # every minute
-    cron_expression = "*/1 * * * *"
-    # The number of replicas to run per execution. For most jobs, set the value to 1.
-    # https://learn.microsoft.com/en-us/azure/container-apps/jobs?tabs=azure-cli#job-settings
-    parallelism = 1
-  }
-
 
   secret {
     name                = "django-db-name"
