@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 
 from pypdf import PdfReader, PdfWriter
+from pypdf.generic import NameObject, NumberObject
 
 from web.core.tasks import Task
 from web.vital_records.models import VitalRecordsRequest
@@ -102,6 +103,27 @@ class PackageTask(Task):
         writer = PdfWriter()
         writer.append(reader)
         writer.update_page_form_field_values(writer.pages[0], package.dict(), auto_regenerate=False)
+
+        written_page = writer.pages[0]
+
+        # get the page's annotations (where form fields are stored)
+        for annot in written_page.get("/Annots", []):
+            # the annotation might be an indirect reference, so get the object
+            annot_object = annot.get_object()
+            # check if the annotation is a form field (widget annotation) by looking for '/T' (Field Name)
+            if "/T" in annot_object:
+                # get the current field flags, default to 0 if not present
+                current_flags = annot_object.get("/Ff", 0)
+
+                # Set the read-only flag (the first bit, value 1)
+                # Use bitwise OR to add the read-only flag without removing others.
+                # The PDF specification defines the first bit (value 1) of the /Ff flag as the ReadOnly flag
+                # See Table 8.70 "Field flags common to all field types"
+                # https://www.verypdf.com/document/pdf-format-reference/pg_0676.htm
+                new_flags = current_flags | 1
+
+                # Update the field flags in the annotation object
+                annot_object[NameObject("/Ff")] = NumberObject(new_flags)
 
         filename = os.path.join(settings.STORAGE_DIR, f"vital-records-{package.package_id}.pdf")
         with open(filename, "wb") as output_stream:
