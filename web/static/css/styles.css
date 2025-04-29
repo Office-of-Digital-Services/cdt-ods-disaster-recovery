@@ -196,6 +196,10 @@ header {
     padding: 0;
   }
 
+  .main-header .external-link-icon {
+    display: none;
+  }
+
   small,
   .small {
     font-size: 14px;
