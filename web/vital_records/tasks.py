@@ -73,12 +73,9 @@ class PackageTask(Task):
     def __init__(self, request_id: UUID):
         super().__init__(request_id=request_id)
 
-    def handler(self, request_id: UUID):
-        logger.debug(f"Creating request package for: {request_id}")
-        request = get_request_with_status(request_id, "enqueued")
-
+    def make_package(self, request: VitalRecordsRequest):
         package = Package(
-            package_id=request_id,
+            package_id=str(request.pk),
             WildfireName=request.fire.capitalize(),
             NumberOfCopies=request.number_of_records,
             RegFirstName=request.first_name,
@@ -109,6 +106,14 @@ class PackageTask(Task):
         filename = os.path.join(settings.STORAGE_DIR, f"vital-records-{package.package_id}.pdf")
         with open(filename, "wb") as output_stream:
             writer.write(output_stream)
+
+        return filename
+
+    def handler(self, request_id: UUID):
+        logger.debug(f"Creating request package for: {request_id}")
+        request = get_request_with_status(request_id, "enqueued")
+
+        filename = self.make_package(request)
 
         request.complete_package()
         request.save()
