@@ -54,6 +54,11 @@ resource "azurerm_container_app_job" "worker" {
     identity            = "System"
   }
   secret {
+    name                = "tasks-db-password"
+    key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-password"
+    identity            = "System"
+  }
+  secret {
     name                = "vital-records-email-from"
     key_vault_secret_id = "${local.secret_http_prefix}/vital-records-email-from"
     identity            = "System"
