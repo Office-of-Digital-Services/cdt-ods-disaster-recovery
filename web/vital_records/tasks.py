@@ -21,7 +21,7 @@ TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", 
 @dataclass
 class Package:
     package_id: str = str(uuid4())
-    CDPH_VR_FORMTYPE: str = "WILDFIRE"
+    CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_B0A6353F1"
     WildfireName: Optional[str] = None
     CopyType: Optional[str] = "/WLDFREAUTH"
     RelationshipToRegistrant: Optional[str] = "/1"
