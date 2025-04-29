@@ -41,12 +41,12 @@ resource "azurerm_container_app_job" "worker" {
   }
   secret {
     name                = "django-email-user"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-email-host"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-email-user"
     identity            = "System"
   }
   secret {
     name                = "django-email-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-email-host"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-email-password"
     identity            = "System"
   }
   secret {
