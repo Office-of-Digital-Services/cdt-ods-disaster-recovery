@@ -8,7 +8,6 @@ app_name = "vital_records"
 urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),
     path("login", views.LoginView.as_view(), name="login"),
-    path("request", views.RequestView.as_view(), name="request"),
     path("request/eligibility/", views.EligibilityView.as_view(), name="request_eligibility"),
     path("request/<uuid:pk>/statement/", views.StatementView.as_view(), name="request_statement"),
     path("request/<uuid:pk>/name/", views.NameView.as_view(), name="request_name"),

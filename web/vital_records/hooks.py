@@ -12,7 +12,7 @@ class VitalRecordsHooks(DisasterRecoveryHooks):
     @classmethod
     def claims_verified_eligible(cls, request, claims_request, claims_result):
         super().claims_verified_eligible(request, claims_request, claims_result)
-        return redirect("vital_records:request")
+        return redirect("vital_records:request_eligibility")
 
     @classmethod
     def claims_verified_not_eligible(cls, request, claims_request, claims_result):
