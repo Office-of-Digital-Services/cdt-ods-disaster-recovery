@@ -85,6 +85,21 @@ resource "azurerm_container_app" "web" {
     key_vault_secret_id = "${local.secret_http_prefix}/postgres-password"
     identity            = "System"
   }
+  secret {
+    name                = "tasks-db-name"
+    key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-name"
+    identity            = "System"
+  }
+  secret {
+    name                = "tasks-db-user"
+    key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-user"
+    identity            = "System"
+  }
+  secret {
+    name                = "tasks-db-password"
+    key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-password"
+    identity            = "System"
+  }
 
   # external, auto port 8000
   ingress {
@@ -157,6 +172,18 @@ resource "azurerm_container_app" "web" {
       env {
         name        = "DJANGO_TRUSTED_ORIGINS"
         secret_name = "django-trusted-origins"
+      }
+      env {
+        name        = "TASKS_DB_NAME"
+        secret_name = "tasks-db-name"
+      }
+      env {
+        name        = "TASKS_DB_USER"
+        secret_name = "tasks-db-user"
+      }
+      env {
+        name        = "TASKS_DB_PASSWORD"
+        secret_name = "tasks-db-password"
       }
 
       volume_mounts {
