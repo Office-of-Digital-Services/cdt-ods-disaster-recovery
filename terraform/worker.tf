@@ -18,6 +18,22 @@ resource "azurerm_container_app_job" "worker" {
     parallelism = 1
   }
 
+
+  secret {
+    name                = "django-db-name"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-db-name"
+    identity            = "System"
+  }
+  secret {
+    name                = "django-db-user"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-db-user"
+    identity            = "System"
+  }
+  secret {
+    name                = "django-db-password"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-db-password"
+    identity            = "System"
+  }
   secret {
     name                = "django-email-host"
     key_vault_secret_id = "${local.secret_http_prefix}/django-email-host"
@@ -79,6 +95,18 @@ resource "azurerm_container_app_job" "worker" {
       memory  = "0.5Gi"
 
       # Django settings
+      env {
+        name        = "DJANGO_DB_NAME"
+        secret_name = "django-db-name"
+      }
+      env {
+        name        = "DJANGO_DB_USER"
+        secret_name = "django-db-user"
+      }
+      env {
+        name        = "DJANGO_DB_PASSWORD"
+        secret_name = "django-db-password"
+      }
       env {
         name        = "DJANGO_EMAIL_HOST"
         secret_name = "django-email-host"
