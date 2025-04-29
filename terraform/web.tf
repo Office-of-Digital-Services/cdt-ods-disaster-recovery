@@ -137,30 +137,6 @@ resource "azurerm_container_app" "web" {
         secret_name = "django-db-password"
       }
       env {
-        name  = "DJANGO_EMAIL_HOST"
-        value = ""
-      }
-      env {
-        name  = "DJANGO_EMAIL_USER"
-        value = ""
-      }
-      env {
-        name  = "DJANGO_EMAIL_PASSWORD"
-        value = ""
-      }
-      env {
-        name  = "EMAIL_FROM"
-        value = ""
-      }
-      env {
-        name  = "EMAIL_TO"
-        value = ""
-      }
-      env {
-        name  = "EMAIL_CC"
-        value = ""
-      }
-      env {
         name = "POSTGRES_HOSTNAME"
         # reference the internal name of the database container app
         value = azurerm_container_app.db.latest_revision_name
