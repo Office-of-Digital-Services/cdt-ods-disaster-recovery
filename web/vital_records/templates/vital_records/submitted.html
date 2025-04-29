@@ -1,7 +1,7 @@
 {% extends "vital_records/base.html" %}
 {% load i18n %}
 {% block inner-content %}
-    <div class="col-md-10">
+    <div class="col-md-10 m-b-40">
         <h2>We received your request</h2>
         <p>
             We’ll process your request within 1-2 business days and notify you by email once it’s complete. If you have any questions about your order, you can reach out to us at:
@@ -14,8 +14,8 @@
                 <strong>Email:</strong> <a href="mailto:SOEVitalRecords@cdph.ca.gov">SOEVitalRecords@cdph.ca.gov</a>
             </li>
         </ul>
-        <a class="btn btn-primary m-r-md"
-           href="{% url 'vital_records:request_eligibility' %}">Request another birth record</a><a class="btn btn-outline-primary"
+        <a class="btn btn-primary m-r-md m-b-md"
+           href="{% url 'vital_records:request_eligibility' %}">Request another birth record</a><a class="btn btn-outline-primary m-b-md"
    href="https://www.ca.gov/lafires/get-help-online/">See more recovery resources</a>
     </div>
 {% endblock inner-content %}

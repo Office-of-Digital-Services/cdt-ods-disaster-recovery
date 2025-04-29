@@ -187,6 +187,15 @@ header {
     font-size: 23px;
   }
 
+  h3.md {
+    font-size: 29px;
+  }
+
+  p {
+    font-size: 18px;
+    line-height: 32px;
+  }
+
   .main-primary {
     margin-top: 80px;
   }
@@ -213,6 +222,10 @@ header {
     margin-top: 4px;
   }
 
+  .form-group {
+    margin-bottom: 24px;
+  }
+
   .form-control {
     border-radius: 0;
     font-size: 18px;
@@ -221,6 +234,7 @@ header {
 
   label {
     margin-bottom: 12px;
+    font-weight: 700;
   }
 
   .label {
@@ -244,5 +258,17 @@ header {
     margin-bottom: 80px;
     font-size: 18px;
     padding: 8px 16px;
+  }
+
+  dt {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.96875rem;
+    margin-top: 28px;
+  }
+
+  dd {
+    font-size: 18px;
+    line-height: 2rem;
   }
 }

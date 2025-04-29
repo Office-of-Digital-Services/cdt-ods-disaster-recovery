@@ -7,15 +7,16 @@
                 {% include "vital_records/_form_progress.html" with url_name=url_name %}
             {% endwith %}
         </div>
-        <div class="col-9">
+        <div class="col-md-9">
+            <small class="accent">Step 6 of 6</small>
             <h2>Confirm your order</h2>
-            <p>
+            <p class="m-b-sm p-b-md">
                 If everything looks accurate, press “Submit” below to finish your request. If you need to edit request, you can go back without losing your progress.
             </p>
             <hr>
-            <h3>Birth record details</h3>
+            <h3 class="md m-b-sm">Birth record details</h3>
             <p>This is the information that will be printed on the replacement birth record.</p>
-            <dl>
+            <dl class="m-b-40">
                 <dt>Name</dt>
                 <dd>
                     {{ vital_records_request.first_name }} {{ vital_records_request.middle_name }} {{ vital_records_request.last_name }}
@@ -36,9 +37,9 @@
                 </dd>
             </dl>
             <hr>
-            <h3>Order information</h3>
+            <h3 class="md">Order information</h3>
             <dl>
-                <dt>Number of replacements:</dt>
+                <dt>Number of replacements</dt>
                 <dd>
                     {{ vital_records_request.number_of_records }}
                 </dd>
@@ -52,11 +53,11 @@
                     <br>
                     United States
                 </dd>
-                <dt>Email address:</dt>
+                <dt>Email address</dt>
                 <dd>
                     {{ vital_records_request.email_address }}
                 </dd>
-                <dt>Phone number:</dt>
+                <dt>Phone number</dt>
                 <dd>
                     {{ vital_records_request.phone_number }}
                 </dd>
@@ -64,9 +65,9 @@
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Submit order</button>
+                <button type="submit" class="btn btn-primary m-b-sm">Submit your order</button>
             </form>
-            <p>
+            <p class="m-b-40 p-b-lg">
                 or <a href="{% url 'vital_records:request_name' pk=vital_records_request.id %}">go back</a>
             </p>
         </div>
