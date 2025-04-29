@@ -77,13 +77,16 @@ resource "azurerm_container_app" "worker" {
   }
 
   template {
+    min_replicas = 1
+    max_replicas = 1
+
     container {
       name    = "worker"
       command = []
       args    = ["bin/worker.sh"]
       image   = "${var.container_registry}/${var.container_repository}:${var.container_tag}"
-      cpu     = 0.25
-      memory  = "0.5Gi"
+      cpu     = 0.5
+      memory  = "1Gi"
 
       # Django settings
       env {
