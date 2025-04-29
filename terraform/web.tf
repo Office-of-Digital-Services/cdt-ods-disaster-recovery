@@ -137,27 +137,27 @@ resource "azurerm_container_app" "web" {
         secret_name = "django-db-password"
       }
       env {
-        name = "DJANGO_EMAIL_HOST"
+        name  = "DJANGO_EMAIL_HOST"
         value = ""
       }
       env {
-        name = "DJANGO_EMAIL_USER"
+        name  = "DJANGO_EMAIL_USER"
         value = ""
       }
       env {
-        name = "DJANGO_EMAIL_PASSWORD"
+        name  = "DJANGO_EMAIL_PASSWORD"
         value = ""
       }
       env {
-        name = "EMAIL_FROM"
+        name  = "EMAIL_FROM"
         value = ""
       }
       env {
-        name = "EMAIL_TO"
+        name  = "EMAIL_TO"
         value = ""
       }
       env {
-        name = "EMAIL_CC"
+        name  = "EMAIL_CC"
         value = ""
       }
       env {
