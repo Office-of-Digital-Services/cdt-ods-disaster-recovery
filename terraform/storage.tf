@@ -28,6 +28,7 @@ resource "azurerm_storage_share" "config" {
   name               = "config"
   storage_account_id = azurerm_storage_account.main.id
   quota              = 1
+  access_tier        = "Cool"
 }
 
 resource "azurerm_storage_share" "requests" {

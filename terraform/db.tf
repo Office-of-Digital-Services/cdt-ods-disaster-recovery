@@ -98,7 +98,7 @@ resource "azurerm_container_app" "pgweb" {
       memory = "0.5Gi"
 
       env {
-        name = "PGWEB_SESSIONS"
+        name  = "PGWEB_SESSIONS"
         value = "1"
       }
     }
