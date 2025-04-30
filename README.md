@@ -25,7 +25,7 @@
 | web/vital\_records/\_\_init\_\_.py                                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/apps.py                                                                                |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms.py                                                                               |       83 |       22 |        6 |        0 |     69% |113-120, 123-133, 136-144 |
-| web/vital\_records/hooks.py                                                                               |       15 |        6 |        0 |        0 |     60% |9-10, 14-15, 19-20 |
+| web/vital\_records/hooks.py                                                                               |       16 |        6 |        0 |        0 |     62% |10-11, 15-16, 20-21 |
 | web/vital\_records/migrations/0001\_initial.py                                                            |        7 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/0002\_vitalrecordsrequest\_legal\_attestation\_and\_more.py                 |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/0003\_vitalrecordsrequest\_first\_name\_and\_more.py                        |        5 |        0 |        0 |        0 |    100% |           |
@@ -34,16 +34,18 @@
 | web/vital\_records/migrations/0006\_vitalrecordsrequest\_parent\_1\_first\_name\_and\_more.py             |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/0007\_vitalrecordsrequest\_address\_vitalrecordsrequest\_city\_and\_more.py |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/0008\_vitalrecordsrequest\_enqueued\_at\_and\_more.py                       |        5 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/0009\_vitalrecordsrequest\_started\_at\_and\_more.py                        |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/\_\_init\_\_.py                                                             |        0 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/models.py                                                                              |       74 |       12 |        0 |        0 |     84% |199, 203, 207, 211, 215, 219, 223, 227, 231, 235, 239, 243 |
+| web/vital\_records/models.py                                                                              |       78 |       14 |        0 |        0 |     82% |202-203, 207, 211, 215, 219, 223, 227, 231-232, 236, 240, 244, 248 |
+| web/vital\_records/routes.py                                                                              |       17 |        1 |        0 |        0 |     94% |        20 |
 | web/vital\_records/session.py                                                                             |       13 |        4 |        2 |        0 |     60% |     15-18 |
 | web/vital\_records/tasks.py                                                                               |       99 |       44 |        6 |        0 |     52% |52-53, 57-66, 74, 77-117, 120-126, 134, 137-156, 161-167 |
 | web/vital\_records/templatetags/\_\_init\_\_.py                                                           |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/templatetags/form\_helpers.py                                                          |       10 |       10 |        2 |        0 |      0% |      1-13 |
 | web/vital\_records/urls.py                                                                                |        4 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/views.py                                                                               |      156 |       71 |        6 |        0 |     52% |51-57, 60, 69-75, 78, 87-93, 96-104, 107, 116-122, 125, 135-141, 144, 153-159, 162-173, 176, 185-191, 194-201, 204, 214-223, 226-233, 236-238, 241, 250-261 |
+| web/vital\_records/views.py                                                                               |      141 |       64 |        6 |        0 |     52% |52-57, 67-72, 82-87, 90-98, 108-113, 124-129, 139-144, 147-158, 168-173, 176-183, 193-202, 205-212, 215-217, 226-237 |
 | web/wsgi.py                                                                                               |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                                 **TOTAL** |  **731** |  **244** |   **50** |    **7** | **64%** |           |
+|                                                                                                 **TOTAL** |  **743** |  **240** |   **50** |    **7** | **65%** |           |
 
 
 ## Setup coverage badge
