@@ -4,13 +4,15 @@ from django.db import models
 from django.utils import timezone
 from django_fsm import FSMField, transition
 
+from web.vital_records.routes import Routes
+
 
 class VitalRecordsRequest(models.Model):
     """Represents a request to order a vital record through the Disaster Recovery app."""
 
     STATUS_CHOICES = [
+        ("initialized", "Initialized"),
         ("started", "Started"),
-        ("eligibility_completed", "Eligibility Completed"),
         ("statement_completed", "Sworn Statement Completed"),
         ("name_completed", "Name Completed"),
         ("county_completed", "County Completed"),
@@ -166,7 +168,7 @@ class VitalRecordsRequest(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    status = FSMField(default="started", choices=STATUS_CHOICES)
+    status = FSMField(default="initialized", choices=STATUS_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
     relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
     legal_attestation = models.CharField(max_length=100)
@@ -188,43 +190,46 @@ class VitalRecordsRequest(models.Model):
     zip_code = models.CharField(max_length=5)
     email_address = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=10)
+    started_at = models.DateTimeField(null=True, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
     enqueued_at = models.DateTimeField(null=True, blank=True)
     packaged_at = models.DateTimeField(null=True, blank=True)
     sent_at = models.DateTimeField(null=True, blank=True)
 
     # Transitions from state to state
-    @transition(field=status, source="*", target="eligibility_completed")
-    def complete_eligibility(self):
-        pass
+    @transition(field=status, source="initialized", target="started")
+    def complete_start(self):
+        self.started_at = timezone.now()
+        return Routes.app_route(Routes.request_statement)
 
-    @transition(field=status, target="statement_completed")
+    @transition(field=status, source="started", target="statement_completed")
     def complete_statement(self):
-        pass
+        return Routes.app_route(Routes.request_name)
 
     @transition(field=status, target="name_completed")
     def complete_name(self):
-        pass
+        return Routes.app_route(Routes.request_county)
 
     @transition(field=status, target="county_completed")
     def complete_county(self):
-        pass
+        return Routes.app_route(Routes.request_dob)
 
     @transition(field=status, target="dob_completed")
     def complete_dob(self):
-        pass
+        return Routes.app_route(Routes.request_parents)
 
     @transition(field=status, target="parents_names_completed")
     def complete_parents_names(self):
-        pass
+        return Routes.app_route(Routes.request_order)
 
     @transition(field=status, target="order_info_completed")
     def complete_order_info(self):
-        pass
+        return Routes.app_route(Routes.request_submit)
 
     @transition(field=status, source="order_info_completed", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
+        return Routes.app_route(Routes.request_submitted)
 
     @transition(field=status, source="submitted", target="enqueued")
     def complete_enqueue(self):
