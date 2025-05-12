@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 set -eu
 
-# initialize Django
-
-bin/init.sh
+# prepare static files
+python manage.py collectstatic --no-input
 
 # start the web server
-
 nginx
 
 # start the application server
-
 python -m gunicorn -c $GUNICORN_CONF web.wsgi

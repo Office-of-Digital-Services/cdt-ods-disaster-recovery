@@ -16,11 +16,6 @@ resource "azurerm_container_app" "web" {
     identity            = "System"
   }
   secret {
-    name                = "django-db-reset"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-db-reset"
-    identity            = "System"
-  }
-  secret {
     name                = "django-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-name"
     identity            = "System"
