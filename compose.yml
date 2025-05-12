@@ -1,12 +1,20 @@
 name: cdt/disaster-recovery
 
 services:
+  web-init:
+    image: cdt/disaster-recovery:web
+    depends_on:
+      - postgres
+    env_file: .env
+    command: ["bin/setup.sh"]
+
   web:
     build:
       context: .
       dockerfile: appcontainer/Dockerfile
     image: cdt/disaster-recovery:web
     depends_on:
+      - web-init
       - postgres
     env_file: .env
     ports:

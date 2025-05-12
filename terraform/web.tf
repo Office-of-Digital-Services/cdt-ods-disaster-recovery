@@ -31,6 +31,11 @@ resource "azurerm_container_app" "web" {
     identity            = "System"
   }
   secret {
+    name                = "django-db-fixtures"
+    key_vault_secret_id = "${local.secret_http_prefix}/django-db-fixtures"
+    identity            = "System"
+  }
+  secret {
     name                = "django-debug"
     key_vault_secret_id = "${local.secret_http_prefix}/django-debug"
     identity            = "System"
@@ -111,6 +116,53 @@ resource "azurerm_container_app" "web" {
   template {
     min_replicas = 1
     max_replicas = 1
+
+    init_container {
+      name    = "web-init"
+      command = ["bin/setup.sh"]
+      image   = "${var.container_registry}/${var.container_repository}:${var.container_tag}"
+      cpu     = 0.25
+      memory  = "0.5Gi"
+
+      env {
+        name        = "DJANGO_DB_NAME"
+        secret_name = "django-db-name"
+      }
+      env {
+        name        = "DJANGO_DB_USER"
+        secret_name = "django-db-user"
+      }
+      env {
+        name        = "DJANGO_DB_PASSWORD"
+        secret_name = "django-db-password"
+      }
+      env {
+        name        = "DJANGO_DB_FIXTURES"
+        secret_name = "django-db-fixtures"
+      }
+      env {
+        name = "POSTGRES_HOSTNAME"
+        # reference the internal name of the database container app
+        value = azurerm_container_app.db.latest_revision_name
+      }
+      env {
+        name        = "TASKS_DB_NAME"
+        secret_name = "tasks-db-name"
+      }
+      env {
+        name        = "TASKS_DB_USER"
+        secret_name = "tasks-db-user"
+      }
+      env {
+        name        = "TASKS_DB_PASSWORD"
+        secret_name = "tasks-db-password"
+      }
+
+      volume_mounts {
+        name = "config"
+        path = "/cdt/app/config"
+      }
+    }
 
     container {
       name    = "web"
