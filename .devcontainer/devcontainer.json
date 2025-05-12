@@ -4,7 +4,7 @@
   "service": "dev",
   "runServices": ["dev", "pgweb"],
   "workspaceFolder": "/cdt/app",
-  "postStartCommand": ["/bin/bash", "bin/reset_db.sh"],
+  "postStartCommand": ["/bin/bash", "bin/setup.sh"],
   "postAttachCommand": ["/bin/bash", ".devcontainer/postAttach.sh"],
   "customizations": {
     "vscode": {
