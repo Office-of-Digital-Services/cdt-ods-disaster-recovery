@@ -1,72 +1,91 @@
-resource "azurerm_container_app" "db" {
-  name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-db")
-  container_app_environment_id = azurerm_container_app_environment.main.id
-  resource_group_name          = data.azurerm_resource_group.main.name
-  revision_mode                = "Single"
-  max_inactive_revisions       = 10
+locals {
+  # Define secret names for clarity
+  postgres_admin_login_secret_name    = "postgres-admin-login"
+  postgres_admin_password_secret_name = "postgres-admin-password"
+}
 
-  identity {
-    identity_ids = []
-    type         = "SystemAssigned"
-  }
+# Generate a random password for PostgreSQL
+resource "random_password" "pg_admin_password" {
+  length           = 32
+  min_lower        = 4
+  min_upper        = 4
+  min_numeric      = 4
+  min_special      = 4
+  special          = true
+  override_special = "_%@!-"
+}
 
-  secret {
-    name                = "postgres-db"
-    key_vault_secret_id = "${local.secret_http_prefix}/postgres-db"
-    identity            = "System"
-  }
-  secret {
-    name                = "postgres-user"
-    key_vault_secret_id = "${local.secret_http_prefix}/postgres-user"
-    identity            = "System"
-  }
-  secret {
-    name                = "postgres-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/postgres-password"
-    identity            = "System"
-  }
+# Create the secret for PostgreSQL Admin Login
+resource "azurerm_key_vault_secret" "postgres_admin_login" {
+  name         = local.postgres_admin_login_secret_name
+  value        = "postgres_admin"
+  key_vault_id = azurerm_key_vault.main.id
+  content_type = "text/plain"
+  depends_on   = [azurerm_key_vault.main]
+}
 
-  # internal only, TCP port 5432
-  ingress {
-    external_enabled = false
-    exposed_port     = 5432
-    target_port      = 5432
-    transport        = "tcp"
-    traffic_weight {
-      percentage      = 100
-      latest_revision = true
-    }
+# Create the secret for PostgreSQL Admin Password using the generated password
+resource "azurerm_key_vault_secret" "postgres_admin_password" {
+  name         = local.postgres_admin_password_secret_name
+  value        = random_password.pg_admin_password.result
+  key_vault_id = azurerm_key_vault.main.id
+  content_type = "password"
+  depends_on = [
+    azurerm_key_vault.main,
+    random_password.pg_admin_password # Ensure password is generated first
+  ]
+}
+
+# Data sources to read the secrets from Key Vault
+data "azurerm_key_vault_secret" "db_admin_login" {
+  name         = azurerm_key_vault_secret.postgres_admin_login.name
+  key_vault_id = azurerm_key_vault.main.id
+  depends_on = [
+    azurerm_key_vault_secret.postgres_admin_login
+  ]
+}
+
+data "azurerm_key_vault_secret" "db_admin_password" {
+  name         = azurerm_key_vault_secret.postgres_admin_password.name
+  key_vault_id = azurerm_key_vault.main.id
+  depends_on = [
+    azurerm_key_vault_secret.postgres_admin_password
+  ]
+}
+
+resource "azurerm_postgresql_flexible_server" "main" {
+  name                = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-postgres")
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  sku_name            = "B_Standard_B1ms"
+  storage_mb          = 32 * 1024
+  storage_tier        = "P4"
+  version             = "16"
+
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = false
+
+  authentication {
+    active_directory_auth_enabled = false
+    password_auth_enabled         = true
   }
-
-  template {
-    min_replicas = 1
-    max_replicas = 1
-
-    container {
-      name   = "postgres"
-      image  = "postgres:17"
-      cpu    = 0.5
-      memory = "1Gi"
-
-      # Environment variables using secrets for PostgreSQL initialization
-      env {
-        name        = "POSTGRES_DB"
-        secret_name = "postgres-db"
-      }
-      env {
-        name        = "POSTGRES_USER"
-        secret_name = "postgres-user"
-      }
-      env {
-        name        = "POSTGRES_PASSWORD"
-        secret_name = "postgres-password"
-      }
-    }
-  }
+  public_network_access_enabled = true
+  administrator_login           = data.azurerm_key_vault_secret.db_admin_login.value
+  administrator_password        = data.azurerm_key_vault_secret.db_admin_password.value
 
   lifecycle {
     ignore_changes = [tags]
   }
+}
+
+resource "azurerm_postgresql_flexible_server_firewall_rule" "azure" {
+  name      = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-firewall-azure")
+  server_id = azurerm_postgresql_flexible_server.main.id
+  # https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-firewall-rules#programmatically-manage-firewall-rules
+  # a firewall rule setting with a starting and ending address equal to 0.0.0.0 does the equivalent of the
+  # Allow public access from any Azure service within Azure to this server option
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
 }
 
 resource "azurerm_container_app" "pgweb" {
@@ -109,6 +128,6 @@ resource "azurerm_container_app" "pgweb" {
   }
 
   depends_on = [
-    azurerm_container_app.db
+    azurerm_postgresql_flexible_server.main
   ]
 }

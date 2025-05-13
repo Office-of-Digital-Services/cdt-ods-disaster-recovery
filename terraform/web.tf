@@ -155,7 +155,7 @@ resource "azurerm_container_app" "web" {
       env {
         name = "POSTGRES_HOSTNAME"
         # reference the internal name of the database container app
-        value = azurerm_container_app.db.latest_revision_name
+        value = azurerm_postgresql_flexible_server.main.fqdn
       }
       env {
         name        = "TASKS_DB_NAME"
@@ -230,7 +230,7 @@ resource "azurerm_container_app" "web" {
       env {
         name = "POSTGRES_HOSTNAME"
         # reference the internal name of the database container app
-        value = azurerm_container_app.db.latest_revision_name
+        value = azurerm_postgresql_flexible_server.main.fqdn
       }
       env {
         name        = "TASKS_DB_NAME"
@@ -263,6 +263,20 @@ resource "azurerm_container_app" "web" {
   }
 
   depends_on = [
-    azurerm_container_app.db
+    azurerm_postgresql_flexible_server.main
+  ]
+}
+
+# https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?tabs=azure-cli#granting-your-app-access-to-key-vault
+resource "azurerm_key_vault_access_policy" "container_app_web_access" {
+  key_vault_id = azurerm_key_vault.main.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_container_app.web.identity[0].principal_id
+
+  secret_permissions = ["Get"]
+
+  depends_on = [
+    azurerm_key_vault.main,
+    azurerm_container_app.web
   ]
 }
