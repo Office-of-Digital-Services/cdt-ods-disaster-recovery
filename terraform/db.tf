@@ -1,6 +1,6 @@
 locals {
   # Define secret names for clarity
-  postgres_admin_login_secret_name    = "postgres-admin-login"
+  postgres_admin_login                = "postgres_admin"
   postgres_admin_password_secret_name = "postgres-admin-password"
 }
 
@@ -15,15 +15,6 @@ resource "random_password" "pg_admin_password" {
   override_special = "_%@!-"
 }
 
-# Create the secret for PostgreSQL Admin Login
-resource "azurerm_key_vault_secret" "postgres_admin_login" {
-  name         = local.postgres_admin_login_secret_name
-  value        = "postgres_admin"
-  key_vault_id = azurerm_key_vault.main.id
-  content_type = "text/plain"
-  depends_on   = [azurerm_key_vault.main]
-}
-
 # Create the secret for PostgreSQL Admin Password using the generated password
 resource "azurerm_key_vault_secret" "postgres_admin_password" {
   name         = local.postgres_admin_password_secret_name
@@ -33,15 +24,6 @@ resource "azurerm_key_vault_secret" "postgres_admin_password" {
   depends_on = [
     azurerm_key_vault.main,
     random_password.pg_admin_password # Ensure password is generated first
-  ]
-}
-
-# Data sources to read the secrets from Key Vault
-data "azurerm_key_vault_secret" "db_admin_login" {
-  name         = azurerm_key_vault_secret.postgres_admin_login.name
-  key_vault_id = azurerm_key_vault.main.id
-  depends_on = [
-    azurerm_key_vault_secret.postgres_admin_login
   ]
 }
 
@@ -70,7 +52,7 @@ resource "azurerm_postgresql_flexible_server" "main" {
     password_auth_enabled         = true
   }
   public_network_access_enabled = true
-  administrator_login           = data.azurerm_key_vault_secret.db_admin_login.value
+  administrator_login           = local.postgres_admin_login
   administrator_password        = data.azurerm_key_vault_secret.db_admin_password.value
 
   lifecycle {
@@ -79,11 +61,11 @@ resource "azurerm_postgresql_flexible_server" "main" {
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "azure" {
-  name      = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-firewall-azure")
-  server_id = azurerm_postgresql_flexible_server.main.id
   # https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-firewall-rules#programmatically-manage-firewall-rules
   # a firewall rule setting with a starting and ending address equal to 0.0.0.0 does the equivalent of the
-  # Allow public access from any Azure service within Azure to this server option
+  # 'Allow public access from any Azure service within Azure to this server' option
+  name             = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-firewall-azure")
+  server_id        = azurerm_postgresql_flexible_server.main.id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
 }
