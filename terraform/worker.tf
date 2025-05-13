@@ -129,7 +129,7 @@ resource "azurerm_container_app" "worker" {
       env {
         name = "POSTGRES_HOSTNAME"
         # reference the internal name of the database container app
-        value = azurerm_container_app.db.latest_revision_name
+        value = azurerm_postgresql_flexible_server.main.fqdn
       }
       env {
         name        = "TASKS_DB_NAME"
@@ -173,6 +173,7 @@ resource "azurerm_container_app" "worker" {
   }
 
   depends_on = [
+    azurerm_postgresql_flexible_server.main
   ]
 }
 
