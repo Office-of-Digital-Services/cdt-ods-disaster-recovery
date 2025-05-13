@@ -146,7 +146,7 @@ PG_CONFIG = {
     "HOST": os.environ.get("POSTGRES_HOSTNAME", "postgres"),
     "PORT": os.environ.get("POSTGRES_PORT", "5432"),
     # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
-    "OPTIONS": {"sslmode": "verify-full"},
+    "OPTIONS": {"sslmode": os.environ.get("POSTGRES_SSLMODE", "verify-full")},
 }
 DATABASES = {
     "default": PG_CONFIG
