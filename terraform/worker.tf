@@ -10,6 +10,7 @@ resource "azurerm_container_app" "worker" {
     type         = "SystemAssigned"
   }
 
+  # Django
   secret {
     name                = "django-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-name"
@@ -50,6 +51,7 @@ resource "azurerm_container_app" "worker" {
     key_vault_secret_id = "${local.secret_http_prefix}/django-secret-key"
     identity            = "System"
   }
+  # Tasks
   secret {
     name                = "tasks-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-name"
@@ -65,6 +67,7 @@ resource "azurerm_container_app" "worker" {
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-password"
     identity            = "System"
   }
+  # Vital records
   secret {
     name                = "vital-records-email-from"
     key_vault_secret_id = "${local.secret_http_prefix}/vital-records-email-from"
