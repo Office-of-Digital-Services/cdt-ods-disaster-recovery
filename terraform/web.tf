@@ -141,6 +141,18 @@ resource "azurerm_container_app" "web" {
         secret_name = "django-db-fixtures"
       }
       env {
+        name        = "POSTGRES_DB"
+        secret_name = "postgres-db"
+      }
+      env {
+        name        = "POSTGRES_USER"
+        secret_name = "postgres-user"
+      }
+      env {
+        name        = "POSTGRES_PASSWORD"
+        secret_name = "postgres-password"
+      }
+      env {
         name = "POSTGRES_HOSTNAME"
         # reference the internal name of the database container app
         value = azurerm_container_app.db.latest_revision_name
@@ -199,11 +211,6 @@ resource "azurerm_container_app" "web" {
         secret_name = "django-db-password"
       }
       env {
-        name = "POSTGRES_HOSTNAME"
-        # reference the internal name of the database container app
-        value = azurerm_container_app.db.latest_revision_name
-      }
-      env {
         name        = "DJANGO_DEBUG"
         secret_name = local.is_prod ? null : "django-debug"
         value       = local.is_prod ? "False" : null
@@ -219,6 +226,11 @@ resource "azurerm_container_app" "web" {
       env {
         name        = "DJANGO_TRUSTED_ORIGINS"
         secret_name = "django-trusted-origins"
+      }
+      env {
+        name = "POSTGRES_HOSTNAME"
+        # reference the internal name of the database container app
+        value = azurerm_container_app.db.latest_revision_name
       }
       env {
         name        = "TASKS_DB_NAME"
