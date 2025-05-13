@@ -70,19 +70,15 @@ resource "azurerm_container_app" "web" {
     key_vault_secret_id = "${local.secret_http_prefix}/django-trusted-origins"
     identity            = "System"
   }
+  # Postgres
   secret {
     name                = "postgres-db"
     key_vault_secret_id = "${local.secret_http_prefix}/postgres-db"
     identity            = "System"
   }
   secret {
-    name                = "postgres-user"
-    key_vault_secret_id = "${local.secret_http_prefix}/postgres-user"
-    identity            = "System"
-  }
-  secret {
-    name                = "postgres-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/postgres-password"
+    name                = azurerm_key_vault_secret.postgres_admin_password.name
+    key_vault_secret_id = azurerm_key_vault_secret.postgres_admin_password.id
     identity            = "System"
   }
   secret {
@@ -145,16 +141,16 @@ resource "azurerm_container_app" "web" {
         secret_name = "postgres-db"
       }
       env {
-        name        = "POSTGRES_USER"
-        secret_name = "postgres-user"
+        name  = "POSTGRES_USER"
+        value = local.postgres_admin_login
       }
       env {
         name        = "POSTGRES_PASSWORD"
-        secret_name = "postgres-password"
+        secret_name = azurerm_key_vault_secret.postgres_admin_password.name
       }
       env {
         name = "POSTGRES_HOSTNAME"
-        # reference the internal name of the database container app
+        # reference the database server
         value = azurerm_postgresql_flexible_server.main.fqdn
       }
       env {
@@ -227,9 +223,10 @@ resource "azurerm_container_app" "web" {
         name        = "DJANGO_TRUSTED_ORIGINS"
         secret_name = "django-trusted-origins"
       }
+      # Postgres settings
       env {
         name = "POSTGRES_HOSTNAME"
-        # reference the internal name of the database container app
+        # reference the database server
         value = azurerm_postgresql_flexible_server.main.fqdn
       }
       env {
