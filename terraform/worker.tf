@@ -173,6 +173,19 @@ resource "azurerm_container_app" "worker" {
   }
 
   depends_on = [
-    azurerm_container_app.db
+  ]
+}
+
+# https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?tabs=azure-cli#granting-your-app-access-to-key-vault
+resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
+  key_vault_id = azurerm_key_vault.main.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_container_app.worker.identity[0].principal_id
+
+  secret_permissions = ["Get"]
+
+  depends_on = [
+    azurerm_key_vault.main,
+    azurerm_container_app.worker
   ]
 }
