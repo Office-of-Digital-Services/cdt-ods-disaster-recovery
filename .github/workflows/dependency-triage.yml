@@ -16,3 +16,8 @@ jobs:
         uses: andymckay/labeler@master
         with:
           add-labels: "dependencies"
+
+      - uses: actions/add-to-project@main
+        with:
+          project-url: ${{ secrets.USB_PROJECT_URL }}
+          github-token: ${{ secrets.USB_PROJECT_TOKEN }}
