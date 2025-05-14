@@ -50,25 +50,36 @@ resource "azurerm_key_vault" "main" {
   tenant_id                = data.azurerm_client_config.current.tenant_id
   purge_protection_enabled = true
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = var.ENGINEERING_GROUP_OBJECT_ID
-
-    certificate_permissions = local.all_certificate_permissions
-    key_permissions         = local.all_key_permissions
-    secret_permissions      = local.all_secret_permissions
-  }
-
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = var.DEVSECOPS_OBJECT_ID
-
-    key_permissions    = local.all_key_permissions
-    secret_permissions = local.all_secret_permissions
-  }
-
   lifecycle {
     prevent_destroy = true
-    ignore_changes  = [tags]
+    ignore_changes = [
+      tags,
+      access_policy # IMPORTANT: Tell Terraform to ignore changes to access policies here since we aren't using inline policies
+    ]
   }
+}
+
+# Access policy for ENGINEERING_GROUP
+resource "azurerm_key_vault_access_policy" "engineering_group_policy" {
+  key_vault_id = azurerm_key_vault.main.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = var.ENGINEERING_GROUP_OBJECT_ID
+
+  certificate_permissions = local.all_certificate_permissions
+  key_permissions         = local.all_key_permissions
+  secret_permissions      = local.all_secret_permissions
+
+  depends_on = [azurerm_key_vault.main]
+}
+
+# Access policy for DEVSECOPS_GROUP
+resource "azurerm_key_vault_access_policy" "devsecops_group_policy" {
+  key_vault_id = azurerm_key_vault.main.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = var.DEVSECOPS_OBJECT_ID
+
+  key_permissions    = local.all_key_permissions
+  secret_permissions = local.all_secret_permissions
+
+  depends_on = [azurerm_key_vault.main]
 }
