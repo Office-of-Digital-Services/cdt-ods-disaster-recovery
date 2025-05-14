@@ -183,20 +183,25 @@ def test_user_exists_false(command, mock_psycopg_cursor):
     )
 
 
-def test_create_database_user_success(command, mock_psycopg_cursor):
+def test_create_database_user_success(command, mock_psycopg_cursor, mocker):
+    admin_user = "admin_user"
     db_alias = "test_alias"
     test_username = "new_db_user"
     test_password = "secure_password"
 
-    command._create_database_user(mock_psycopg_cursor, db_alias, test_username, test_password)
+    command._create_database_user(mock_psycopg_cursor, admin_user, db_alias, test_username, test_password)
 
-    expected_sql = sql.SQL("CREATE USER {user} WITH PASSWORD {password_literal}").format(
+    create_sql = sql.SQL("CREATE USER {user} WITH PASSWORD {password_literal}").format(
         user=sql.Identifier(test_username), password_literal=sql.Literal(test_password)
     )
-    mock_psycopg_cursor.execute.assert_called_once_with(expected_sql)
+    grant_sql = sql.SQL("GRANT {user} TO {admin}").format(user=sql.Identifier(test_username), admin=sql.Identifier(admin_user))
+
+    calls = [mocker.call(create_sql), mocker.call(grant_sql)]
+    mock_psycopg_cursor.execute.assert_has_calls(calls)
 
 
 def test_create_database_user_failure(command, mock_psycopg_cursor, mocker):
+    admin_user = "admin_user"
     db_alias = "fail_alias"
     test_username = "doomed_user"
     test_password = "bad_password"
@@ -204,7 +209,7 @@ def test_create_database_user_failure(command, mock_psycopg_cursor, mocker):
     mock_psycopg_cursor.execute.side_effect = db_error
 
     with pytest.raises(psycopg.ProgrammingError, match="Test DB creation error"):
-        command._create_database_user(mock_psycopg_cursor, db_alias, test_username, test_password)
+        command._create_database_user(mock_psycopg_cursor, admin_user, db_alias, test_username, test_password)
 
     expected_sql = sql.SQL("CREATE USER {user} WITH PASSWORD {password_literal}").format(
         user=sql.Identifier(test_username), password_literal=sql.Literal(test_password)
@@ -323,6 +328,7 @@ def test_create_database_db_creation_psycopg_error(command, mock_psycopg_cursor,
 
 
 def test_ensure_users_and_db_creates_new_user_and_db(command, mock_admin_connection, mock_psycopg_cursor, settings, mocker):
+    admin_user = "admin_user"
     db_name_val = "example_db"
     db_user_val = "example_user"
     db_password_val = "example_password"
@@ -340,13 +346,14 @@ def test_ensure_users_and_db_creates_new_user_and_db(command, mock_admin_connect
     mock_create_user = mocker.patch.object(command, "_create_database_user")
     mocker.patch.object(command, "_database_exists", return_value=False)  # Database does not exist
     mock_create_db = mocker.patch.object(command, "_create_database")
+    mock_admin_connection.info.user = admin_user
 
     command._ensure_users_and_db(mock_admin_connection)
 
     # Verify calls to helpers
     command._validate_config.assert_called_once_with(DB_TEST_ALIAS, db_config_dict)
     command._user_exists.assert_called_once_with(mock_psycopg_cursor, db_user_val)
-    mock_create_user.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_user_val, db_password_val)
+    mock_create_user.assert_called_once_with(mock_psycopg_cursor, admin_user, DB_TEST_ALIAS, db_user_val, db_password_val)
     command._database_exists.assert_called_once_with(mock_psycopg_cursor, db_name_val)
     mock_create_db.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_name_val, db_user_val)
 
@@ -414,6 +421,7 @@ def test_ensure_users_and_db_incomplete_config(command, mock_admin_connection, s
 
 
 def test_ensure_users_and_db_user_creation_fails(command, mocker, mock_admin_connection, mock_psycopg_cursor, settings):
+    admin_user = "admin_user"
     db_name_val = "fail_db"
     db_user_val = "fail_user"
     db_password_val = "fp"
@@ -429,13 +437,14 @@ def test_ensure_users_and_db_user_creation_fails(command, mocker, mock_admin_con
     mocker.patch.object(command, "_user_exists", return_value=False)
     mock_create_user = mocker.patch.object(command, "_create_database_user", side_effect=psycopg.ProgrammingError())
     mock_database_exists = mocker.patch.object(command, "_database_exists")
+    mock_admin_connection.info.user = admin_user
 
     with pytest.raises(psycopg.ProgrammingError):
         command._ensure_users_and_db(mock_admin_connection)
 
     command._validate_config.assert_called_once_with(DB_TEST_ALIAS, db_config_dict)
     command._user_exists.assert_called_once_with(mock_psycopg_cursor, db_user_val)
-    mock_create_user.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_user_val, db_password_val)
+    mock_create_user.assert_called_once_with(mock_psycopg_cursor, admin_user, DB_TEST_ALIAS, db_user_val, db_password_val)
     mock_database_exists.assert_not_called()
 
 
