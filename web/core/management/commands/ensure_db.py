@@ -19,8 +19,8 @@ class Command(BaseCommand):
         # Try to get HOST/PORT from the default database settings first
         # Fallback to environment variables if not found in settings
         default_db_settings = settings.DATABASES.get(DEFAULT_DB_ALIAS, {})
-        db_host = default_db_settings.get("HOST") or os.environ.get("POSTGRES_HOSTNAME", "postgres")
-        db_port = default_db_settings.get("PORT") or os.environ.get("POSTGRES_PORT", "5432")
+        db_host = default_db_settings.get("HOST")
+        db_port = default_db_settings.get("PORT")
 
         postgres_maintenance_db = os.environ.get("POSTGRES_DB", "postgres")
         admin_user = os.environ.get("POSTGRES_USER", "postgres")
