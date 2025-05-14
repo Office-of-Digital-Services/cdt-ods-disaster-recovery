@@ -29,6 +29,7 @@ class Command(BaseCommand):
         if not admin_password:
             raise CommandError("POSTGRES_PASSWORD environment variable not set. Cannot establish admin connection.")
 
+        self.stdout.write(f"Attempting admin connection as user: {admin_user} to database: {postgres_maintenance_db}")
         try:
             conn = psycopg.connect(
                 host=db_host,
@@ -69,7 +70,7 @@ class Command(BaseCommand):
         cursor.execute("SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = %s", [username])
         return cursor.fetchone() is not None
 
-    def _create_database_user(self, cursor: psycopg.Cursor, db_alias: str, username: str, password: str):
+    def _create_database_user(self, cursor: psycopg.Cursor, admin_user: str, db_alias: str, username: str, password: str):
         """Creates a PostgreSQL user."""
         self.stdout.write(f"User: {username} for database: {db_alias} not found. Creating...")
         try:
@@ -77,6 +78,10 @@ class Command(BaseCommand):
             query = sql.SQL("CREATE USER {user} WITH PASSWORD {password_literal}").format(
                 user=sql.Identifier(username), password_literal=sql.Literal(password)
             )
+            cursor.execute(query)
+            # grant the specific username role to the admin_user
+            # to allow the admin_user to create database(s) on behalf of the db_user
+            query = sql.SQL("GRANT {user} TO {admin}").format(user=sql.Identifier(username), admin=sql.Identifier(admin_user))
             cursor.execute(query)
             self.stdout.write(self.style.SUCCESS("User created successfully"))
         except psycopg.Error as e:
@@ -125,7 +130,8 @@ class Command(BaseCommand):
 
                 # Ensure DB User Exists
                 if not self._user_exists(cursor, db_user):
-                    self._create_database_user(cursor, db_alias, db_user, db_password)
+                    admin_user = admin_conn.info.user
+                    self._create_database_user(cursor, admin_user, db_alias, db_user, db_password)
                 else:
                     self.stdout.write(f"User found: {db_user}")
 
