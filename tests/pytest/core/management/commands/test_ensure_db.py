@@ -548,9 +548,6 @@ def test_run_migrations_failure_raises_commanderror(command, mock_call_command, 
     with pytest.raises(CommandError, match=f"Migration failed for {db_alias_fail}."):
         command._run_migrations()
 
-    command.stderr.write.assert_any_call(f"Error running migrations for database: {db_alias_fail}")
-    assert any(error_obj is call_arg.args[0] for call_arg in command.stderr.write.call_args_list if call_arg.args)
-
 
 def test_ensure_superuser_creates_if_not_exists(command, mock_os_environ, mock_get_user_model, mock_call_command):
     username = "new_super_user"

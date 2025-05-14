@@ -158,10 +158,9 @@ class Command(BaseCommand):
                 call_command("migrate", database=db_alias, interactive=False)
                 self.stdout.write(self.style.SUCCESS(f"Migrations complete for database: {db_alias}"))
             except Exception as e:  # Catch more general errors from call_command
-                self.stderr.write(self.style.ERROR(f"Error running migrations for database: {db_alias}"))
-                self.stderr.write(self.style.ERROR(e))
+                self.stderr.write(self.style.ERROR(f"Error running migrations for database: {db_alias}: {str(e)}"))
                 # Re-raise as CommandError to potentially stop the whole process if a migration fails
-                raise CommandError(f"Migration failed for {db_alias}.")
+                raise CommandError(f"Migration failed for {db_alias}.") from e
         self.stdout.write("All migrations processed.")
 
     def _ensure_superuser(self):
