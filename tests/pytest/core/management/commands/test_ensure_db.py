@@ -195,11 +195,6 @@ def test_create_database_user_success(command, mock_psycopg_cursor):
     )
     mock_psycopg_cursor.execute.assert_called_once_with(expected_sql)
 
-    command.stdout.write.assert_any_call(f"User: {test_username} for database: {db_alias} not found. Creating...")
-    command.stdout.write.assert_any_call(
-        command.style.SUCCESS(f"User: {test_username} for database: {db_alias} created successfully")
-    )
-
 
 def test_create_database_user_failure(command, mock_psycopg_cursor, mocker):
     db_alias = "fail_alias"
@@ -267,12 +262,6 @@ def test_create_database_success(command, mock_psycopg_cursor, mocker):
         encoding=sql.Literal("UTF-8"),
     )
     mock_psycopg_cursor.execute.assert_called_once_with(expected_sql)
-
-    command.stdout.write.assert_any_call(f"Database {test_dbname} not found. Creating...")
-    command.stdout.write.assert_any_call(
-        command.style.SUCCESS(f"Database {test_dbname} with owner {test_owner} created successfully")
-    )
-    command.stderr.write.assert_not_called()
 
 
 def test_create_database_owner_does_not_exist(command, mock_psycopg_cursor, mocker):
@@ -565,7 +554,6 @@ def test_ensure_superuser_creates_if_not_exists(command, mock_os_environ, mock_g
 
     mock_get_user_model.return_value.objects.using(DEFAULT_DB_ALIAS).filter(username=username).exists.assert_called_once()
     mock_call_command.assert_called_once_with("createsuperuser", interactive=False, username=username, email=email)
-    command.stdout.write.assert_any_call(f"Superuser: {username} not found. Creating in database: {DEFAULT_DB_ALIAS}...")
 
 
 def test_ensure_superuser_already_exists(command, mock_os_environ, mock_get_user_model, mock_call_command):

@@ -78,7 +78,7 @@ class Command(BaseCommand):
                 user=sql.Identifier(username), password_literal=sql.Literal(password)
             )
             cursor.execute(query)
-            self.stdout.write(self.style.SUCCESS(f"User: {username} for database: {db_alias} created successfully"))
+            self.stdout.write(self.style.SUCCESS("User created successfully"))
         except psycopg.Error as e:
             self.stderr.write(self.style.ERROR(f"Failed to create user {username} for database {db_alias}: {e}"))
             raise
@@ -107,7 +107,7 @@ class Command(BaseCommand):
                 encoding=sql.Literal("UTF-8"),
             )
             cursor.execute(query)
-            self.stdout.write(self.style.SUCCESS(f"Database {db_name} with owner {owner_username} created successfully"))
+            self.stdout.write(self.style.SUCCESS("Database created successfully"))
         except psycopg.Error as e:
             self.stderr.write(self.style.ERROR(f"Failed to create database {db_name} for alias {db_alias}: {e}"))
             raise
@@ -148,7 +148,7 @@ class Command(BaseCommand):
                 )
                 continue
             try:
-                self.stdout.write(f"Running migrations for database: {db_alias}...")
+                self.stdout.write(f"For database: {db_alias}")
                 call_command("migrate", database=db_alias, interactive=False)
                 self.stdout.write(self.style.SUCCESS(f"Migrations complete for database: {db_alias}"))
             except Exception as e:  # Catch more general errors from call_command
@@ -171,9 +171,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Superuser: {DJANGO_SUPERUSER_USERNAME} already exists in database: {DEFAULT_DB_ALIAS}")
             else:
                 if DJANGO_SUPERUSER_EMAIL and DJANGO_SUPERUSER_PASSWORD:
-                    self.stdout.write(
-                        f"Superuser: {DJANGO_SUPERUSER_USERNAME} not found. Creating in database: {DEFAULT_DB_ALIAS}..."
-                    )
+                    self.stdout.write(f"Superuser: {DJANGO_SUPERUSER_USERNAME} not found. Creating...")
                     # Note: createsuperuser --no-input relies on DJANGO_SUPERUSER_PASSWORD env var implicitly for password.
                     # Explicitly passing username and email makes it clearer.
                     call_command(
