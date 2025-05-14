@@ -140,6 +140,122 @@ def test_create_database_user_failure(command, mock_psycopg_cursor, mocker):
     )
 
 
+def test_database_exists_true(command, mock_psycopg_cursor):
+    """Test _database_exists when database is found."""
+    test_dbname = "existing_db"
+    mock_psycopg_cursor.fetchone.return_value = (1,)  # Simulate DB found
+
+    result = command._database_exists(mock_psycopg_cursor, test_dbname)
+
+    assert result is True
+    mock_psycopg_cursor.execute.assert_called_once_with("SELECT 1 FROM pg_database WHERE datname = %s", [test_dbname])
+    command.stdout.write.assert_not_called()  # No logging in this helper
+    command.stderr.write.assert_not_called()
+
+
+def test_database_exists_false(command, mock_psycopg_cursor):
+    """Test _database_exists when database is not found."""
+    test_dbname = "missing_db"
+    mock_psycopg_cursor.fetchone.return_value = None  # Simulate DB not found
+
+    result = command._database_exists(mock_psycopg_cursor, test_dbname)
+
+    assert result is False
+    mock_psycopg_cursor.execute.assert_called_once_with("SELECT 1 FROM pg_database WHERE datname = %s", [test_dbname])
+    command.stdout.write.assert_not_called()  # No logging in this helper
+    command.stderr.write.assert_not_called()
+
+
+def test_create_database_success(command, mock_psycopg_cursor, mocker):
+    """Test _create_database successfully creates a database."""
+    db_alias = "test_db_alias"
+    test_dbname = "new_db"
+    test_owner = "db_owner"
+
+    # Mock the internal call to _user_exists within _create_database to simulate owner exists
+    mocker.patch.object(command, "_user_exists", return_value=True)
+
+    command._create_database(mock_psycopg_cursor, db_alias, test_dbname, test_owner)
+
+    command._user_exists.assert_called_once_with(mock_psycopg_cursor, test_owner)
+
+    expected_sql_obj = sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING %s").format(
+        db=sql.Identifier(test_dbname),
+        owner=sql.Identifier(test_owner),
+    )
+    # Check that CREATE DATABASE was called
+    called_args, _ = mock_psycopg_cursor.execute.call_args  # This will be the CREATE DATABASE call
+    assert str(called_args[0]) == str(expected_sql_obj)
+    assert called_args[1] == ["UTF-8"]
+
+    command.stdout.write.assert_any_call(f"Database {test_dbname} not found. Creating...")
+    command.stdout.write.assert_any_call(
+        command.style.SUCCESS(f"Database {test_dbname} with owner {test_owner} created successfully")
+    )
+    command.stderr.write.assert_not_called()
+
+
+def test_create_database_owner_does_not_exist(command, mock_psycopg_cursor, mocker):
+    """_create_database fails with CommandError if the owner does not exist."""
+    db_alias = "test_db_alias_fail"
+    test_dbname = "another_new_db"
+    test_owner = "non_existent_owner"
+
+    # Mock _user_exists to return False for the owner check
+    mocker.patch.object(command, "_user_exists", return_value=False)
+    # Keep a reference to the original execute mock to check it wasn't called for CREATE DB
+    original_execute_mock = mock_psycopg_cursor.execute
+
+    with pytest.raises(
+        CommandError, match=f"Owner user {test_owner} for database {test_dbname} not found during database creation."
+    ):
+        command._create_database(mock_psycopg_cursor, db_alias, test_dbname, test_owner)
+
+    command._user_exists.assert_called_once_with(mock_psycopg_cursor, test_owner)
+
+    # Ensure CREATE DATABASE was not attempted by checking the calls to the cursor's execute
+    for call_obj in original_execute_mock.call_args_list:
+        if isinstance(call_obj.args[0], sql.SQL) and "CREATE DATABASE" in str(call_obj.args[0]):
+            pytest.fail("CREATE DATABASE should not have been called when owner is missing")
+
+    command.stdout.write.assert_any_call(f"Database {test_dbname} not found. Creating...")
+    command.stderr.write.assert_any_call(
+        command.style.ERROR(
+            f"Cannot create database: {test_dbname} because user: {test_owner} does not exist or was not created"
+        )
+    )
+
+
+def test_create_database_db_creation_psycopg_error(command, mock_psycopg_cursor, mocker):
+    """Test _create_database propagates psycopg error during DB creation."""
+    db_alias = "test_db_alias_psycopg_fail"
+    test_dbname = "fail_creation_db"
+    test_owner = "owner_for_fail_db"
+    db_error = psycopg.ProgrammingError("DB creation system error")
+
+    mocker.patch.object(command, "_user_exists", return_value=True)  # Owner exists
+    # Mock the execute call that attempts to create the database to raise an error
+    mock_psycopg_cursor.execute.side_effect = db_error
+
+    with pytest.raises(psycopg.ProgrammingError, match="DB creation system error"):
+        command._create_database(mock_psycopg_cursor, db_alias, test_dbname, test_owner)
+
+    command._user_exists.assert_called_once_with(mock_psycopg_cursor, test_owner)
+    # The failing call to execute should be the CREATE DATABASE one
+    expected_sql_obj = sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING %s").format(
+        db=sql.Identifier(test_dbname),
+        owner=sql.Identifier(test_owner),
+    )
+    called_args, _ = mock_psycopg_cursor.execute.call_args
+    assert str(called_args[0]) == str(expected_sql_obj)
+    assert called_args[1] == ["UTF-8"]
+
+    command.stdout.write.assert_any_call(f"Database {test_dbname} not found. Creating...")
+    command.stderr.write.assert_any_call(
+        command.style.ERROR(f"Failed to create database {test_dbname} for alias {db_alias}: {db_error}")
+    )
+
+
 def test_ensure_users_and_db_creates_new_user_and_db(command, mock_admin_connection, mock_psycopg_cursor, settings):
     db_config = {
         "ENGINE": "django.db.backends.postgresql",
@@ -255,7 +371,8 @@ def test_ensure_users_and_db_creation_fails_owner_missing(
 
     mock_psycopg_cursor.execute = permissive_create_user_execute
 
-    command._ensure_users_and_db(mock_admin_connection)
+    with pytest.raises(CommandError):
+        command._ensure_users_and_db(mock_admin_connection)
 
     command.stderr.write.assert_any_call(
         command.style.ERROR(

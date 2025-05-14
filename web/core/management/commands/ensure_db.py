@@ -60,6 +60,35 @@ class Command(BaseCommand):
             self.stderr.write(self.style.ERROR(f"Failed to create user {username} for database {db_alias}: {e}"))
             raise
 
+    def _database_exists(self, cursor: psycopg.Cursor, db_name: str) -> bool:
+        """Checks if a PostgreSQL database exists."""
+        cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", [db_name])
+        return cursor.fetchone() is not None
+
+    def _create_database(self, cursor: psycopg.Cursor, db_alias: str, db_name: str, owner_username: str):
+        """Creates a PostgreSQL database with the specified owner."""
+        self.stdout.write(f"Database {db_name} not found. Creating...")
+        # Ensure owner exists before attempting to create the database
+        if not self._user_exists(cursor, owner_username):
+            self.stderr.write(
+                self.style.ERROR(
+                    f"Cannot create database: {db_name} because user: {owner_username} does not exist or was not created"
+                )
+            )
+            raise CommandError(f"Owner user {owner_username} for database {db_name} not found during database creation.")
+        try:
+            cursor.execute(
+                sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING %s").format(
+                    db=sql.Identifier(db_name),
+                    owner=sql.Identifier(owner_username),
+                ),
+                ["UTF-8"],
+            )
+            self.stdout.write(self.style.SUCCESS(f"Database {db_name} with owner {owner_username} created successfully"))
+        except psycopg.Error as e:
+            self.stderr.write(self.style.ERROR(f"Failed to create database {db_name} for alias {db_alias}: {e}"))
+            raise
+
     def _ensure_users_and_db(self, admin_conn: Connection):
         self.stdout.write(self.style.MIGRATE_HEADING("Checking and creating database users and databases..."))
         cursor = admin_conn.cursor()
@@ -90,27 +119,8 @@ class Command(BaseCommand):
                     self.stdout.write(f"User found: {db_user}")
 
                 # Ensure Database Exists
-                cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", [db_name])
-                db_exists = cursor.fetchone()
-
-                if not db_exists:
-                    self.stdout.write(f"Database {db_name} not found. Creating...")
-                    if not self._user_exists(cursor, db_user):
-                        self.stderr.write(
-                            self.style.ERROR(
-                                f"Cannot create database: {db_name} because user: {db_user} does not exist or was not created"
-                            )
-                        )
-                        continue
-
-                    cursor.execute(
-                        sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING %s").format(
-                            db=sql.Identifier(db_name),
-                            owner=sql.Identifier(db_user),
-                        ),
-                        ["UTF-8"],
-                    )
-                    self.stdout.write(self.style.SUCCESS(f"Database {db_name} with owner {db_user} created successfully"))
+                if not self._database_exists(cursor, db_name):
+                    self._create_database(cursor, db_alias, db_name, db_user)  # db_user is the owner
                 else:
                     self.stdout.write(f"Database found: {db_name}")
         finally:
