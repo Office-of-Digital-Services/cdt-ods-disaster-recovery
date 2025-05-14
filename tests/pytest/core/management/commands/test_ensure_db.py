@@ -2,6 +2,7 @@ import psycopg
 import pytest
 from django.core.management.base import CommandError
 from django.db import DEFAULT_DB_ALIAS
+from psycopg import sql
 
 from web.core.management.commands.ensure_db import Command
 
@@ -73,6 +74,70 @@ def test_admin_connection_psycopg_error(command, mock_psycopg_connect, mock_os_e
 
 
 DB_TEST_ALIAS = "testdb"  # Define a clear alias for these tests
+
+
+def test_user_exists_true(command, mock_psycopg_cursor):
+    test_username = "existing_user"
+    mock_psycopg_cursor.fetchone.return_value = (1,)  # Simulate user found
+
+    result = command._user_exists(mock_psycopg_cursor, test_username)
+
+    assert result is True
+    mock_psycopg_cursor.execute.assert_called_once_with(
+        "SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = %s", [test_username]
+    )
+
+
+def test_user_exists_false(command, mock_psycopg_cursor):
+    test_username = "missing_user"
+    mock_psycopg_cursor.fetchone.return_value = None  # Simulate user not found
+
+    result = command._user_exists(mock_psycopg_cursor, test_username)
+
+    assert result is False
+    mock_psycopg_cursor.execute.assert_called_once_with(
+        "SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = %s", [test_username]
+    )
+
+
+def test_create_database_user_success(command, mock_psycopg_cursor):
+    db_alias = "test_alias"
+    test_username = "new_db_user"
+    test_password = "secure_password"
+
+    command._create_database_user(mock_psycopg_cursor, db_alias, test_username, test_password)
+
+    expected_sql = sql.SQL("CREATE USER {user} WITH PASSWORD %s").format(user=sql.Identifier(test_username))
+    # Check the called SQL and parameters
+    called_args, _ = mock_psycopg_cursor.execute.call_args
+    assert str(called_args[0]) == str(expected_sql)  # Compare string representation of SQL
+    assert called_args[1] == [test_password]
+
+    command.stdout.write.assert_any_call(f"User: {test_username} for database: {db_alias} not found. Creating...")
+    command.stdout.write.assert_any_call(
+        command.style.SUCCESS(f"User: {test_username} for database: {db_alias} created successfully")
+    )
+
+
+def test_create_database_user_failure(command, mock_psycopg_cursor, mocker):
+    db_alias = "fail_alias"
+    test_username = "doomed_user"
+    test_password = "bad_password"
+    db_error = psycopg.ProgrammingError("Test DB creation error")
+    mock_psycopg_cursor.execute.side_effect = db_error
+
+    with pytest.raises(psycopg.ProgrammingError, match="Test DB creation error"):
+        command._create_database_user(mock_psycopg_cursor, db_alias, test_username, test_password)
+
+    expected_sql = sql.SQL("CREATE USER {user} WITH PASSWORD %s").format(user=sql.Identifier(test_username))
+    called_args, _ = mock_psycopg_cursor.execute.call_args
+    assert str(called_args[0]) == str(expected_sql)
+    assert called_args[1] == [test_password]
+
+    command.stdout.write.assert_any_call(f"User: {test_username} for database: {db_alias} not found. Creating...")
+    command.stderr.write.assert_any_call(
+        command.style.ERROR(f"Failed to create user {test_username} for database {db_alias}: {db_error}")
+    )
 
 
 def test_ensure_users_and_db_creates_new_user_and_db(command, mock_admin_connection, mock_psycopg_cursor, settings):

@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DEFAULT_DB_ALIAS
-from psycopg import sql
+from psycopg import Connection, sql
 
 
 class Command(BaseCommand):
@@ -42,7 +42,25 @@ class Command(BaseCommand):
         except psycopg.Error as e:
             raise CommandError(f"Admin connection to PostgreSQL failed: {e}")
 
-    def _ensure_users_and_db(self, admin_conn):
+    def _user_exists(self, cursor: psycopg.Cursor, username: str) -> bool:
+        """Checks if a PostgreSQL user exists."""
+        cursor.execute("SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = %s", [username])
+        return cursor.fetchone() is not None
+
+    def _create_database_user(self, cursor: psycopg.Cursor, db_alias: str, username: str, password: str):
+        """Creates a PostgreSQL user."""
+        self.stdout.write(f"User: {username} for database: {db_alias} not found. Creating...")
+        try:
+            cursor.execute(
+                sql.SQL("CREATE USER {user} WITH PASSWORD %s").format(user=sql.Identifier(username)),
+                [password],
+            )
+            self.stdout.write(self.style.SUCCESS(f"User: {username} for database: {db_alias} created successfully"))
+        except psycopg.Error as e:
+            self.stderr.write(self.style.ERROR(f"Failed to create user {username} for database {db_alias}: {e}"))
+            raise
+
+    def _ensure_users_and_db(self, admin_conn: Connection):
         self.stdout.write(self.style.MIGRATE_HEADING("Checking and creating database users and databases..."))
         cursor = admin_conn.cursor()
         try:
@@ -66,16 +84,8 @@ class Command(BaseCommand):
                     continue
 
                 # Ensure DB User Exists
-                cursor.execute("SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = %s", [db_user])
-                user_exists = cursor.fetchone()
-
-                if not user_exists:
-                    self.stdout.write(f"User: {db_user} for database: {db_alias} not found. Creating...")
-                    cursor.execute(
-                        sql.SQL("CREATE USER {user} WITH PASSWORD %s").format(user=sql.Identifier(db_user)),
-                        [db_password],
-                    )
-                    self.stdout.write(self.style.SUCCESS(f"User: {db_user} for database: {db_alias} created successfully"))
+                if not self._user_exists(cursor, db_user):
+                    self._create_database_user(cursor, db_alias, db_user, db_password)
                 else:
                     self.stdout.write(f"User found: {db_user}")
 
@@ -85,11 +95,10 @@ class Command(BaseCommand):
 
                 if not db_exists:
                     self.stdout.write(f"Database {db_name} not found. Creating...")
-                    cursor.execute("SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = %s", [db_user])
-                    if not cursor.fetchone():
+                    if not self._user_exists(cursor, db_user):
                         self.stderr.write(
                             self.style.ERROR(
-                                f"Cannot create database: {db_name} because user: {db_user} does not exist or was not created"  # noqa: E501
+                                f"Cannot create database: {db_name} because user: {db_user} does not exist or was not created"
                             )
                         )
                         continue
