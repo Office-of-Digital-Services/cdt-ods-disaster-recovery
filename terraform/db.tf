@@ -36,7 +36,7 @@ data "azurerm_key_vault_secret" "db_admin_password" {
 }
 
 resource "azurerm_postgresql_flexible_server" "main" {
-  name                = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-postgres")
+  name                = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-db")
   resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
   sku_name            = "B_Standard_B1ms"
