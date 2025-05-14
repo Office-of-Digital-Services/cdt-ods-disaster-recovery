@@ -190,11 +190,10 @@ def test_create_database_user_success(command, mock_psycopg_cursor):
 
     command._create_database_user(mock_psycopg_cursor, db_alias, test_username, test_password)
 
-    expected_sql = sql.SQL("CREATE USER {user} WITH PASSWORD %s").format(user=sql.Identifier(test_username))
-    # Check the called SQL and parameters
-    called_args, _ = mock_psycopg_cursor.execute.call_args
-    assert str(called_args[0]) == str(expected_sql)  # Compare string representation of SQL
-    assert called_args[1] == [test_password]
+    expected_sql = sql.SQL("CREATE USER {user} WITH PASSWORD {password_literal}").format(
+        user=sql.Identifier(test_username), password_literal=sql.Literal(test_password)
+    )
+    mock_psycopg_cursor.execute.assert_called_once_with(expected_sql)
 
     command.stdout.write.assert_any_call(f"User: {test_username} for database: {db_alias} not found. Creating...")
     command.stdout.write.assert_any_call(
@@ -212,10 +211,10 @@ def test_create_database_user_failure(command, mock_psycopg_cursor, mocker):
     with pytest.raises(psycopg.ProgrammingError, match="Test DB creation error"):
         command._create_database_user(mock_psycopg_cursor, db_alias, test_username, test_password)
 
-    expected_sql = sql.SQL("CREATE USER {user} WITH PASSWORD %s").format(user=sql.Identifier(test_username))
-    called_args, _ = mock_psycopg_cursor.execute.call_args
-    assert str(called_args[0]) == str(expected_sql)
-    assert called_args[1] == [test_password]
+    expected_sql = sql.SQL("CREATE USER {user} WITH PASSWORD {password_literal}").format(
+        user=sql.Identifier(test_username), password_literal=sql.Literal(test_password)
+    )
+    mock_psycopg_cursor.execute.assert_called_once_with(expected_sql)
 
     command.stdout.write.assert_any_call(f"User: {test_username} for database: {db_alias} not found. Creating...")
     command.stderr.write.assert_any_call(
@@ -262,14 +261,12 @@ def test_create_database_success(command, mock_psycopg_cursor, mocker):
 
     command._user_exists.assert_called_once_with(mock_psycopg_cursor, test_owner)
 
-    expected_sql_obj = sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING %s").format(
+    expected_sql = sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING {encoding}").format(
         db=sql.Identifier(test_dbname),
         owner=sql.Identifier(test_owner),
+        encoding=sql.Literal("UTF-8"),
     )
-    # Check that CREATE DATABASE was called
-    called_args, _ = mock_psycopg_cursor.execute.call_args  # This will be the CREATE DATABASE call
-    assert str(called_args[0]) == str(expected_sql_obj)
-    assert called_args[1] == ["UTF-8"]
+    mock_psycopg_cursor.execute.assert_called_once_with(expected_sql)
 
     command.stdout.write.assert_any_call(f"Database {test_dbname} not found. Creating...")
     command.stdout.write.assert_any_call(
@@ -325,13 +322,10 @@ def test_create_database_db_creation_psycopg_error(command, mock_psycopg_cursor,
 
     command._user_exists.assert_called_once_with(mock_psycopg_cursor, test_owner)
     # The failing call to execute should be the CREATE DATABASE one
-    expected_sql_obj = sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING %s").format(
-        db=sql.Identifier(test_dbname),
-        owner=sql.Identifier(test_owner),
+    expected_sql = sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING {encoding}").format(
+        db=sql.Identifier(test_dbname), owner=sql.Identifier(test_owner), encoding=sql.Literal("UTF-8")
     )
-    called_args, _ = mock_psycopg_cursor.execute.call_args
-    assert str(called_args[0]) == str(expected_sql_obj)
-    assert called_args[1] == ["UTF-8"]
+    mock_psycopg_cursor.execute.assert_called_once_with(expected_sql)
 
     command.stdout.write.assert_any_call(f"Database {test_dbname} not found. Creating...")
     command.stderr.write.assert_any_call(

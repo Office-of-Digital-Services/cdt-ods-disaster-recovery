@@ -73,10 +73,11 @@ class Command(BaseCommand):
         """Creates a PostgreSQL user."""
         self.stdout.write(f"User: {username} for database: {db_alias} not found. Creating...")
         try:
-            cursor.execute(
-                sql.SQL("CREATE USER {user} WITH PASSWORD %s").format(user=sql.Identifier(username)),
-                [password],
+            # Use sql.Literal for the password to ensure it's correctly quoted
+            query = sql.SQL("CREATE USER {user} WITH PASSWORD {password_literal}").format(
+                user=sql.Identifier(username), password_literal=sql.Literal(password)
             )
+            cursor.execute(query)
             self.stdout.write(self.style.SUCCESS(f"User: {username} for database: {db_alias} created successfully"))
         except psycopg.Error as e:
             self.stderr.write(self.style.ERROR(f"Failed to create user {username} for database {db_alias}: {e}"))
@@ -99,13 +100,13 @@ class Command(BaseCommand):
             )
             raise CommandError(f"Owner user {owner_username} for database {db_name} not found during database creation.")
         try:
-            cursor.execute(
-                sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING %s").format(
-                    db=sql.Identifier(db_name),
-                    owner=sql.Identifier(owner_username),
-                ),
-                ["UTF-8"],
+            # Use sql.Literal for the password to ensure it's correctly quoted
+            query = sql.SQL("CREATE DATABASE {db} WITH OWNER {owner} ENCODING {encoding}").format(
+                db=sql.Identifier(db_name),
+                owner=sql.Identifier(owner_username),
+                encoding=sql.Literal("UTF-8"),
             )
+            cursor.execute(query)
             self.stdout.write(self.style.SUCCESS(f"Database {db_name} with owner {owner_username} created successfully"))
         except psycopg.Error as e:
             self.stderr.write(self.style.ERROR(f"Failed to create database {db_name} for alias {db_alias}: {e}"))
