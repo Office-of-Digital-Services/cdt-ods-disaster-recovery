@@ -42,6 +42,28 @@ class Command(BaseCommand):
         except psycopg.Error as e:
             raise CommandError(f"Admin connection to PostgreSQL failed: {e}")
 
+    def _validate_config(self, db_alias: str, db_config: dict) -> tuple[str, str, str] | None:
+        """
+        Validates the database configuration for PostgreSQL engine and completeness.
+        Returns (db_name, db_user, db_password) or None if validation fails.
+        """
+        if db_config.get("ENGINE") != "django.db.backends.postgresql":
+            self.stdout.write(self.style.WARNING(f"Skipping database {db_alias}, ENGINE is not PostgreSQL."))
+            return None
+
+        db_name = db_config.get("NAME")
+        db_user = db_config.get("USER")
+        db_password = db_config.get("PASSWORD")
+
+        if not all([db_name, db_user, db_password]):
+            self.stderr.write(
+                self.style.ERROR(
+                    f"Skipping database {db_alias} with incomplete configuration (missing NAME, USER, or PASSWORD)."
+                )
+            )
+            return None
+        return db_name, db_user, db_password
+
     def _user_exists(self, cursor: psycopg.Cursor, username: str) -> bool:
         """Checks if a PostgreSQL user exists."""
         cursor.execute("SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = %s", [username])
@@ -94,23 +116,11 @@ class Command(BaseCommand):
         cursor = admin_conn.cursor()
         try:
             for db_alias, db_config in settings.DATABASES.items():
-                if db_config.get("ENGINE") != "django.db.backends.postgresql":
-                    self.stdout.write(self.style.WARNING(f"Skipping database {db_alias}, ENGINE is not PostgreSQL."))
-                    continue
+                validated_config = self._validate_config(db_alias, db_config)
+                if not validated_config:
+                    continue  # Skip this alias if validation failed
 
-                self.stdout.write(f"Database configuration: {db_alias}")
-
-                db_name = db_config.get("NAME")
-                db_user = db_config.get("USER")
-                db_password = db_config.get("PASSWORD")
-
-                if not all([db_name, db_user, db_password]):
-                    self.stderr.write(
-                        self.style.ERROR(
-                            f"Skipping database {db_alias} with incomplete configuration (missing NAME, USER, or PASSWORD)."
-                        )
-                    )
-                    continue
+                db_name, db_user, db_password = validated_config
 
                 # Ensure DB User Exists
                 if not self._user_exists(cursor, db_user):

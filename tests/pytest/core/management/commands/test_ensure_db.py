@@ -76,6 +76,89 @@ def test_admin_connection_psycopg_error(command, mock_psycopg_connect, mock_os_e
 DB_TEST_ALIAS = "testdb"  # Define a clear alias for these tests
 
 
+def test_validate_config_success(command, settings):
+    """Test _validate_config with valid PostgreSQL config."""
+    db_alias = "postgres_db"
+    valid_config = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "test_name",
+        "USER": "test_user",
+        "PASSWORD": "test_password",
+    }
+    expected_details = ("test_name", "test_user", "test_password")
+
+    details = command._validate_config(db_alias, valid_config)
+
+    assert details == expected_details
+
+
+def test_validate_config_wrong_engine(command, settings):
+    """Test _validate_config skips non-PostgreSQL engine."""
+    db_alias = "sqlite_db"
+    invalid_config = {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "test_name",
+    }
+
+    details = command._validate_config(db_alias, invalid_config)
+
+    assert details is None
+    command.stdout.write.assert_called_once_with(
+        command.style.WARNING(f"Skipping database {db_alias}, ENGINE is not PostgreSQL.")
+    )
+
+
+def test_validate_config_missing_name(command, settings):
+    """Test _validate_config skips incomplete config (missing NAME)."""
+    db_alias = "incomplete_db_name"
+    incomplete_config = {
+        "ENGINE": "django.db.backends.postgresql",
+        "USER": "test_user",
+        "PASSWORD": "test_password",
+    }
+
+    details = command._validate_config(db_alias, incomplete_config)
+
+    assert details is None
+    command.stderr.write.assert_called_once_with(
+        command.style.ERROR(f"Skipping database {db_alias} with incomplete configuration (missing NAME, USER, or PASSWORD).")
+    )
+
+
+def test_validate_config_missing_user(command, settings):
+    """Test _validate_config skips incomplete config (missing USER)."""
+    db_alias = "incomplete_db_user"
+    incomplete_config = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "test_name",
+        "PASSWORD": "test_password",
+    }
+
+    details = command._validate_config(db_alias, incomplete_config)
+
+    assert details is None
+    command.stderr.write.assert_called_once_with(
+        command.style.ERROR(f"Skipping database {db_alias} with incomplete configuration (missing NAME, USER, or PASSWORD).")
+    )
+
+
+def test_validate_config_missing_password(command, settings):
+    """Test _validate_config skips incomplete config (missing PASSWORD)."""
+    db_alias = "incomplete_db_pass"
+    incomplete_config = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "test_name",
+        "USER": "test_user",
+    }
+
+    details = command._validate_config(db_alias, incomplete_config)
+
+    assert details is None
+    command.stderr.write.assert_called_once_with(
+        command.style.ERROR(f"Skipping database {db_alias} with incomplete configuration (missing NAME, USER, or PASSWORD).")
+    )
+
+
 def test_user_exists_true(command, mock_psycopg_cursor):
     test_username = "existing_user"
     mock_psycopg_cursor.fetchone.return_value = (1,)  # Simulate user found
