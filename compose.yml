@@ -37,7 +37,7 @@ services:
       - ./:/cdt/app
 
   postgres:
-    image: postgres:17
+    image: postgres:16
     environment:
       - POSTGRES_DB
       - POSTGRES_USER
