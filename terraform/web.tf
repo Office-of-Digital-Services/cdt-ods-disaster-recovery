@@ -10,6 +10,7 @@ resource "azurerm_container_app" "web" {
     type         = "SystemAssigned"
   }
 
+  # Django
   secret {
     name                = "django-allowed-hosts"
     key_vault_secret_id = "${local.secret_http_prefix}/django-allowed-hosts"
@@ -70,21 +71,18 @@ resource "azurerm_container_app" "web" {
     key_vault_secret_id = "${local.secret_http_prefix}/django-trusted-origins"
     identity            = "System"
   }
+  # Postgres
   secret {
     name                = "postgres-db"
     key_vault_secret_id = "${local.secret_http_prefix}/postgres-db"
     identity            = "System"
   }
   secret {
-    name                = "postgres-user"
-    key_vault_secret_id = "${local.secret_http_prefix}/postgres-user"
+    name                = azurerm_key_vault_secret.postgres_admin_password.name
+    key_vault_secret_id = azurerm_key_vault_secret.postgres_admin_password.id
     identity            = "System"
   }
-  secret {
-    name                = "postgres-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/postgres-password"
-    identity            = "System"
-  }
+  # Tasks
   secret {
     name                = "tasks-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-name"
@@ -124,6 +122,7 @@ resource "azurerm_container_app" "web" {
       cpu     = 0.25
       memory  = "0.5Gi"
 
+      # Django
       env {
         name        = "DJANGO_DB_NAME"
         secret_name = "django-db-name"
@@ -140,23 +139,25 @@ resource "azurerm_container_app" "web" {
         name        = "DJANGO_DB_FIXTURES"
         secret_name = "django-db-fixtures"
       }
+      # Postgres
       env {
         name        = "POSTGRES_DB"
         secret_name = "postgres-db"
       }
       env {
-        name        = "POSTGRES_USER"
-        secret_name = "postgres-user"
+        name  = "POSTGRES_USER"
+        value = local.postgres_admin_login
       }
       env {
         name        = "POSTGRES_PASSWORD"
-        secret_name = "postgres-password"
+        secret_name = azurerm_key_vault_secret.postgres_admin_password.name
       }
       env {
         name = "POSTGRES_HOSTNAME"
-        # reference the internal name of the database container app
+        # reference the database server
         value = azurerm_postgresql_flexible_server.main.fqdn
       }
+      # Tasks
       env {
         name        = "TASKS_DB_NAME"
         secret_name = "tasks-db-name"
@@ -184,16 +185,7 @@ resource "azurerm_container_app" "web" {
       cpu     = 0.5
       memory  = "1Gi"
 
-      # Requests
-      env {
-        name  = "REQUESTS_CONNECT_TIMEOUT"
-        value = "5"
-      }
-      env {
-        name  = "REQUESTS_READ_TIMEOUT"
-        value = "20"
-      }
-      # Django settings
+      # Django
       env {
         name        = "DJANGO_ALLOWED_HOSTS"
         secret_name = "django-allowed-hosts"
@@ -227,11 +219,22 @@ resource "azurerm_container_app" "web" {
         name        = "DJANGO_TRUSTED_ORIGINS"
         secret_name = "django-trusted-origins"
       }
+      # Postgres
       env {
         name = "POSTGRES_HOSTNAME"
-        # reference the internal name of the database container app
+        # reference the database server
         value = azurerm_postgresql_flexible_server.main.fqdn
       }
+      # Requests
+      env {
+        name  = "REQUESTS_CONNECT_TIMEOUT"
+        value = "5"
+      }
+      env {
+        name  = "REQUESTS_READ_TIMEOUT"
+        value = "20"
+      }
+      # Tasks
       env {
         name        = "TASKS_DB_NAME"
         secret_name = "tasks-db-name"
