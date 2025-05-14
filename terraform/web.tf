@@ -1,3 +1,14 @@
+# Create a User-Assigned Managed Identity for the Web App
+resource "azurerm_user_assigned_identity" "web_app_identity" {
+  name                = lower("umi-aca-web-${local.env_name}")
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
 resource "azurerm_container_app" "web" {
   name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-web")
   container_app_environment_id = azurerm_container_app_environment.main.id
@@ -6,97 +17,97 @@ resource "azurerm_container_app" "web" {
   max_inactive_revisions       = 10
 
   identity {
-    identity_ids = []
-    type         = "SystemAssigned"
+    identity_ids = [azurerm_user_assigned_identity.web_app_identity.id]
+    type         = "UserAssigned"
   }
 
   # Django
   secret {
     name                = "django-allowed-hosts"
     key_vault_secret_id = "${local.secret_http_prefix}/django-allowed-hosts"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-name"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-db-user"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-user"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-db-password"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-password"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-db-fixtures"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-fixtures"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-debug"
     key_vault_secret_id = "${local.secret_http_prefix}/django-debug"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-log-level"
     key_vault_secret_id = "${local.secret_http_prefix}/django-log-level"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-secret-key"
     key_vault_secret_id = "${local.secret_http_prefix}/django-secret-key"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-superuser-username"
     key_vault_secret_id = "${local.secret_http_prefix}/django-superuser-username"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-superuser-email"
     key_vault_secret_id = "${local.secret_http_prefix}/django-superuser-email"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-superuser-password"
     key_vault_secret_id = "${local.secret_http_prefix}/django-superuser-password"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "django-trusted-origins"
     key_vault_secret_id = "${local.secret_http_prefix}/django-trusted-origins"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   # Postgres
   secret {
     name                = "postgres-db"
     key_vault_secret_id = "${local.secret_http_prefix}/postgres-db"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = azurerm_key_vault_secret.postgres_admin_password.name
-    key_vault_secret_id = azurerm_key_vault_secret.postgres_admin_password.id
-    identity            = "System"
+    key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.postgres_admin_password.name}"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   # Tasks
   secret {
     name                = "tasks-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-name"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "tasks-db-user"
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-user"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
     name                = "tasks-db-password"
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-password"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
 
   # external, auto port 8000
@@ -266,7 +277,9 @@ resource "azurerm_container_app" "web" {
   }
 
   depends_on = [
-    azurerm_postgresql_flexible_server.main
+    azurerm_postgresql_flexible_server.main,
+    azurerm_key_vault_secret.postgres_admin_password,
+    azurerm_user_assigned_identity.web_app_identity
   ]
 }
 
@@ -274,12 +287,12 @@ resource "azurerm_container_app" "web" {
 resource "azurerm_key_vault_access_policy" "container_app_web_access" {
   key_vault_id = azurerm_key_vault.main.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_container_app.web.identity[0].principal_id
+  object_id    = azurerm_user_assigned_identity.web_app_identity.principal_id
 
-  secret_permissions = ["Get"]
+  secret_permissions = ["Get", "List"]
 
   depends_on = [
     azurerm_key_vault.main,
-    azurerm_container_app.web
+    azurerm_user_assigned_identity.web_app_identity
   ]
 }

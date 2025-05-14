@@ -5,7 +5,7 @@ locals {
 }
 
 # Generate a random password for PostgreSQL
-resource "random_password" "pg_admin_password" {
+resource "random_password" "postgres_admin_password" {
   length           = 32
   min_lower        = 4
   min_upper        = 4
@@ -18,20 +18,12 @@ resource "random_password" "pg_admin_password" {
 # Create the secret for PostgreSQL Admin Password using the generated password
 resource "azurerm_key_vault_secret" "postgres_admin_password" {
   name         = local.postgres_admin_password_secret_name
-  value        = random_password.pg_admin_password.result
+  value        = random_password.postgres_admin_password.result
   key_vault_id = azurerm_key_vault.main.id
   content_type = "password"
   depends_on = [
     azurerm_key_vault.main,
-    random_password.pg_admin_password # Ensure password is generated first
-  ]
-}
-
-data "azurerm_key_vault_secret" "db_admin_password" {
-  name         = azurerm_key_vault_secret.postgres_admin_password.name
-  key_vault_id = azurerm_key_vault.main.id
-  depends_on = [
-    azurerm_key_vault_secret.postgres_admin_password
+    random_password.postgres_admin_password # Ensure password is generated first
   ]
 }
 
@@ -53,7 +45,7 @@ resource "azurerm_postgresql_flexible_server" "main" {
   }
   public_network_access_enabled = true
   administrator_login           = local.postgres_admin_login
-  administrator_password        = data.azurerm_key_vault_secret.db_admin_password.value
+  administrator_password        = azurerm_key_vault_secret.postgres_admin_password.value
 
   lifecycle {
     ignore_changes = [tags]

@@ -1,3 +1,14 @@
+# Create a User-Assigned Managed Identity for the Worker App
+resource "azurerm_user_assigned_identity" "worker_app_identity" {
+  name                = lower("umi-aca-worker-${local.env_name}")
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
 resource "azurerm_container_app" "worker" {
   name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-worker")
   container_app_environment_id = azurerm_container_app_environment.main.id
@@ -6,77 +17,77 @@ resource "azurerm_container_app" "worker" {
   max_inactive_revisions       = 10
 
   identity {
-    identity_ids = []
-    type         = "SystemAssigned"
+    identity_ids = [azurerm_user_assigned_identity.worker_app_identity.id]
+    type         = "UserAssigned"
   }
 
   # Django
   secret {
     name                = "django-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-name"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "django-db-user"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-user"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "django-db-password"
     key_vault_secret_id = "${local.secret_http_prefix}/django-db-password"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "django-email-host"
     key_vault_secret_id = "${local.secret_http_prefix}/django-email-host"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "django-email-user"
     key_vault_secret_id = "${local.secret_http_prefix}/django-email-user"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "django-email-password"
     key_vault_secret_id = "${local.secret_http_prefix}/django-email-password"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "django-log-level"
     key_vault_secret_id = "${local.secret_http_prefix}/django-log-level"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "django-secret-key"
     key_vault_secret_id = "${local.secret_http_prefix}/django-secret-key"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   # Tasks
   secret {
     name                = "tasks-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-name"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "tasks-db-user"
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-user"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "tasks-db-password"
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-password"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   # Vital records
   secret {
     name                = "vital-records-email-from"
     key_vault_secret_id = "${local.secret_http_prefix}/vital-records-email-from"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
     name                = "vital-records-email-to"
     key_vault_secret_id = "${local.secret_http_prefix}/vital-records-email-to"
-    identity            = "System"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
 
   template {
@@ -176,7 +187,8 @@ resource "azurerm_container_app" "worker" {
   }
 
   depends_on = [
-    azurerm_postgresql_flexible_server.main
+    azurerm_postgresql_flexible_server.main,
+    azurerm_user_assigned_identity.worker_app_identity
   ]
 }
 
@@ -184,12 +196,12 @@ resource "azurerm_container_app" "worker" {
 resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
   key_vault_id = azurerm_key_vault.main.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_container_app.worker.identity[0].principal_id
+  object_id    = azurerm_user_assigned_identity.worker_app_identity.principal_id
 
-  secret_permissions = ["Get"]
+  secret_permissions = ["Get", "List"]
 
   depends_on = [
     azurerm_key_vault.main,
-    azurerm_container_app.worker
+    azurerm_user_assigned_identity.worker_app_identity
   ]
 }
