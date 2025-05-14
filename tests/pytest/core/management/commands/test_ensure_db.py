@@ -339,55 +339,62 @@ def test_create_database_db_creation_psycopg_error(command, mock_psycopg_cursor,
     )
 
 
-def test_ensure_users_and_db_creates_new_user_and_db(command, mock_admin_connection, mock_psycopg_cursor, settings):
-    db_config = {
+def test_ensure_users_and_db_creates_new_user_and_db(command, mock_admin_connection, mock_psycopg_cursor, settings, mocker):
+    db_name_val = "example_db"
+    db_user_val = "example_user"
+    db_password_val = "example_password"
+    db_config_dict = {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "example_db",
-        "USER": "example_user",
-        "PASSWORD": "example_password",
+        "NAME": db_name_val,
+        "USER": db_user_val,
+        "PASSWORD": db_password_val,
     }
-    settings.DATABASES = {DB_TEST_ALIAS: db_config}
-    mock_psycopg_cursor.fetchone.side_effect = [None, None, (1,)]  # User not exist, DB not exist, User exists for owner check
+    settings.DATABASES = {DB_TEST_ALIAS: db_config_dict}
+
+    # Mock helper methods
+    mocker.patch.object(command, "_validate_config", return_value=(db_name_val, db_user_val, db_password_val))
+    mocker.patch.object(command, "_user_exists", return_value=False)  # User does not exist
+    mock_create_user = mocker.patch.object(command, "_create_database_user")
+    mocker.patch.object(command, "_database_exists", return_value=False)  # Database does not exist
+    mock_create_db = mocker.patch.object(command, "_create_database")
 
     command._ensure_users_and_db(mock_admin_connection)
 
-    execute_calls = mock_psycopg_cursor.execute.call_args_list
-    create_user_call = next(c for c in execute_calls if "CREATE USER" in str(c.args[0]))
-    assert db_config["USER"] in str(create_user_call.args[0])
-    assert create_user_call.args[1] == [db_config["PASSWORD"]]
+    # Verify calls to helpers
+    command._validate_config.assert_called_once_with(DB_TEST_ALIAS, db_config_dict)
+    command._user_exists.assert_called_once_with(mock_psycopg_cursor, db_user_val)
+    mock_create_user.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_user_val, db_password_val)
+    command._database_exists.assert_called_once_with(mock_psycopg_cursor, db_name_val)
+    mock_create_db.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_name_val, db_user_val)
 
-    create_db_call = next(c for c in execute_calls if "CREATE DATABASE" in str(c.args[0]))
-    assert db_config["NAME"] in str(create_db_call.args[0])
-    assert db_config["USER"] in str(create_db_call.args[0])  # Owner
-    assert create_db_call.args[1] == ["UTF-8"]  # Encoding
-
-    command.stdout.write.assert_any_call(f"User: {db_config['USER']} for database: {DB_TEST_ALIAS} not found. Creating...")
-    command.stdout.write.assert_any_call(
-        command.style.SUCCESS(f"User: {db_config['USER']} for database: {DB_TEST_ALIAS} created successfully")
-    )
-    command.stdout.write.assert_any_call(f"Database {db_config['NAME']} not found. Creating...")
-    command.stdout.write.assert_any_call(
-        command.style.SUCCESS(f"Database {db_config['NAME']} with owner {db_config['USER']} created successfully")
-    )
     mock_psycopg_cursor.close.assert_called_once()
 
 
-def test_ensure_users_and_db_user_exists_db_not_exists(command, mock_admin_connection, mock_psycopg_cursor, settings):
-    db_config = {
+def test_ensure_users_and_db_user_exists_db_not_exists(command, mock_admin_connection, mock_psycopg_cursor, settings, mocker):
+    db_name_val = "another_example_db"
+    db_user_val = "current_user"
+    db_password_val = "pwd123"
+    db_config_dict = {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "another_example_db",
-        "USER": "current_user",
-        "PASSWORD": "pwd123",
+        "NAME": db_name_val,
+        "USER": db_user_val,
+        "PASSWORD": db_password_val,
     }
-    settings.DATABASES = {DB_TEST_ALIAS: db_config}
-    mock_psycopg_cursor.fetchone.side_effect = [(1,), None, (1,)]  # User exists, DB not exist, User exists for owner check
+    settings.DATABASES = {DB_TEST_ALIAS: db_config_dict}
+
+    mocker.patch.object(command, "_validate_config", return_value=(db_name_val, db_user_val, db_password_val))
+    mocker.patch.object(command, "_user_exists", return_value=True)  # User exists
+    mock_create_user = mocker.patch.object(command, "_create_database_user")
+    mocker.patch.object(command, "_database_exists", return_value=False)  # DB does not exist
+    mock_create_db = mocker.patch.object(command, "_create_database")
 
     command._ensure_users_and_db(mock_admin_connection)
 
-    assert not any("CREATE USER" in str(call.args[0]) for call in mock_psycopg_cursor.execute.call_args_list)
-    assert any("CREATE DATABASE" in str(call.args[0]) for call in mock_psycopg_cursor.execute.call_args_list)
-    command.stdout.write.assert_any_call(f"User found: {db_config['USER']}")
-    command.stdout.write.assert_any_call(f"Database {db_config['NAME']} not found. Creating...")
+    command._validate_config.assert_called_once_with(DB_TEST_ALIAS, db_config_dict)
+    command._user_exists.assert_called_once_with(mock_psycopg_cursor, db_user_val)
+    mock_create_user.assert_not_called()
+    command._database_exists.assert_called_once_with(mock_psycopg_cursor, db_name_val)
+    mock_create_db.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_name_val, db_user_val)
 
 
 def test_ensure_users_and_db_skips_non_postgres(command, mock_admin_connection, mock_psycopg_cursor, settings):
@@ -403,65 +410,111 @@ def test_ensure_users_and_db_skips_non_postgres(command, mock_admin_connection, 
     command.stdout.write.assert_any_call(
         command.style.WARNING(f"Skipping database {db_alias_sqlite}, ENGINE is not PostgreSQL.")
     )
-    command.stdout.write.assert_any_call(f"Database configuration: {DB_TEST_ALIAS}")
 
 
-def test_ensure_users_and_db_incomplete_config(command, mock_admin_connection, settings):
-    settings.DATABASES[DB_TEST_ALIAS] = {"ENGINE": "django.db.backends.postgresql", "NAME": "db1"}  # Missing USER/PASSWORD
+def test_ensure_users_and_db_incomplete_config(command, mock_admin_connection, settings, mocker):
+    db_config_incomplete = {"ENGINE": "django.db.backends.postgresql", "NAME": "db1"}
+    settings.DATABASES = {DB_TEST_ALIAS: db_config_incomplete}
+
+    def validate_side_effect(alias, config):
+        return None
+
+    mock_validate = mocker.patch.object(command, "_validate_config", side_effect=validate_side_effect)
+    mock_user_exists = mocker.patch.object(command, "_user_exists")
+    mock_database_exists = mocker.patch.object(command, "_database_exists")
 
     command._ensure_users_and_db(mock_admin_connection)
 
-    command.stderr.write.assert_any_call(
-        command.style.ERROR(
-            f"Skipping database {DB_TEST_ALIAS} with incomplete configuration (missing NAME, USER, or PASSWORD)."
-        )
-    )
+    mock_validate.assert_called_once_with(DB_TEST_ALIAS, db_config_incomplete)
+    mock_user_exists.assert_not_called()
+    mock_database_exists.assert_not_called()
 
 
 def test_ensure_users_and_db_user_creation_fails(command, mocker, mock_admin_connection, mock_psycopg_cursor, settings):
-    db_config = {"ENGINE": "django.db.backends.postgresql", "NAME": "fail_db", "USER": "fail_user", "PASSWORD": "fp"}
-    settings.DATABASES = {DB_TEST_ALIAS: db_config}
-    mock_psycopg_cursor.fetchone.return_value = None
+    db_name_val = "fail_db"
+    db_user_val = "fail_user"
+    db_password_val = "fp"
+    db_config_dict = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": db_name_val,
+        "USER": db_user_val,
+        "PASSWORD": db_password_val,
+    }
+    settings.DATABASES = {DB_TEST_ALIAS: db_config_dict}
 
-    error_on_create = psycopg.ProgrammingError("Cannot create this specific user")
-
-    def execute_side_effect(sql_query, params=None):
-        if "CREATE USER" in str(sql_query) and db_config["USER"] in str(sql_query):
-            raise error_on_create
-        m = mocker.MagicMock()
-        m.fetchone.return_value = None
-        return m
-
-    mock_psycopg_cursor.execute.side_effect = execute_side_effect
+    mocker.patch.object(command, "_validate_config", return_value=(db_name_val, db_user_val, db_password_val))
+    mocker.patch.object(command, "_user_exists", return_value=False)
+    mock_create_user = mocker.patch.object(command, "_create_database_user", side_effect=psycopg.ProgrammingError())
+    mock_database_exists = mocker.patch.object(command, "_database_exists")
 
     with pytest.raises(psycopg.ProgrammingError):
         command._ensure_users_and_db(mock_admin_connection)
 
+    command._validate_config.assert_called_once_with(DB_TEST_ALIAS, db_config_dict)
+    command._user_exists.assert_called_once_with(mock_psycopg_cursor, db_user_val)
+    mock_create_user.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_user_val, db_password_val)
+    mock_database_exists.assert_not_called()
+
 
 def test_ensure_users_and_db_creation_fails_owner_missing(
-    command, mocker, mock_admin_connection, mock_psycopg_cursor, settings
+    command, mock_admin_connection, mock_psycopg_cursor, settings, mocker
 ):
-    db_config = {"ENGINE": "django.db.backends.postgresql", "NAME": "ownerless_db", "USER": "ghost_user", "PASSWORD": "gp"}
-    settings.DATABASES = {DB_TEST_ALIAS: db_config}
-    mock_psycopg_cursor.fetchone.side_effect = [None, None, None]  # User not found, DB not found, Owner (user) not found
+    db_name_val = "ownerless_db"
+    db_user_val = "ghost_user"
+    db_password_val = "gp"
+    db_config_dict = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": db_name_val,
+        "USER": db_user_val,
+        "PASSWORD": db_password_val,
+    }
+    settings.DATABASES = {DB_TEST_ALIAS: db_config_dict}
 
-    original_execute = mock_psycopg_cursor.execute
-
-    def permissive_create_user_execute(sql_query, params=None):
-        if "CREATE USER" in str(sql_query):
-            return mocker.MagicMock()
-        return original_execute(sql_query, params)
-
-    mock_psycopg_cursor.execute = permissive_create_user_execute
+    mocker.patch.object(command, "_validate_config", return_value=(db_name_val, db_user_val, db_password_val))
+    mocker.patch.object(command, "_user_exists", return_value=True)  # Initial user check is fine
+    mock_create_user = mocker.patch.object(command, "_create_database_user")
+    mocker.patch.object(command, "_database_exists", return_value=False)  # DB needs creation
+    mock_create_db = mocker.patch.object(command, "_create_database", side_effect=CommandError())
 
     with pytest.raises(CommandError):
         command._ensure_users_and_db(mock_admin_connection)
 
-    command.stderr.write.assert_any_call(
-        command.style.ERROR(
-            f"Cannot create database: {db_config['NAME']} because user: {db_config['USER']} does not exist or was not created"
-        )
-    )
+    command._validate_config.assert_called_once_with(DB_TEST_ALIAS, db_config_dict)
+    command._user_exists.assert_called_once_with(mock_psycopg_cursor, db_user_val)
+    mock_create_user.assert_not_called()
+    command._database_exists.assert_called_once_with(mock_psycopg_cursor, db_name_val)
+    mock_create_db.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_name_val, db_user_val)
+
+
+def test_ensure_users_and_db_user_and_db_already_exist(command, mock_admin_connection, mock_psycopg_cursor, settings, mocker):
+    db_name_val = "existing_db"
+    db_user_val = "existing_user"
+    db_password_val = "existing_pass"
+    db_config_dict = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": db_name_val,
+        "USER": db_user_val,
+        "PASSWORD": db_password_val,
+    }
+    settings.DATABASES = {DB_TEST_ALIAS: db_config_dict}
+
+    mocker.patch.object(command, "_validate_config", return_value=(db_name_val, db_user_val, db_password_val))
+    mocker.patch.object(command, "_user_exists", return_value=True)  # User exists
+    mock_create_user = mocker.patch.object(command, "_create_database_user")
+    mocker.patch.object(command, "_database_exists", return_value=True)  # Database exists
+    mock_create_db = mocker.patch.object(command, "_create_database")
+
+    command._ensure_users_and_db(mock_admin_connection)
+
+    command._validate_config.assert_called_once_with(DB_TEST_ALIAS, db_config_dict)
+    command._user_exists.assert_called_once_with(mock_psycopg_cursor, db_user_val)
+    mock_create_user.assert_not_called()
+    command._database_exists.assert_called_once_with(mock_psycopg_cursor, db_name_val)
+    mock_create_db.assert_not_called()
+
+    command.stdout.write.assert_any_call(f"User found: {db_user_val}")
+    command.stdout.write.assert_any_call(f"Database found: {db_name_val}")
+    mock_psycopg_cursor.close.assert_called_once()
 
 
 def test_run_migrations_success(command, mock_call_command, settings):
