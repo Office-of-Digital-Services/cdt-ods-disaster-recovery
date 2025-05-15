@@ -80,6 +80,7 @@ WORKDIR /$USER/app
 COPY --from=build_wheel /build/dist /build/dist
 COPY manage.py manage.py
 COPY bin bin
+COPY appcontainer/certs/azure_postgres_ca_bundle.pem certs/azure_postgres_ca_bundle.pem
 COPY web web
 
 # install source as a package
