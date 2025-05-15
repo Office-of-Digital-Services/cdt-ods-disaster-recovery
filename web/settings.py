@@ -141,12 +141,14 @@ WSGI_APPLICATION = "web.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+sslmode = os.environ.get("POSTGRES_SSLMODE", "verify-full")
+sslrootcert = os.path.join(BASE_DIR, "certs", "azure_postgres_ca_bundle.pem") if sslmode == "verify-full" else None
 PG_CONFIG = {
     "ENGINE": "django.db.backends.postgresql",
     "HOST": os.environ.get("POSTGRES_HOSTNAME", "postgres"),
     "PORT": os.environ.get("POSTGRES_PORT", "5432"),
     # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
-    "OPTIONS": {"sslmode": os.environ.get("POSTGRES_SSLMODE", "verify-full")},
+    "OPTIONS": {"sslmode": sslmode, "sslrootcert": sslrootcert},
 }
 DATABASES = {
     "default": PG_CONFIG
