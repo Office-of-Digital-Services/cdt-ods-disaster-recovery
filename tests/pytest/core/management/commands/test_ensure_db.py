@@ -76,7 +76,7 @@ def test_admin_connection_psycopg_error(command, mock_psycopg_connect, mock_os_e
 DB_TEST_ALIAS = "testdb"  # Define a clear alias for these tests
 
 
-def test_validate_config_success(command, settings):
+def test_validate_config_success(command):
     """Test _validate_config with valid PostgreSQL config."""
     db_alias = "postgres_db"
     valid_config = {
@@ -92,7 +92,7 @@ def test_validate_config_success(command, settings):
     assert details == expected_details
 
 
-def test_validate_config_wrong_engine(command, settings):
+def test_validate_config_wrong_engine(command):
     """Test _validate_config skips non-PostgreSQL engine."""
     db_alias = "sqlite_db"
     invalid_config = {
@@ -108,7 +108,7 @@ def test_validate_config_wrong_engine(command, settings):
     )
 
 
-def test_validate_config_missing_name(command, settings):
+def test_validate_config_missing_name(command):
     """Test _validate_config skips incomplete config (missing NAME)."""
     db_alias = "incomplete_db_name"
     incomplete_config = {
@@ -125,7 +125,7 @@ def test_validate_config_missing_name(command, settings):
     )
 
 
-def test_validate_config_missing_user(command, settings):
+def test_validate_config_missing_user(command):
     """Test _validate_config skips incomplete config (missing USER)."""
     db_alias = "incomplete_db_user"
     incomplete_config = {
@@ -142,7 +142,7 @@ def test_validate_config_missing_user(command, settings):
     )
 
 
-def test_validate_config_missing_password(command, settings):
+def test_validate_config_missing_password(command):
     """Test _validate_config skips incomplete config (missing PASSWORD)."""
     db_alias = "incomplete_db_pass"
     incomplete_config = {
@@ -327,6 +327,57 @@ def test_create_database_db_creation_psycopg_error(command, mock_psycopg_cursor,
     )
 
 
+def test_ensure_schema_permissions_success(command, mock_admin_connection, mocker):
+    """Test successful schema permission grant."""
+    db_name = "test_db"
+    db_user = "test_user"
+    mocker.patch.object(command, "_admin_connection", return_value=mock_admin_connection)
+    mock_cursor = command._admin_connection.return_value.cursor.return_value.__enter__.return_value
+
+    command._ensure_schema_permissions(db_name, db_user)
+
+    # Verify admin connection was made with correct database
+    command._admin_connection.assert_called_once_with(db_name)
+
+    # Verify grant query was executed with correct SQL
+    expected_sql = sql.SQL("GRANT USAGE, CREATE ON SCHEMA public TO {user}").format(user=sql.Identifier(db_user))
+    mock_cursor.execute.assert_called_once_with(expected_sql)
+
+    # Verify connection was closed
+    assert mock_admin_connection.closed is True
+
+
+def test_ensure_schema_permissions_psycopg_error(command, mock_admin_connection, mocker):
+    """Test handling of psycopg error during schema permission grant."""
+    db_name = "error_db"
+    db_user = "error_user"
+    mocker.patch.object(command, "_admin_connection", return_value=mock_admin_connection)
+    mock_cursor = command._admin_connection.return_value.cursor.return_value.__enter__.return_value
+
+    # Set up the cursor to raise an error
+    mock_cursor.execute.side_effect = psycopg.Error()
+
+    with pytest.raises(CommandError, match=f"Failed to set schema permissions for newly created database: {db_name}."):
+        command._ensure_schema_permissions(db_name, db_user)
+
+    # Verify connection was closed even after error
+    assert mock_admin_connection.closed
+
+
+def test_ensure_schema_permissions_admin_connection_failure(command, mocker):
+    """Test handling of admin connection failure."""
+    db_name = "nonexistent_db"
+    db_user = "some_user"
+
+    # Mock _admin_connection to raise an error
+    mocker.patch.object(command, "_admin_connection", side_effect=CommandError())
+
+    with pytest.raises(CommandError):
+        command._ensure_schema_permissions(db_name, db_user)
+
+    command._admin_connection.assert_called_once_with(db_name)
+
+
 def test_ensure_users_and_db_creates_new_user_and_db(command, mock_admin_connection, mock_psycopg_cursor, settings, mocker):
     admin_user = "admin_user"
     db_name_val = "example_db"
@@ -346,6 +397,7 @@ def test_ensure_users_and_db_creates_new_user_and_db(command, mock_admin_connect
     mock_create_user = mocker.patch.object(command, "_create_database_user")
     mocker.patch.object(command, "_database_exists", return_value=False)  # Database does not exist
     mock_create_db = mocker.patch.object(command, "_create_database")
+    mock_ensure_schema_permissions = mocker.patch.object(command, "_ensure_schema_permissions")
     mock_admin_connection.info.user = admin_user
 
     command._ensure_users_and_db(mock_admin_connection)
@@ -356,6 +408,7 @@ def test_ensure_users_and_db_creates_new_user_and_db(command, mock_admin_connect
     mock_create_user.assert_called_once_with(mock_psycopg_cursor, admin_user, DB_TEST_ALIAS, db_user_val, db_password_val)
     command._database_exists.assert_called_once_with(mock_psycopg_cursor, db_name_val)
     mock_create_db.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_name_val, db_user_val)
+    mock_ensure_schema_permissions.assert_called_once_with(db_name_val, db_user_val)
 
     mock_psycopg_cursor.close.assert_called_once()
 

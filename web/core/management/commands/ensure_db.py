@@ -15,7 +15,7 @@ class Command(BaseCommand):
         "and creates a superuser if specified by environment variables and not already present."
     )
 
-    def _admin_connection(self):
+    def _admin_connection(self, database=None):
         # Try to get HOST/PORT from the default database settings first
         # Fallback to environment variables if not found in settings
         default_db_settings = settings.DATABASES.get(DEFAULT_DB_ALIAS, {})
@@ -23,25 +23,26 @@ class Command(BaseCommand):
         db_port = default_db_settings.get("PORT")
 
         postgres_maintenance_db = os.environ.get("POSTGRES_DB", "postgres")
+        target_db = database or postgres_maintenance_db
         admin_user = os.environ.get("POSTGRES_USER", "postgres")
         admin_password = os.environ.get("POSTGRES_PASSWORD")
 
         if not admin_password:
             raise CommandError("POSTGRES_PASSWORD environment variable not set. Cannot establish admin connection.")
 
-        self.stdout.write(f"Attempting admin connection as user: {admin_user} to database: {postgres_maintenance_db}")
+        self.stdout.write(f"Attempting admin connection as user: {admin_user} to database: {target_db}")
         try:
             conn = psycopg.connect(
                 host=db_host,
                 port=db_port,
                 user=admin_user,
                 password=admin_password,
-                dbname=postgres_maintenance_db,
+                dbname=target_db,
                 autocommit=True,  # Ensure commands are executed immediately
             )
             return conn
         except psycopg.Error as e:
-            raise CommandError(f"Admin connection to PostgreSQL failed: {e}")
+            raise CommandError(f"Admin connection to PostgreSQL failed: {e}") from e
 
     def _validate_config(self, db_alias: str, db_config: dict) -> tuple[str, str, str] | None:
         """
@@ -117,6 +118,30 @@ class Command(BaseCommand):
             self.stderr.write(self.style.ERROR(f"Failed to create database {db_name} for alias {db_alias}: {e}"))
             raise
 
+    def _ensure_schema_permissions(self, db_name: str, db_user_to_grant: str):
+        """
+        Grants USAGE and CREATE permissions on the public schema of a newly created database to the specified user.
+        Connects to the target database using admin credentials. Failure is considered critical as it's for a new database.
+        """
+        admin_conn = None
+        try:
+            admin_conn = self._admin_connection(db_name)
+            with admin_conn.cursor() as cursor:
+                grant_query = sql.SQL("GRANT USAGE, CREATE ON SCHEMA public TO {user}").format(
+                    user=sql.Identifier(db_user_to_grant)
+                )
+                cursor.execute(grant_query)
+        except psycopg.Error as e:
+            self.stderr.write(
+                self.style.ERROR(
+                    f"Failed to grant schema permissions in database: {db_name} for user: {db_user_to_grant}: {e}"
+                )
+            )
+            raise CommandError(f"Failed to set schema permissions for newly created database: {db_name}.") from e
+        finally:
+            if admin_conn:
+                admin_conn.close()
+
     def _ensure_users_and_db(self, admin_conn: Connection):
         self.stdout.write(self.style.MIGRATE_HEADING("Checking and creating database users and databases..."))
         cursor = admin_conn.cursor()
@@ -132,6 +157,7 @@ class Command(BaseCommand):
                 if not self._user_exists(cursor, db_user):
                     admin_user = admin_conn.info.user
                     self._create_database_user(cursor, admin_user, db_alias, db_user, db_password)
+                    self._ensure_schema_permissions(db_name, db_user)
                 else:
                     self.stdout.write(f"User found: {db_user}")
 
