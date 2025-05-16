@@ -150,6 +150,18 @@ resource "azurerm_container_app" "web" {
         name        = "DJANGO_DB_FIXTURES"
         secret_name = "django-db-fixtures"
       }
+      env {
+        name        = "DJANGO_SUPERUSER_USERNAME"
+        secret_name = "django-superuser-username"
+      }
+      env {
+        name        = "DJANGO_SUPERUSER_EMAIL"
+        secret_name = "django-superuser-email"
+      }
+      env {
+        name        = "DJANGO_SUPERUSER_PASSWORD"
+        secret_name = "django-superuser-password"
+      }
       # Postgres
       env {
         name        = "POSTGRES_DB"
