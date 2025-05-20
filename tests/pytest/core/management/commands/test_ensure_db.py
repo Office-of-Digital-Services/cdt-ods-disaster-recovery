@@ -6,6 +6,9 @@ from psycopg import sql
 
 from web.core.management.commands.ensure_db import Command
 
+# ignore UserWarnings about modifying settings.DATABASE, the whole purpose of these tests!
+pytestmark = pytest.mark.filterwarnings("ignore:Overriding setting DATABASES")
+
 DB_TEST_ALIAS = "testdb"  # Define a clear alias for these tests
 
 
