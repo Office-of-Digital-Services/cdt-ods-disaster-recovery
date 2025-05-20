@@ -54,6 +54,9 @@ class StartView(EligibilityMixin, CreateView):
         next_route = self.object.complete_start()
         self.object.save()
 
+        # store generated request id in session for verification in later steps
+        Session(self.request, request_id=self.object.pk)
+
         return redirect(next_route, pk=self.object.pk)
 
 
