@@ -1,7 +1,8 @@
+from uuid import uuid4
+
 from django.contrib.sessions.middleware import SessionMiddleware
 
 import pytest
-
 from pytest_socket import disable_socket
 
 
@@ -25,3 +26,8 @@ def app_request(rf):
     app_request.session.save()
 
     return app_request
+
+
+@pytest.fixture
+def request_id():
+    return uuid4()
