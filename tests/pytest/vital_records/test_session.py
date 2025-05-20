@@ -1,5 +1,7 @@
 import pytest
 
+from cdt_identity.claims import ClaimsResult
+
 from web.vital_records.session import Session
 
 
@@ -23,3 +25,10 @@ class TestSession:
         session.request_id = request_id
         assert session.request_id == request_id
         assert session._keys_request_id in session.session
+
+    def test_verified_email(self, app_request):
+        session = Session(app_request)
+        assert session.verified_email == ""
+
+        session.claims_result = ClaimsResult(verified={"email_verified": True, "email": "email@example.com"})
+        assert session.verified_email == "email@example.com"
