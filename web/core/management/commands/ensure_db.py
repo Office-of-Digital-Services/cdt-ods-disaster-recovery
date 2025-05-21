@@ -123,6 +123,7 @@ class Command(BaseCommand):
         Grants USAGE and CREATE permissions on the public schema of a newly created database to the specified user.
         Connects to the target database using admin credentials. Failure is considered critical as it's for a new database.
         """
+        self.stdout.write(f"Ensuring schema permissions for user: {db_user_to_grant} in database: {db_name}")
         admin_conn = None
         try:
             admin_conn = self._admin_connection(db_name)
@@ -131,10 +132,11 @@ class Command(BaseCommand):
                     user=sql.Identifier(db_user_to_grant)
                 )
                 cursor.execute(grant_query)
+                self.stdout.write("Schema permissions confirmed")
         except psycopg.Error as e:
             self.stderr.write(
                 self.style.ERROR(
-                    f"Failed to grant schema permissions in database: {db_name} for user: {db_user_to_grant}: {e}"
+                    f"Failed to grant schema permissions for user: {db_user_to_grant} in database: {db_name} : {e}"
                 )
             )
             raise CommandError(f"Failed to set schema permissions for newly created database: {db_name}.") from e
