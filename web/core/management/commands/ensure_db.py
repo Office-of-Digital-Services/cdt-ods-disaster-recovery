@@ -254,8 +254,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # database and user setup (requires admin connection)
         admin_conn = None
+        reset = options.get("reset", False)
         try:
             admin_conn = self._admin_connection()
+            if reset:
+                self._reset(admin_conn)
             self._ensure_users_and_db(admin_conn)
         except Exception as e:
             self.stderr.write(self.style.ERROR(str(e)))

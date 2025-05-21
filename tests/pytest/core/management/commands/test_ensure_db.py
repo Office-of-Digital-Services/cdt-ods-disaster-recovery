@@ -661,27 +661,27 @@ def test_add_arguments(command, mocker):
     )
 
 
-def test_handle_success_path(command, mocker):
-    mock_conn_obj = mocker.MagicMock(spec=psycopg.Connection, closed=False)
-
-    def mock_admin_conn_close():
-        mock_conn_obj.closed = True
-
-    mock_conn_obj.close = mock_admin_conn_close
-
-    mocker.patch.object(command, "_admin_connection", return_value=mock_conn_obj)
+@pytest.mark.parametrize("reset", [True, False])
+def test_handle_success(command, mocker, mock_admin_connection, reset):
+    mocker.patch.object(command, "_admin_connection", return_value=mock_admin_connection)
+    mocker.patch.object(command, "_reset")
     mocker.patch.object(command, "_ensure_users_and_db")
     mocker.patch.object(command, "_run_migrations")
     mocker.patch.object(command, "_ensure_superuser")
 
-    command.handle()
+    command.handle(reset=reset)
 
     command._admin_connection.assert_called_once()
-    command._ensure_users_and_db.assert_called_once_with(mock_conn_obj)
+    command._ensure_users_and_db.assert_called_once_with(mock_admin_connection)
     command._run_migrations.assert_called_once()
     command._ensure_superuser.assert_called_once()
-    assert mock_conn_obj.closed
+    assert mock_admin_connection.closed
     command.stdout.write.assert_any_call(command.style.SUCCESS("ensure_db command finished successfully."))
+
+    if reset:
+        command._reset.assert_called_once_with(mock_admin_connection)
+    else:
+        command._reset.assert_not_called()
 
 
 def test_handle_admin_connection_fails(command, mocker):
