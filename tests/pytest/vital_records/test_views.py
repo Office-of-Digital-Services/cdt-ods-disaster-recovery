@@ -3,6 +3,7 @@ from django.urls import reverse
 import pytest
 
 from web.vital_records import views
+from web.vital_records.forms import EligibilityForm
 from web.vital_records.session import Session
 
 
@@ -46,6 +47,35 @@ class TestLoginView:
 
         assert response.status_code == 302
         assert response.url == reverse("cdt:login")
+
+
+@pytest.mark.django_db
+class TestStartView:
+    @pytest.fixture
+    def view(self, app_request):
+        v = views.StartView()
+        v.setup(app_request)
+        return v
+
+    @pytest.fixture
+    def form(self, mocker, request_id):
+        frm = mocker.Mock(spec=EligibilityForm)
+        # mock the model/return value of calling form.save()
+        obj = frm.save.return_value
+        # mock complete_start on the model, which returns the next URL to navigate to
+        obj.complete_start.return_value = "/test"
+        # set the model's ID
+        obj.pk = request_id
+
+        return frm
+
+    def test_form_valid(self, app_request, request_id, view, form, mock_Session_cls):
+        response = view.form_valid(form)
+        # Session was initialized with the request_id
+        mock_Session_cls.assert_called_once_with(app_request, request_id=request_id)
+        # response is a redirect
+        assert response.status_code == 302
+        assert response.url == "/test"
 
 
 class TestSubmittedView:

@@ -16,6 +16,7 @@ from web.vital_records.forms import (
     OrderInfoForm,
     SubmitForm,
 )
+from web.vital_records.mixins import ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
 
@@ -54,10 +55,13 @@ class StartView(EligibilityMixin, CreateView):
         next_route = self.object.complete_start()
         self.object.save()
 
+        # store generated request id in session for verification in later steps
+        Session(self.request, request_id=self.object.pk)
+
         return redirect(next_route, pk=self.object.pk)
 
 
-class StatementView(EligibilityMixin, UpdateView):
+class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = StatementForm
     template_name = "vital_records/request/statement.html"
@@ -72,7 +76,7 @@ class StatementView(EligibilityMixin, UpdateView):
         return super().form_valid(form)
 
 
-class NameView(EligibilityMixin, UpdateView):
+class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = NameForm
     template_name = "vital_records/request/name.html"
@@ -98,7 +102,7 @@ class NameView(EligibilityMixin, UpdateView):
         return context
 
 
-class CountyView(EligibilityMixin, UpdateView):
+class CountyView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = CountyForm
     template_name = "vital_records/request/county.html"
@@ -113,7 +117,7 @@ class CountyView(EligibilityMixin, UpdateView):
         return super().form_valid(form)
 
 
-class DateOfBirthView(EligibilityMixin, UpdateView):
+class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = DateOfBirthForm
     template_name = "vital_records/request/dob.html"
@@ -129,7 +133,7 @@ class DateOfBirthView(EligibilityMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ParentsNamesView(EligibilityMixin, UpdateView):
+class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = ParentsNamesForm
     template_name = "vital_records/request/parents.html"
@@ -158,7 +162,7 @@ class ParentsNamesView(EligibilityMixin, UpdateView):
         return context
 
 
-class OrderInfoView(EligibilityMixin, UpdateView):
+class OrderInfoView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = OrderInfoForm
     template_name = "vital_records/request/order.html"
@@ -183,7 +187,7 @@ class OrderInfoView(EligibilityMixin, UpdateView):
         return context
 
 
-class SubmitView(EligibilityMixin, UpdateView):
+class SubmitView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = SubmitForm
     template_name = "vital_records/request/confirm.html"
@@ -217,7 +221,7 @@ class SubmitView(EligibilityMixin, UpdateView):
         return context
 
 
-class SubmittedView(EligibilityMixin, DetailView):
+class SubmittedView(EligibilityMixin, ValidateRequestIdMixin, DetailView):
     model = VitalRecordsRequest
     template_name = "vital_records/submitted.html"
 
