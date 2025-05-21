@@ -155,15 +155,14 @@ class Command(BaseCommand):
 
                 # Ensure DB User Exists
                 if not self._user_exists(cursor, db_user):
-                    admin_user = admin_conn.info.user
-                    self._create_database_user(cursor, admin_user, db_alias, db_user, db_password)
-                    self._ensure_schema_permissions(db_name, db_user)
+                    self._create_database_user(cursor, admin_conn.info.user, db_alias, db_user, db_password)
                 else:
                     self.stdout.write(f"User found: {db_user}")
 
                 # Ensure Database Exists
                 if not self._database_exists(cursor, db_name):
                     self._create_database(cursor, db_alias, db_name, db_user)  # db_user is the owner
+                    self._ensure_schema_permissions(db_name, db_user)
                 else:
                     self.stdout.write(f"Database found: {db_name}")
         finally:

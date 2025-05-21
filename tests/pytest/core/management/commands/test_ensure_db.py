@@ -389,6 +389,7 @@ def test_ensure_users_and_db_user_exists_db_not_exists(command, mock_admin_conne
     mock_create_user = mocker.patch.object(command, "_create_database_user")
     mocker.patch.object(command, "_database_exists", return_value=False)  # DB does not exist
     mock_create_db = mocker.patch.object(command, "_create_database")
+    mock_ensure_schema_permissions = mocker.patch.object(command, "_ensure_schema_permissions")
 
     command._ensure_users_and_db(mock_admin_connection)
 
@@ -397,6 +398,7 @@ def test_ensure_users_and_db_user_exists_db_not_exists(command, mock_admin_conne
     mock_create_user.assert_not_called()
     command._database_exists.assert_called_once_with(mock_psycopg_cursor, db_name_val)
     mock_create_db.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_name_val, db_user_val)
+    mock_ensure_schema_permissions.assert_called_once_with(db_name_val, db_user_val)
 
 
 def test_ensure_users_and_db_skips_non_postgres(command, mock_admin_connection, mock_psycopg_cursor, settings):
