@@ -2,7 +2,13 @@
 set -ex
 
 # Ensure databases, users, migrations, and superuser are set up
-python manage.py ensure_db
+should_reset=${REMOTE_CONTAINERS:-false}
+if [[ -n $should_reset ]]; then
+    # running in a devcontainer, reset the DB
+    python manage.py ensure_db --reset
+else
+    python manage.py ensure_db
+fi
 
 # Load data fixtures (if any)
 valid_fixtures=$(echo "$DJANGO_DB_FIXTURES" | grep -e fixtures\.json$ || test $? = 1)
