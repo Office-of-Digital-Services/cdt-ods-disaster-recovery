@@ -222,6 +222,9 @@ class Command(BaseCommand):
         else:
             self.stdout.write("DJANGO_SUPERUSER_USERNAME environment variable not set. Skipping superuser creation.")
 
+    def add_arguments(self, parser):
+        parser.add_argument("--reset", action="store_true", help="Completely reset the database(s) (DESTRUCTIVE).")
+
     def handle(self, *args, **options):
         # database and user setup (requires admin connection)
         admin_conn = None

@@ -614,6 +614,16 @@ def test_ensure_superuser_creation_missing_email_env_var(command, mock_os_enviro
     mock_call_command.assert_not_called()
 
 
+def test_add_arguments(command, mocker):
+    mock_parser = mocker.Mock()
+
+    command.add_arguments(mock_parser)
+
+    mock_parser.add_argument.assert_called_once_with(
+        "--reset", action="store_true", help="Completely reset the database(s) (DESTRUCTIVE)."
+    )
+
+
 def test_handle_success_path(command, mocker):
     mock_conn_obj = mocker.MagicMock(spec=psycopg.Connection, closed=False)
 
