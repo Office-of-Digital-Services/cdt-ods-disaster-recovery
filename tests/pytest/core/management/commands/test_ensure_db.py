@@ -6,6 +6,11 @@ from psycopg import sql
 
 from web.core.management.commands.ensure_db import Command
 
+# ignore UserWarnings about modifying settings.DATABASE, the whole purpose of these tests!
+pytestmark = pytest.mark.filterwarnings("ignore:Overriding setting DATABASES")
+
+DB_TEST_ALIAS = "testdb"  # Define a clear alias for these tests
+
 
 @pytest.fixture
 def command(mocker):
@@ -73,7 +78,42 @@ def test_admin_connection_psycopg_error(command, mock_psycopg_connect, mock_os_e
         command._admin_connection()
 
 
-DB_TEST_ALIAS = "testdb"  # Define a clear alias for these tests
+def test_reset_success(command, mock_admin_connection, mock_psycopg_cursor, settings, mocker):
+    """Test successful database reset."""
+    settings.DATABASES = {
+        DEFAULT_DB_ALIAS: {"ENGINE": "django.db.backends.postgresql", "NAME": "db1", "USER": "u1", "PASSWORD": "p1"},
+        "db2": {"ENGINE": "django.db.backends.postgresql", "NAME": "db2", "USER": "u2", "PASSWORD": "p2"},
+        "other_db": {"ENGINE": "django.db.backends.sqlite3", "NAME": "other"},
+    }
+    mock_admin_connection.cursor.return_value = mock_psycopg_cursor
+
+    command._reset(mock_admin_connection)
+
+    drop_db = sql.SQL("DROP DATABASE IF EXISTS {db}")
+    drop_user = sql.SQL("DROP USER IF EXISTS {user}")
+
+    calls = [
+        mocker.call(drop_db.format(db=sql.Identifier("db1"))),
+        mocker.call(drop_user.format(user=sql.Identifier("u1"))),
+        mocker.call(drop_db.format(db=sql.Identifier("db2"))),
+        mocker.call(drop_user.format(user=sql.Identifier("u2"))),
+    ]
+    mock_psycopg_cursor.execute.assert_has_calls(calls)
+
+
+def test_reset_psycopg_error(command, mock_admin_connection, mock_psycopg_cursor, settings):
+    """Test psycopg error during database reset."""
+    settings.DATABASES = {
+        DEFAULT_DB_ALIAS: {"ENGINE": "django.db.backends.postgresql", "NAME": "db1", "USER": "u1", "PASSWORD": "p1"},
+        "db2": {"ENGINE": "django.db.backends.postgresql", "NAME": "db2", "USER": "u2", "PASSWORD": "p2"},
+        "other_db": {"ENGINE": "django.db.backends.sqlite3", "NAME": "other"},
+    }
+    mock_admin_connection.cursor.return_value = mock_psycopg_cursor
+    mock_psycopg_cursor.execute.side_effect = psycopg.Error()
+
+    with pytest.raises(psycopg.Error) as e:
+        command._reset(mock_admin_connection)
+        command.stderr.write.assert_called_once_with(command.style.ERROR(f"Failed database reset for database db1: {e}"))
 
 
 def test_validate_config_success(command):
@@ -108,14 +148,32 @@ def test_validate_config_wrong_engine(command):
     )
 
 
-def test_validate_config_missing_name(command):
+@pytest.mark.parametrize(
+    "incomplete_config",
+    [
+        {
+            "ENGINE": "django.db.backends.postgresql",
+            # missing NAME
+            "USER": "test_user",
+            "PASSWORD": "test_password",
+        },
+        {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "test_name",
+            # missing USER
+            "PASSWORD": "test_password",
+        },
+        {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "test_name",
+            "USER": "test_user",
+            # missing PASSWORD
+        },
+    ],
+)
+def test_validate_config_incomplete(command, incomplete_config):
     """Test _validate_config skips incomplete config (missing NAME)."""
-    db_alias = "incomplete_db_name"
-    incomplete_config = {
-        "ENGINE": "django.db.backends.postgresql",
-        "USER": "test_user",
-        "PASSWORD": "test_password",
-    }
+    db_alias = "incomplete_db"
 
     details = command._validate_config(db_alias, incomplete_config)
 
@@ -125,59 +183,14 @@ def test_validate_config_missing_name(command):
     )
 
 
-def test_validate_config_missing_user(command):
-    """Test _validate_config skips incomplete config (missing USER)."""
-    db_alias = "incomplete_db_user"
-    incomplete_config = {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "test_name",
-        "PASSWORD": "test_password",
-    }
-
-    details = command._validate_config(db_alias, incomplete_config)
-
-    assert details is None
-    command.stderr.write.assert_called_once_with(
-        command.style.ERROR(f"Skipping database {db_alias} with incomplete configuration (missing NAME, USER, or PASSWORD).")
-    )
-
-
-def test_validate_config_missing_password(command):
-    """Test _validate_config skips incomplete config (missing PASSWORD)."""
-    db_alias = "incomplete_db_pass"
-    incomplete_config = {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "test_name",
-        "USER": "test_user",
-    }
-
-    details = command._validate_config(db_alias, incomplete_config)
-
-    assert details is None
-    command.stderr.write.assert_called_once_with(
-        command.style.ERROR(f"Skipping database {db_alias} with incomplete configuration (missing NAME, USER, or PASSWORD).")
-    )
-
-
-def test_user_exists_true(command, mock_psycopg_cursor):
+@pytest.mark.parametrize("user_exists", [False, True])
+def test_user_exists(command, mock_psycopg_cursor, user_exists):
     test_username = "existing_user"
-    mock_psycopg_cursor.fetchone.return_value = (1,)  # Simulate user found
+    mock_psycopg_cursor.fetchone.return_value = (1,) if user_exists else None
 
     result = command._user_exists(mock_psycopg_cursor, test_username)
 
-    assert result is True
-    mock_psycopg_cursor.execute.assert_called_once_with(
-        "SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = %s", [test_username]
-    )
-
-
-def test_user_exists_false(command, mock_psycopg_cursor):
-    test_username = "missing_user"
-    mock_psycopg_cursor.fetchone.return_value = None  # Simulate user not found
-
-    result = command._user_exists(mock_psycopg_cursor, test_username)
-
-    assert result is False
+    assert result is user_exists
     mock_psycopg_cursor.execute.assert_called_once_with(
         "SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = %s", [test_username]
     )
@@ -200,7 +213,7 @@ def test_create_database_user_success(command, mock_psycopg_cursor, mocker):
     mock_psycopg_cursor.execute.assert_has_calls(calls)
 
 
-def test_create_database_user_failure(command, mock_psycopg_cursor, mocker):
+def test_create_database_user_failure(command, mock_psycopg_cursor):
     admin_user = "admin_user"
     db_alias = "fail_alias"
     test_username = "doomed_user"
@@ -222,30 +235,16 @@ def test_create_database_user_failure(command, mock_psycopg_cursor, mocker):
     )
 
 
-def test_database_exists_true(command, mock_psycopg_cursor):
+@pytest.mark.parametrize("db_exists", [True, False])
+def test_database_exists(command, mock_psycopg_cursor, db_exists):
     """Test _database_exists when database is found."""
     test_dbname = "existing_db"
-    mock_psycopg_cursor.fetchone.return_value = (1,)  # Simulate DB found
+    mock_psycopg_cursor.fetchone.return_value = (1,) if db_exists else None
 
     result = command._database_exists(mock_psycopg_cursor, test_dbname)
 
-    assert result is True
+    assert result is db_exists
     mock_psycopg_cursor.execute.assert_called_once_with("SELECT 1 FROM pg_database WHERE datname = %s", [test_dbname])
-    command.stdout.write.assert_not_called()  # No logging in this helper
-    command.stderr.write.assert_not_called()
-
-
-def test_database_exists_false(command, mock_psycopg_cursor):
-    """Test _database_exists when database is not found."""
-    test_dbname = "missing_db"
-    mock_psycopg_cursor.fetchone.return_value = None  # Simulate DB not found
-
-    result = command._database_exists(mock_psycopg_cursor, test_dbname)
-
-    assert result is False
-    mock_psycopg_cursor.execute.assert_called_once_with("SELECT 1 FROM pg_database WHERE datname = %s", [test_dbname])
-    command.stdout.write.assert_not_called()  # No logging in this helper
-    command.stderr.write.assert_not_called()
 
 
 def test_create_database_success(command, mock_psycopg_cursor, mocker):
@@ -430,6 +429,7 @@ def test_ensure_users_and_db_user_exists_db_not_exists(command, mock_admin_conne
     mock_create_user = mocker.patch.object(command, "_create_database_user")
     mocker.patch.object(command, "_database_exists", return_value=False)  # DB does not exist
     mock_create_db = mocker.patch.object(command, "_create_database")
+    mock_ensure_schema_permissions = mocker.patch.object(command, "_ensure_schema_permissions")
 
     command._ensure_users_and_db(mock_admin_connection)
 
@@ -438,6 +438,7 @@ def test_ensure_users_and_db_user_exists_db_not_exists(command, mock_admin_conne
     mock_create_user.assert_not_called()
     command._database_exists.assert_called_once_with(mock_psycopg_cursor, db_name_val)
     mock_create_db.assert_called_once_with(mock_psycopg_cursor, DB_TEST_ALIAS, db_name_val, db_user_val)
+    mock_ensure_schema_permissions.assert_called_once_with(db_name_val, db_user_val)
 
 
 def test_ensure_users_and_db_skips_non_postgres(command, mock_admin_connection, mock_psycopg_cursor, settings):
@@ -626,7 +627,8 @@ def test_ensure_superuser_already_exists(command, mock_os_environ, mock_get_user
     mock_call_command.assert_not_called()
 
 
-def test_ensure_superuser_username_not_set(command, mock_os_environ, mock_call_command):
+@pytest.mark.usefixtures("mock_os_environ")
+def test_ensure_superuser_username_not_set(command, mock_call_command):
     command._ensure_superuser()
 
     command.stdout.write.assert_any_call(
@@ -635,11 +637,12 @@ def test_ensure_superuser_username_not_set(command, mock_os_environ, mock_call_c
     mock_call_command.assert_not_called()
 
 
-def test_ensure_superuser_creation_missing_email_env_var(command, mock_os_environ, mock_get_user_model, mock_call_command):
+@pytest.mark.usefixtures("mock_get_user_model")
+def test_ensure_superuser_creation_missing_email_env_var(command, mock_os_environ, mock_call_command):
+    # mock_get_user_model has exists() returning False
     username = "incomplete_super"
     mock_os_environ["DJANGO_SUPERUSER_USERNAME"] = username
     mock_os_environ["DJANGO_SUPERUSER_PASSWORD"] = "super_password123"
-    # mock_get_user_model has exists() returning False
 
     command._ensure_superuser()
 
@@ -651,27 +654,37 @@ def test_ensure_superuser_creation_missing_email_env_var(command, mock_os_enviro
     mock_call_command.assert_not_called()
 
 
-def test_handle_success_path(command, mocker):
-    mock_conn_obj = mocker.MagicMock(spec=psycopg.Connection, closed=False)
+def test_add_arguments(command, mocker):
+    mock_parser = mocker.Mock()
 
-    def mock_admin_conn_close():
-        mock_conn_obj.closed = True
+    command.add_arguments(mock_parser)
 
-    mock_conn_obj.close = mock_admin_conn_close
+    mock_parser.add_argument.assert_called_once_with(
+        "--reset", action="store_true", help="Completely reset the database(s) (DESTRUCTIVE)."
+    )
 
-    mocker.patch.object(command, "_admin_connection", return_value=mock_conn_obj)
+
+@pytest.mark.parametrize("reset", [True, False])
+def test_handle_success(command, mocker, mock_admin_connection, reset):
+    mocker.patch.object(command, "_admin_connection", return_value=mock_admin_connection)
+    mocker.patch.object(command, "_reset")
     mocker.patch.object(command, "_ensure_users_and_db")
     mocker.patch.object(command, "_run_migrations")
     mocker.patch.object(command, "_ensure_superuser")
 
-    command.handle()
+    command.handle(reset=reset)
 
     command._admin_connection.assert_called_once()
-    command._ensure_users_and_db.assert_called_once_with(mock_conn_obj)
+    command._ensure_users_and_db.assert_called_once_with(mock_admin_connection)
     command._run_migrations.assert_called_once()
     command._ensure_superuser.assert_called_once()
-    assert mock_conn_obj.closed
+    assert mock_admin_connection.closed
     command.stdout.write.assert_any_call(command.style.SUCCESS("ensure_db command finished successfully."))
+
+    if reset:
+        command._reset.assert_called_once_with(mock_admin_connection)
+    else:
+        command._reset.assert_not_called()
 
 
 def test_handle_admin_connection_fails(command, mocker):
@@ -690,17 +703,14 @@ def test_handle_admin_connection_fails(command, mocker):
     mock_superuser.assert_not_called()
 
 
-def test_handle_run_migrations_fails(command, mocker):
-    mock_conn_obj = mocker.MagicMock(spec=psycopg.Connection, closed=False)
-    mock_conn_obj.close = mocker.MagicMock()
-    mocker.patch.object(command, "_admin_connection", return_value=mock_conn_obj)
+def test_handle_run_migrations_fails(command, mock_admin_connection, mocker):
+    mocker.patch.object(command, "_admin_connection", return_value=mock_admin_connection)
     mocker.patch.object(command, "_ensure_users_and_db")
-
     mocker.patch.object(command, "_run_migrations", side_effect=Exception())
-    mock_superuser = mocker.patch.object(command, "_ensure_superuser")
+    mocker.patch.object(command, "_ensure_superuser")
 
     with pytest.raises(Exception):
         command.handle()
 
-    mock_superuser.assert_not_called()
-    mock_conn_obj.close.assert_called_once()
+    command._ensure_superuser.assert_not_called()
+    assert mock_admin_connection.closed

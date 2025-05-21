@@ -44,6 +44,32 @@ class Command(BaseCommand):
         except psycopg.Error as e:
             raise CommandError(f"Admin connection to PostgreSQL failed: {e}") from e
 
+    def _reset(self, admin_conn: Connection):
+        self.stdout.write(self.style.WARNING("Resetting database users and databases..."))
+        cursor = admin_conn.cursor()
+        try:
+            for db_alias, db_config in settings.DATABASES.items():
+                validated_config = self._validate_config(db_alias, db_config)
+                if not validated_config:
+                    continue  # Skip this alias if validation failed
+
+                db_name, db_user, _ = validated_config
+                try:
+                    # drop the database
+                    query = sql.SQL("DROP DATABASE IF EXISTS {db}").format(db=sql.Identifier(db_name))
+                    cursor.execute(query)
+                    # drop the user
+                    query = sql.SQL("DROP USER IF EXISTS {user}").format(user=sql.Identifier(db_user))
+                    cursor.execute(query)
+                    self.stdout.write(self.style.SUCCESS(f"Database {db_name} reset successfully"))
+                except psycopg.Error as e:
+                    self.stderr.write(self.style.ERROR(f"Failed database reset for database {db_alias}: {e}"))
+                    raise
+
+        finally:
+            if cursor:
+                cursor.close()
+
     def _validate_config(self, db_alias: str, db_config: dict) -> tuple[str, str, str] | None:
         """
         Validates the database configuration for PostgreSQL engine and completeness.
@@ -123,6 +149,7 @@ class Command(BaseCommand):
         Grants USAGE and CREATE permissions on the public schema of a newly created database to the specified user.
         Connects to the target database using admin credentials. Failure is considered critical as it's for a new database.
         """
+        self.stdout.write(f"Ensuring schema permissions for user: {db_user_to_grant} in database: {db_name}")
         admin_conn = None
         try:
             admin_conn = self._admin_connection(db_name)
@@ -131,10 +158,11 @@ class Command(BaseCommand):
                     user=sql.Identifier(db_user_to_grant)
                 )
                 cursor.execute(grant_query)
+                self.stdout.write("Schema permissions confirmed")
         except psycopg.Error as e:
             self.stderr.write(
                 self.style.ERROR(
-                    f"Failed to grant schema permissions in database: {db_name} for user: {db_user_to_grant}: {e}"
+                    f"Failed to grant schema permissions for user: {db_user_to_grant} in database: {db_name} : {e}"
                 )
             )
             raise CommandError(f"Failed to set schema permissions for newly created database: {db_name}.") from e
@@ -155,15 +183,14 @@ class Command(BaseCommand):
 
                 # Ensure DB User Exists
                 if not self._user_exists(cursor, db_user):
-                    admin_user = admin_conn.info.user
-                    self._create_database_user(cursor, admin_user, db_alias, db_user, db_password)
-                    self._ensure_schema_permissions(db_name, db_user)
+                    self._create_database_user(cursor, admin_conn.info.user, db_alias, db_user, db_password)
                 else:
                     self.stdout.write(f"User found: {db_user}")
 
                 # Ensure Database Exists
                 if not self._database_exists(cursor, db_name):
                     self._create_database(cursor, db_alias, db_name, db_user)  # db_user is the owner
+                    self._ensure_schema_permissions(db_name, db_user)
                 else:
                     self.stdout.write(f"Database found: {db_name}")
         finally:
@@ -221,11 +248,17 @@ class Command(BaseCommand):
         else:
             self.stdout.write("DJANGO_SUPERUSER_USERNAME environment variable not set. Skipping superuser creation.")
 
+    def add_arguments(self, parser):
+        parser.add_argument("--reset", action="store_true", help="Completely reset the database(s) (DESTRUCTIVE).")
+
     def handle(self, *args, **options):
         # database and user setup (requires admin connection)
         admin_conn = None
+        reset = options.get("reset", False)
         try:
             admin_conn = self._admin_connection()
+            if reset:
+                self._reset(admin_conn)
             self._ensure_users_and_db(admin_conn)
         except Exception as e:
             self.stderr.write(self.style.ERROR(str(e)))
