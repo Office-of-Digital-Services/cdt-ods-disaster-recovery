@@ -6,6 +6,8 @@ from psycopg import sql
 
 from web.core.management.commands.ensure_db import Command
 
+DB_TEST_ALIAS = "testdb"  # Define a clear alias for these tests
+
 
 @pytest.fixture
 def command(mocker):
@@ -73,7 +75,42 @@ def test_admin_connection_psycopg_error(command, mock_psycopg_connect, mock_os_e
         command._admin_connection()
 
 
-DB_TEST_ALIAS = "testdb"  # Define a clear alias for these tests
+def test_reset_success(command, mock_admin_connection, mock_psycopg_cursor, settings, mocker):
+    """Test successful database reset."""
+    settings.DATABASES = {
+        DEFAULT_DB_ALIAS: {"ENGINE": "django.db.backends.postgresql", "NAME": "db1", "USER": "u1", "PASSWORD": "p1"},
+        "db2": {"ENGINE": "django.db.backends.postgresql", "NAME": "db2", "USER": "u2", "PASSWORD": "p2"},
+        "other_db": {"ENGINE": "django.db.backends.sqlite3", "NAME": "other"},
+    }
+    mock_admin_connection.cursor.return_value = mock_psycopg_cursor
+
+    command._reset(mock_admin_connection)
+
+    drop_db = sql.SQL("DROP DATABASE IF EXISTS {db}")
+    drop_user = sql.SQL("DROP USER IF EXISTS {user}")
+
+    calls = [
+        mocker.call(drop_db.format(db=sql.Identifier("db1"))),
+        mocker.call(drop_user.format(user=sql.Identifier("u1"))),
+        mocker.call(drop_db.format(db=sql.Identifier("db2"))),
+        mocker.call(drop_user.format(user=sql.Identifier("u2"))),
+    ]
+    mock_psycopg_cursor.execute.assert_has_calls(calls)
+
+
+def test_reset_psycopg_error(command, mock_admin_connection, mock_psycopg_cursor, settings):
+    """Test psycopg error during database reset."""
+    settings.DATABASES = {
+        DEFAULT_DB_ALIAS: {"ENGINE": "django.db.backends.postgresql", "NAME": "db1", "USER": "u1", "PASSWORD": "p1"},
+        "db2": {"ENGINE": "django.db.backends.postgresql", "NAME": "db2", "USER": "u2", "PASSWORD": "p2"},
+        "other_db": {"ENGINE": "django.db.backends.sqlite3", "NAME": "other"},
+    }
+    mock_admin_connection.cursor.return_value = mock_psycopg_cursor
+    mock_psycopg_cursor.execute.side_effect = psycopg.Error()
+
+    with pytest.raises(psycopg.Error) as e:
+        command._reset(mock_admin_connection)
+        command.stderr.write.assert_called_once_with(command.style.ERROR(f"Failed database reset for database db1: {e}"))
 
 
 def test_validate_config_success(command):

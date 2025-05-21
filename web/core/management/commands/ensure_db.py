@@ -44,6 +44,32 @@ class Command(BaseCommand):
         except psycopg.Error as e:
             raise CommandError(f"Admin connection to PostgreSQL failed: {e}") from e
 
+    def _reset(self, admin_conn: Connection):
+        self.stdout.write(self.style.WARNING("Resetting database users and databases..."))
+        cursor = admin_conn.cursor()
+        try:
+            for db_alias, db_config in settings.DATABASES.items():
+                validated_config = self._validate_config(db_alias, db_config)
+                if not validated_config:
+                    continue  # Skip this alias if validation failed
+
+                db_name, db_user, _ = validated_config
+                try:
+                    # drop the database
+                    query = sql.SQL("DROP DATABASE IF EXISTS {db}").format(db=sql.Identifier(db_name))
+                    cursor.execute(query)
+                    # drop the user
+                    query = sql.SQL("DROP USER IF EXISTS {user}").format(user=sql.Identifier(db_user))
+                    cursor.execute(query)
+                    self.stdout.write(self.style.SUCCESS(f"Database {db_name} reset successfully"))
+                except psycopg.Error as e:
+                    self.stderr.write(self.style.ERROR(f"Failed database reset for database {db_alias}: {e}"))
+                    raise
+
+        finally:
+            if cursor:
+                cursor.close()
+
     def _validate_config(self, db_alias: str, db_config: dict) -> tuple[str, str, str] | None:
         """
         Validates the database configuration for PostgreSQL engine and completeness.
