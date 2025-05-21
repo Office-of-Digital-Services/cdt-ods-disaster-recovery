@@ -3,7 +3,7 @@ set -ex
 
 # Ensure databases, users, migrations, and superuser are set up
 should_reset=${REMOTE_CONTAINERS:-false}
-if [[ -n $should_reset ]]; then
+if [[ $should_reset == "true" ]]; then
     # running in a devcontainer, reset the DB
     python manage.py ensure_db --reset
 else
