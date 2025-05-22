@@ -13,6 +13,7 @@ class SampleView(CustomEligibilityMixin, View):
     pass
 
 
+@pytest.mark.django_db
 class TestEligibilityMixin:
 
     @pytest.fixture

@@ -13,6 +13,7 @@ def mock_Session_cls(mocker):
     return mocker.patch("web.vital_records.views.Session", return_value=session)
 
 
+@pytest.mark.django_db
 class TestIndexView:
     @pytest.fixture
     def view(self, app_request):
