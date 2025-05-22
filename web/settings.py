@@ -79,6 +79,7 @@ CSRF_COOKIE_AGE = None
 CSRF_COOKIE_SAMESITE = "Strict"
 CSRF_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = _filter_empty(os.environ.get("DJANGO_TRUSTED_ORIGINS", "http://localhost").split(","))
+CSRF_USE_SESSIONS = True
 
 # With `Strict`, the user loses their Django session between leaving our app to
 # sign in with OAuth, and coming back into our app from the OAuth redirect.
@@ -244,7 +245,7 @@ LOGGING = {
     "formatters": {
         "default": {
             "format": "[{asctime}] {levelname} {name}:{lineno} {message}",
-            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "datefmt": "%Y-%b-%d %H:%M:%S",
             "style": "{",
         },
     },
