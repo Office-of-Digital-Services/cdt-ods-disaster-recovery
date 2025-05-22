@@ -97,10 +97,7 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
 
 SECURE_BROWSER_XSS_FILTER = True
-
-# required so that cross-origin pop-ups have access to parent window context
-# see https://github.com/cal-itp/benefits/pull/793
-SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 
 # the NGINX reverse proxy sits in front of the application in deployed environments
 # SSL terminates before getting to Django, and NGINX adds this header to indicate
