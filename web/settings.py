@@ -289,3 +289,36 @@ Q_CLUSTER = {
     # The number of workers to use in the cluster.
     "workers": int(os.environ.get("Q_WORKERS", 1)),
 }
+
+# Content Security Policy
+# Configuration docs at https://django-csp.readthedocs.io/en/latest/configuration.html
+
+# In particular, note that the inner single-quotes are required!
+# https://django-csp.readthedocs.io/en/latest/configuration.html#policy-settings
+
+CSP_BASE_URI = ["'none'"]
+CSP_DEFAULT_SRC = ["'self'"]
+CSP_CONNECT_SRC = ["'self'"]
+CSP_FONT_SRC = ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com/"]
+CSP_FRAME_ANCESTORS = ["'none'"]
+CSP_FRAME_SRC = []
+CSP_IMG_SRC = ["'self'", "data:", "https://cdn.cdt.ca.gov"]
+
+# Configuring strict Content Security Policy
+# https://django-csp.readthedocs.io/en/latest/nonce.html
+CSP_INCLUDE_NONCE_IN = ["script-src"]
+CSP_OBJECT_SRC = ["'none'"]
+CSP_SCRIPT_SRC = [
+    "'self'",
+    "https://alert.cdt.ca.gov",
+    "https://cdn.jsdelivr.net/",
+    "https://code.jquery.com/jquery-3.6.0.min.js",
+    "https://www.google-analytics.com",
+    "https://www.googletagmanager.com",
+]
+CSP_STYLE_SRC = [
+    "'self'",
+    "'unsafe-inline'",
+    "https://cdn.cdt.ca.gov",
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/",
+]
