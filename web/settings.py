@@ -90,7 +90,7 @@ CSRF_TRUSTED_ORIGINS = _filter_empty(os.environ.get("DJANGO_TRUSTED_ORIGINS", "h
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_NAME = "_ddrcsessionid"
+SESSION_COOKIE_NAME = "_cdrcsessionid"
 
 if not settings.DEBUG:
     CSRF_COOKIE_SECURE = True
