@@ -302,7 +302,7 @@ CSP_CONNECT_SRC = ["'self'"]
 CSP_FONT_SRC = ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com/"]
 CSP_FRAME_ANCESTORS = ["'none'"]
 CSP_FRAME_SRC = []
-CSP_IMG_SRC = ["'self'", "data:", "https://cdn.cdt.ca.gov"]
+CSP_IMG_SRC = ["'self'", "data:", "https://cdn.cdt.ca.gov", "*.googleusercontent.com"]
 
 # Configuring strict Content Security Policy
 # https://django-csp.readthedocs.io/en/latest/nonce.html
