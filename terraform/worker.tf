@@ -1,3 +1,30 @@
+locals {
+  # Define secret names for clarity
+  tasks_db_password_name = "tasks-db-password"
+}
+
+# Generate a random password for the Tasks DB
+resource "random_password" "tasks_db" {
+  length           = 32
+  min_lower        = 4
+  min_upper        = 4
+  min_numeric      = 4
+  min_special      = 4
+  special          = true
+}
+
+# Create the secret for Tasks DB password using the generated secret
+resource "azurerm_key_vault_secret" "tasks_db_password" {
+  name         = local.tasks_db_password_name
+  value        = random_password.tasks_db.result
+  key_vault_id = azurerm_key_vault.main.id
+  content_type = "password"
+  depends_on = [
+    azurerm_key_vault.main,
+    random_password.tasks_db # Ensure password is generated first
+  ]
+}
+
 # Create a User-Assigned Managed Identity for the Worker App
 resource "azurerm_user_assigned_identity" "worker_app_identity" {
   name                = lower("umi-aca-worker-${local.env_name}")
@@ -33,8 +60,8 @@ resource "azurerm_container_app" "worker" {
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
-    name                = "django-db-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-db-password"
+    name                = azurerm_key_vault_secret.django_db_password.name
+    key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.django_db_password.name}"
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
@@ -58,8 +85,8 @@ resource "azurerm_container_app" "worker" {
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
-    name                = "django-secret-key"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-secret-key"
+    name                = azurerm_key_vault_secret.django_secret_key.name
+    key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.django_secret_key.name}"
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   # Tasks
@@ -74,8 +101,8 @@ resource "azurerm_container_app" "worker" {
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
-    name                = "tasks-db-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-password"
+    name                = azurerm_key_vault_secret.tasks_db_password.name
+    key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.tasks_db_password.name}"
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   # Vital records
@@ -113,7 +140,7 @@ resource "azurerm_container_app" "worker" {
       }
       env {
         name        = "DJANGO_DB_PASSWORD"
-        secret_name = "django-db-password"
+        secret_name = azurerm_key_vault_secret.django_db_password.name
       }
       env {
         name        = "DJANGO_EMAIL_HOST"
@@ -133,7 +160,7 @@ resource "azurerm_container_app" "worker" {
       }
       env {
         name        = "DJANGO_SECRET_KEY"
-        secret_name = "django-secret-key"
+        secret_name = azurerm_key_vault_secret.django_secret_key.name
       }
       env {
         name = "DJANGO_STORAGE_DIR"
@@ -188,6 +215,9 @@ resource "azurerm_container_app" "worker" {
 
   depends_on = [
     azurerm_postgresql_flexible_server.main,
+    azurerm_key_vault_secret.django_db_password,
+    azurerm_key_vault_secret.django_secret_key,
+    azurerm_key_vault_secret.tasks_db_password,
     azurerm_user_assigned_identity.worker_app_identity
   ]
 }

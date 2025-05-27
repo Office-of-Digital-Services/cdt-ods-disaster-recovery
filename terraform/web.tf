@@ -1,6 +1,18 @@
 locals {
   # Define secret names for clarity
+  django_db_password_name = "django-db-password"
   django_secret_key_name = "django-secret-key"
+  django_superuser_password_name = "django-superuser-password"
+}
+
+# Generate a random password for the Django DB
+resource "random_password" "django_db" {
+  length           = 32
+  min_lower        = 4
+  min_upper        = 4
+  min_numeric      = 4
+  min_special      = 4
+  special          = true
 }
 
 # Generate a random secret key for Django
@@ -13,6 +25,30 @@ resource "random_password" "django_secret_key" {
   special          = true
 }
 
+# Generate a random password for the Django superuser
+resource "random_password" "django_superuser" {
+  length           = 32
+  min_lower        = 4
+  min_upper        = 4
+  min_numeric      = 4
+  min_special      = 4
+  special          = true
+}
+
+
+
+# Create the secret for Django DB password using the generated secret
+resource "azurerm_key_vault_secret" "django_db_password" {
+  name         = local.django_db_password_name
+  value        = random_password.django_db.result
+  key_vault_id = azurerm_key_vault.main.id
+  content_type = "password"
+  depends_on = [
+    azurerm_key_vault.main,
+    random_password.django_db # Ensure password is generated first
+  ]
+}
+
 # Create the secret for Django Secret Key using the generated secret
 resource "azurerm_key_vault_secret" "django_secret_key" {
   name         = local.django_secret_key_name
@@ -22,6 +58,18 @@ resource "azurerm_key_vault_secret" "django_secret_key" {
   depends_on = [
     azurerm_key_vault.main,
     random_password.django_secret_key # Ensure secret is generated first
+  ]
+}
+
+# Create the secret for Django superuser password using the generated secret
+resource "azurerm_key_vault_secret" "django_superuser_password" {
+  name         = local.django_superuser_password_name
+  value        = random_password.django_superuser.result
+  key_vault_id = azurerm_key_vault.main.id
+  content_type = "password"
+  depends_on = [
+    azurerm_key_vault.main,
+    random_password.django_superuser # Ensure password is generated first
   ]
 }
 
@@ -65,8 +113,8 @@ resource "azurerm_container_app" "web" {
     identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
-    name                = "django-db-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-db-password"
+    name                = azurerm_key_vault_secret.django_db_password.name
+    key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.django_db_password.name}"
     identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
@@ -100,8 +148,8 @@ resource "azurerm_container_app" "web" {
     identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
-    name                = "django-superuser-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-superuser-password"
+    name                = azurerm_key_vault_secret.django_superuser_password.name
+    key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.django_superuser_password.name}"
     identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
@@ -132,8 +180,8 @@ resource "azurerm_container_app" "web" {
     identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
   secret {
-    name                = "tasks-db-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-password"
+    name                = azurerm_key_vault_secret.tasks_db_password.name
+    key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.tasks_db_password.name}"
     identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
 
@@ -171,7 +219,7 @@ resource "azurerm_container_app" "web" {
       }
       env {
         name        = "DJANGO_DB_PASSWORD"
-        secret_name = "django-db-password"
+        secret_name = azurerm_key_vault_secret.django_db_password.name
       }
       env {
         name        = "DJANGO_DB_FIXTURES"
@@ -187,7 +235,7 @@ resource "azurerm_container_app" "web" {
       }
       env {
         name        = "DJANGO_SUPERUSER_PASSWORD"
-        secret_name = "django-superuser-password"
+        secret_name = azurerm_key_vault_secret.django_superuser_password.name
       }
       # Postgres
       env {
@@ -218,7 +266,7 @@ resource "azurerm_container_app" "web" {
       }
       env {
         name        = "TASKS_DB_PASSWORD"
-        secret_name = "tasks-db-password"
+        secret_name = azurerm_key_vault_secret.tasks_db_password.name
       }
 
       volume_mounts {
@@ -250,7 +298,7 @@ resource "azurerm_container_app" "web" {
       }
       env {
         name        = "DJANGO_DB_PASSWORD"
-        secret_name = "django-db-password"
+        secret_name = azurerm_key_vault_secret.django_db_password.name
       }
       env {
         name        = "DJANGO_DEBUG"
@@ -295,7 +343,7 @@ resource "azurerm_container_app" "web" {
       }
       env {
         name        = "TASKS_DB_PASSWORD"
-        secret_name = "tasks-db-password"
+        secret_name = azurerm_key_vault_secret.tasks_db_password.name
       }
 
       volume_mounts {
@@ -317,8 +365,11 @@ resource "azurerm_container_app" "web" {
 
   depends_on = [
     azurerm_postgresql_flexible_server.main,
+    azurerm_key_vault_secret.django_db_password,
     azurerm_key_vault_secret.django_secret_key,
+    azurerm_key_vault_secret.django_superuser_password,
     azurerm_key_vault_secret.postgres_admin_password,
+    azurerm_key_vault_secret.tasks_db_password,
     azurerm_user_assigned_identity.web_app_identity
   ]
 }
