@@ -14,6 +14,7 @@ from web.vital_records.hooks import VitalRecordsHooks
 urlpatterns = [
     path("", include("web.core.urls")),
     path("admin/", admin.site.urls),
+    path("google_sso/", include("django_google_sso.urls", namespace="django_google_sso")),
     path("oauth/", include("cdt_identity.urls"), {"hooks": VitalRecordsHooks}),
     path("vital-records/", include("web.vital_records.urls")),
 ]
