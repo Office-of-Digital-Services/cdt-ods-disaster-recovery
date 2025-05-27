@@ -346,6 +346,7 @@ GOOGLE_SSO_ALLOWABLE_DOMAINS = _filter_empty(os.environ.get("GOOGLE_SSO_ALLOWABL
 GOOGLE_SSO_CLIENT_ID = os.environ.get("GOOGLE_SSO_CLIENT_ID", "secret")
 GOOGLE_SSO_CLIENT_SECRET = os.environ.get("GOOGLE_SSO_CLIENT_SECRET", "secret")
 GOOGLE_SSO_LOGO_URL = "/static/icon/google_sso_logo.svg"
+GOOGLE_SSO_PRE_LOGIN_CALLBACK = "web.core.admin.pre_login_user"
 GOOGLE_SSO_PROJECT_ID = os.environ.get("GOOGLE_SSO_PROJECT_ID", "cdrc-admin")
 GOOGLE_SSO_SAVE_ACCESS_TOKEN = True
 GOOGLE_SSO_SCOPES = [
