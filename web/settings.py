@@ -70,15 +70,16 @@ MIDDLEWARE = [
     "web.core.middleware.Healthcheck",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 CSRF_COOKIE_AGE = None
 CSRF_COOKIE_SAMESITE = "Strict"
 CSRF_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = _filter_empty(os.environ.get("DJANGO_TRUSTED_ORIGINS", "http://localhost").split(","))
+CSRF_USE_SESSIONS = True
 
 # With `Strict`, the user loses their Django session between leaving our app to
 # sign in with OAuth, and coming back into our app from the OAuth redirect.
@@ -88,19 +89,16 @@ CSRF_TRUSTED_ORIGINS = _filter_empty(os.environ.get("DJANGO_TRUSTED_ORIGINS", "h
 # `Lax` allows the cookie to travel with the user and be sent back to us by the
 # OAuth server, as long as the request is "safe" i.e. GET
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_NAME = "_ddrcsessionid"
+SESSION_COOKIE_NAME = "_cdrcsessionid"
 
-if not DEBUG:
+if not settings.DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
 SECURE_BROWSER_XSS_FILTER = True
-
-# required so that cross-origin pop-ups have access to parent window context
-# see https://github.com/cal-itp/benefits/pull/793
-SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 
 # the NGINX reverse proxy sits in front of the application in deployed environments
 # SSL terminates before getting to Django, and NGINX adds this header to indicate
@@ -247,7 +245,7 @@ LOGGING = {
     "formatters": {
         "default": {
             "format": "[{asctime}] {levelname} {name}:{lineno} {message}",
-            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "datefmt": "%Y-%b-%d %H:%M:%S",
             "style": "{",
         },
     },
@@ -291,3 +289,36 @@ Q_CLUSTER = {
     # The number of workers to use in the cluster.
     "workers": int(os.environ.get("Q_WORKERS", 1)),
 }
+
+# Content Security Policy
+# Configuration docs at https://django-csp.readthedocs.io/en/latest/configuration.html
+
+# In particular, note that the inner single-quotes are required!
+# https://django-csp.readthedocs.io/en/latest/configuration.html#policy-settings
+
+CSP_BASE_URI = ["'none'"]
+CSP_DEFAULT_SRC = ["'self'"]
+CSP_CONNECT_SRC = ["'self'"]
+CSP_FONT_SRC = ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com/"]
+CSP_FRAME_ANCESTORS = ["'none'"]
+CSP_FRAME_SRC = []
+CSP_IMG_SRC = ["'self'", "data:", "https://cdn.cdt.ca.gov", "*.googleusercontent.com"]
+
+# Configuring strict Content Security Policy
+# https://django-csp.readthedocs.io/en/latest/nonce.html
+CSP_INCLUDE_NONCE_IN = ["script-src"]
+CSP_OBJECT_SRC = ["'none'"]
+CSP_SCRIPT_SRC = [
+    "'self'",
+    "https://alert.cdt.ca.gov",
+    "https://cdn.jsdelivr.net/",
+    "https://code.jquery.com/jquery-3.6.0.min.js",
+    "https://www.google-analytics.com",
+    "https://www.googletagmanager.com",
+]
+CSP_STYLE_SRC = [
+    "'self'",
+    "'unsafe-inline'",
+    "https://cdn.cdt.ca.gov",
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/",
+]

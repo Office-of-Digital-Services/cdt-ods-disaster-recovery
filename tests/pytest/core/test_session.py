@@ -8,6 +8,7 @@ from cdt_identity.models import ClaimsVerificationRequest
 from web.core.session import Session
 
 
+@pytest.mark.django_db
 class TestSession:
     @pytest.fixture
     def session_instance(self, app_request, mocker):
