@@ -95,11 +95,11 @@ def test_reset_success(command, mock_admin_connection, mock_psycopg_cursor, sett
     drop_user = sql.SQL("DROP USER IF EXISTS {user}")
 
     calls = [
-        mocker.call(revoke_role.format(role_to_revoke=sql.Identifier("u1"), grantee_admin=sql.Identifier("admin"))),
         mocker.call(drop_db.format(db=sql.Identifier("db1"))),
+        mocker.call(revoke_role.format(role_to_revoke=sql.Identifier("u1"), grantee_admin=sql.Identifier("admin"))),
         mocker.call(drop_user.format(user=sql.Identifier("u1"))),
-        mocker.call(revoke_role.format(role_to_revoke=sql.Identifier("u2"), grantee_admin=sql.Identifier("admin"))),
         mocker.call(drop_db.format(db=sql.Identifier("db2"))),
+        mocker.call(revoke_role.format(role_to_revoke=sql.Identifier("u2"), grantee_admin=sql.Identifier("admin"))),
         mocker.call(drop_user.format(user=sql.Identifier("u2"))),
     ]
     mock_psycopg_cursor.execute.assert_has_calls(calls)

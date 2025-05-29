@@ -56,23 +56,28 @@ class Command(BaseCommand):
 
                 db_name, db_user, _ = validated_config
                 try:
-                    # Attempt to revoke the app role from the admin role.
-                    # Ignore UndefinedObject if the app_role doesn't exist.
+                    self.stdout.write(f"Preparing to reset {db_user} and {db_name}...")
+
+                    # 1. Drop the database (while admin still has app_role granted from previous run)
+                    drop_db_query = sql.SQL("DROP DATABASE IF EXISTS {db} WITH (FORCE)").format(db=sql.Identifier(db_name))
+                    cursor.execute(drop_db_query)
+                    self.stdout.write(f"Database {db_name} dropped.")
+
+                    # 2. Revoke the app role from the admin role to break membership
                     try:
-                        query = sql.SQL("REVOKE {role_to_revoke} FROM {grantee_admin}").format(
+                        revoke_query = sql.SQL("REVOKE {role_to_revoke} FROM {grantee_admin}").format(
                             role_to_revoke=sql.Identifier(db_user), grantee_admin=sql.Identifier(admin_user)
                         )
-                        cursor.execute(query)
+                        cursor.execute(revoke_query)
                     except psycopg.errors.UndefinedObject:
-                        # This is expected and fine if the role (db_user) doesn't exist yet.
+                        # Expected if db_user (app_role) or admin_user doesn't exist.
                         pass
-                    # drop the database
-                    query = sql.SQL("DROP DATABASE IF EXISTS {db} WITH (FORCE)").format(db=sql.Identifier(db_name))
-                    cursor.execute(query)
-                    # drop the user
-                    query = sql.SQL("DROP USER IF EXISTS {user}").format(user=sql.Identifier(db_user))
-                    cursor.execute(query)
-                    self.stdout.write(self.style.SUCCESS(f"Database {db_name} reset successfully"))
+
+                    # 3. Drop the role
+                    drop_role_query = sql.SQL("DROP USER IF EXISTS {user}").format(user=sql.Identifier(db_user))
+                    cursor.execute(drop_role_query)
+                    self.stdout.write(f"Role {db_user} dropped.")
+                    self.stdout.write(self.style.SUCCESS(f"Database {db_name} and role {db_user} reset successfully."))
                 except psycopg.Error as e:
                     self.stderr.write(self.style.ERROR(f"Failed database reset for database {db_alias}: {e}"))
                     if hasattr(e, "diag") and e.diag and e.diag.message_detail:
