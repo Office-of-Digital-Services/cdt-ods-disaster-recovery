@@ -207,8 +207,10 @@ def test_create_database_user_success(command, mock_psycopg_cursor, mocker):
     create_sql = sql.SQL("CREATE USER {user} WITH PASSWORD {password_literal}").format(
         user=sql.Identifier(test_username), password_literal=sql.Literal(test_password)
     )
+    grant_sql = sql.SQL("GRANT {user} TO {admin}").format(user=sql.Identifier(test_username), admin=sql.Identifier(admin_user))
 
-    mock_psycopg_cursor.execute.assert_called_once_with(create_sql)
+    calls = [mocker.call(create_sql), mocker.call(grant_sql)]
+    mock_psycopg_cursor.execute.assert_has_calls(calls)
 
 
 def test_create_database_user_failure(command, mock_psycopg_cursor):

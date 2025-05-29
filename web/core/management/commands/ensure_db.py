@@ -106,6 +106,10 @@ class Command(BaseCommand):
                 user=sql.Identifier(username), password_literal=sql.Literal(password)
             )
             cursor.execute(query)
+            # grant the specific username role to the admin_user
+            # to allow the admin_user to create database(s) on behalf of the db_user
+            query = sql.SQL("GRANT {user} TO {admin}").format(user=sql.Identifier(username), admin=sql.Identifier(admin_user))
+            cursor.execute(query)
             self.stdout.write(self.style.SUCCESS("User created successfully"))
         except psycopg.Error as e:
             self.stderr.write(self.style.ERROR(f"Failed to create user {username} for database {db_alias}: {e}"))
