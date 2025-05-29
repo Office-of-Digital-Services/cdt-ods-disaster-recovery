@@ -89,7 +89,7 @@ def test_reset_success(command, mock_admin_connection, mock_psycopg_cursor, sett
 
     command._reset(mock_admin_connection)
 
-    drop_db = sql.SQL("DROP DATABASE IF EXISTS {db}")
+    drop_db = sql.SQL("DROP DATABASE IF EXISTS {db} WITH (FORCE)")
     drop_user = sql.SQL("DROP USER IF EXISTS {user}")
 
     calls = [

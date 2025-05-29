@@ -56,7 +56,7 @@ class Command(BaseCommand):
                 db_name, db_user, _ = validated_config
                 try:
                     # drop the database
-                    query = sql.SQL("DROP DATABASE IF EXISTS {db}").format(db=sql.Identifier(db_name))
+                    query = sql.SQL("DROP DATABASE IF EXISTS {db} WITH (FORCE)").format(db=sql.Identifier(db_name))
                     cursor.execute(query)
                     # drop the user
                     query = sql.SQL("DROP USER IF EXISTS {user}").format(user=sql.Identifier(db_user))
