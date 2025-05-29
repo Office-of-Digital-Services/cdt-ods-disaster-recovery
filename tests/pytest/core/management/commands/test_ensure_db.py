@@ -86,15 +86,19 @@ def test_reset_success(command, mock_admin_connection, mock_psycopg_cursor, sett
         "other_db": {"ENGINE": "django.db.backends.sqlite3", "NAME": "other"},
     }
     mock_admin_connection.cursor.return_value = mock_psycopg_cursor
+    mock_admin_connection.info.user = "admin"
 
     command._reset(mock_admin_connection)
 
+    revoke_role = sql.SQL("REVOKE {role_to_revoke} FROM {grantee_admin}")
     drop_db = sql.SQL("DROP DATABASE IF EXISTS {db} WITH (FORCE)")
     drop_user = sql.SQL("DROP USER IF EXISTS {user}")
 
     calls = [
+        mocker.call(revoke_role.format(role_to_revoke=sql.Identifier("u1"), grantee_admin=sql.Identifier("admin"))),
         mocker.call(drop_db.format(db=sql.Identifier("db1"))),
         mocker.call(drop_user.format(user=sql.Identifier("u1"))),
+        mocker.call(revoke_role.format(role_to_revoke=sql.Identifier("u2"), grantee_admin=sql.Identifier("admin"))),
         mocker.call(drop_db.format(db=sql.Identifier("db2"))),
         mocker.call(drop_user.format(user=sql.Identifier("u2"))),
     ]
@@ -109,6 +113,7 @@ def test_reset_psycopg_error(command, mock_admin_connection, mock_psycopg_cursor
         "other_db": {"ENGINE": "django.db.backends.sqlite3", "NAME": "other"},
     }
     mock_admin_connection.cursor.return_value = mock_psycopg_cursor
+    mock_admin_connection.info.user = "admin"
     mock_psycopg_cursor.execute.side_effect = psycopg.Error()
 
     with pytest.raises(psycopg.Error) as e:
