@@ -90,14 +90,17 @@ def test_reset_success(command, mock_admin_connection, mock_psycopg_cursor, sett
 
     command._reset(mock_admin_connection)
 
+    reassign_role = sql.SQL("REASSIGN OWNED BY {owned_by_role} TO {new_owner_role}")
     revoke_role = sql.SQL("REVOKE {role_to_revoke} FROM {grantee_admin}")
     drop_db = sql.SQL("DROP DATABASE IF EXISTS {db} WITH (FORCE)")
     drop_user = sql.SQL("DROP USER IF EXISTS {user}")
 
     calls = [
+        mocker.call(reassign_role.format(owned_by_role=sql.Identifier("u1"), new_owner_role=sql.Identifier("admin"))),
         mocker.call(drop_db.format(db=sql.Identifier("db1"))),
         mocker.call(revoke_role.format(role_to_revoke=sql.Identifier("u1"), grantee_admin=sql.Identifier("admin"))),
         mocker.call(drop_user.format(user=sql.Identifier("u1"))),
+        mocker.call(reassign_role.format(owned_by_role=sql.Identifier("u2"), new_owner_role=sql.Identifier("admin"))),
         mocker.call(drop_db.format(db=sql.Identifier("db2"))),
         mocker.call(revoke_role.format(role_to_revoke=sql.Identifier("u2"), grantee_admin=sql.Identifier("admin"))),
         mocker.call(drop_user.format(user=sql.Identifier("u2"))),
