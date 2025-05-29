@@ -47,6 +47,7 @@ class Command(BaseCommand):
     def _reset(self, admin_conn: Connection):
         self.stdout.write(self.style.WARNING("Resetting database users and databases..."))
         cursor = admin_conn.cursor()
+        # This is the role executing this _reset method (e.g. 'postgres')
         admin_user = admin_conn.info.user
         try:
             for db_alias, db_config in settings.DATABASES.items():
@@ -54,16 +55,30 @@ class Command(BaseCommand):
                 if not validated_config:
                     continue  # Skip this alias if validation failed
 
-                db_name, db_user, _ = validated_config
+                db_name, db_user, _ = validated_config  # db_user is the app user, e.g. 'django'
                 try:
                     self.stdout.write(f"Preparing to reset {db_user} and {db_name}...")
 
-                    # 1. Drop the database (while admin still has app_role granted from previous run)
+                    # 1. Attempt to transfer ownership of any objects owned by db_user to admin_user.
+                    #    This allows admin_user (if not full superuser) to drop databases owned by db_user.
+                    #    If db_user does not exist, psycopg.errors.UndefinedObject will be raised.
+                    #    We catch this and pass, as there would be no objects to reassign.
+                    try:
+                        reassign_query = sql.SQL("REASSIGN OWNED BY {owned_by_role} TO {new_owner_role}").format(
+                            owned_by_role=sql.Identifier(db_user), new_owner_role=sql.Identifier(admin_user)
+                        )
+                        cursor.execute(reassign_query)
+                    except psycopg.errors.UndefinedObject:
+                        # If db_user doesn't exist, there's nothing to reassign. Pass silently.
+                        pass
+
+                    # 2. Drop the database
+                    # If REASSIGN OWNED was successful and db_user owned it, admin_user is now the owner.
                     drop_db_query = sql.SQL("DROP DATABASE IF EXISTS {db} WITH (FORCE)").format(db=sql.Identifier(db_name))
                     cursor.execute(drop_db_query)
                     self.stdout.write(f"Database {db_name} dropped.")
 
-                    # 2. Revoke the app role from the admin role to break membership
+                    # 3. Revoke the app role from the admin role to break membership
                     try:
                         revoke_query = sql.SQL("REVOKE {role_to_revoke} FROM {grantee_admin}").format(
                             role_to_revoke=sql.Identifier(db_user), grantee_admin=sql.Identifier(admin_user)
@@ -73,7 +88,7 @@ class Command(BaseCommand):
                         # Expected if db_user (app_role) or admin_user doesn't exist.
                         pass
 
-                    # 3. Drop the role
+                    # 4. Drop the role
                     drop_role_query = sql.SQL("DROP USER IF EXISTS {user}").format(user=sql.Identifier(db_user))
                     cursor.execute(drop_role_query)
                     self.stdout.write(f"Role {db_user} dropped.")
