@@ -11,7 +11,7 @@
 | web/core/hooks.py                                                                                         |       11 |        4 |        0 |        0 |     64% |9-10, 14-15 |
 | web/core/management/\_\_init\_\_.py                                                                       |        0 |        0 |        0 |        0 |    100% |           |
 | web/core/management/commands/\_\_init\_\_.py                                                              |        0 |        0 |        0 |        0 |    100% |           |
-| web/core/management/commands/ensure\_db.py                                                                |      165 |        0 |       40 |        3 |     99% |70->exit, 197->199, 267->271 |
+| web/core/management/commands/ensure\_db.py                                                                |      163 |        0 |       40 |        3 |     99% |70->exit, 193->195, 263->267 |
 | web/core/middleware.py                                                                                    |        9 |        1 |        2 |        1 |     82% |        19 |
 | web/core/migrations/0001\_initial.py                                                                      |        7 |        0 |        0 |        0 |    100% |           |
 | web/core/migrations/\_\_init\_\_.py                                                                       |        0 |        0 |        0 |        0 |    100% |           |
@@ -46,7 +46,7 @@
 | web/vital\_records/urls.py                                                                                |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views.py                                                                               |      143 |       60 |        6 |        0 |     56% |71-76, 86-91, 94-102, 112-117, 128-133, 143-148, 151-162, 172-177, 180-187, 197-206, 209-216, 219-221, 230-241 |
 | web/wsgi.py                                                                                               |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                                 **TOTAL** |  **905** |  **191** |   **90** |   **10** | **77%** |           |
+|                                                                                                 **TOTAL** |  **903** |  **191** |   **90** |   **10** | **77%** |           |
 
 
 ## Setup coverage badge
