@@ -47,6 +47,7 @@ class Command(BaseCommand):
     def _reset(self, admin_conn: Connection):
         self.stdout.write(self.style.WARNING("Resetting database users and databases..."))
         cursor = admin_conn.cursor()
+        admin_user = admin_conn.info.user
         try:
             for db_alias, db_config in settings.DATABASES.items():
                 validated_config = self._validate_config(db_alias, db_config)
@@ -55,6 +56,16 @@ class Command(BaseCommand):
 
                 db_name, db_user, _ = validated_config
                 try:
+                    # Attempt to revoke the app role from the admin role.
+                    # Ignore UndefinedObject if the app_role doesn't exist.
+                    try:
+                        query = sql.SQL("REVOKE {role_to_revoke} FROM {grantee_admin}").format(
+                            role_to_revoke=sql.Identifier(db_user), grantee_admin=sql.Identifier(admin_user)
+                        )
+                        cursor.execute(query)
+                    except psycopg.errors.UndefinedObject:
+                        # This is expected and fine if the role (db_user) doesn't exist yet.
+                        pass
                     # drop the database
                     query = sql.SQL("DROP DATABASE IF EXISTS {db} WITH (FORCE)").format(db=sql.Identifier(db_name))
                     cursor.execute(query)
@@ -64,6 +75,8 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.SUCCESS(f"Database {db_name} reset successfully"))
                 except psycopg.Error as e:
                     self.stderr.write(self.style.ERROR(f"Failed database reset for database {db_alias}: {e}"))
+                    if hasattr(e, "diag") and e.diag and e.diag.message_detail:
+                        self.stderr.write(self.style.ERROR(f"DETAIL: {e.diag.message_detail}"))
                     raise
 
         finally:
@@ -105,6 +118,10 @@ class Command(BaseCommand):
             query = sql.SQL("CREATE USER {user} WITH PASSWORD {password_literal}").format(
                 user=sql.Identifier(username), password_literal=sql.Literal(password)
             )
+            cursor.execute(query)
+            # grant the specific username role to the admin_user
+            # to allow the admin_user to create database(s) on behalf of the db_user
+            query = sql.SQL("GRANT {user} TO {admin}").format(user=sql.Identifier(username), admin=sql.Identifier(admin_user))
             cursor.execute(query)
             self.stdout.write(self.style.SUCCESS("User created successfully"))
         except psycopg.Error as e:
