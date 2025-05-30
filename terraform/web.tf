@@ -157,6 +157,32 @@ resource "azurerm_container_app" "web" {
     key_vault_secret_id = "${local.secret_http_prefix}/django-trusted-origins"
     identity            = azurerm_user_assigned_identity.web_app_identity.id
   }
+  # Google SSO
+  secret {
+    name                = "google-sso-allowable-domains"
+    key_vault_secret_id = "${local.secret_http_prefix}/google-sso-allowable-domains"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
+  }
+  secret {
+    name                = "google-sso-client-id"
+    key_vault_secret_id = "${local.secret_http_prefix}/google-sso-client-id"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
+  }
+  secret {
+    name                = "google-sso-client-secret"
+    key_vault_secret_id = "${local.secret_http_prefix}/google-sso-client-secret"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
+  }
+  secret {
+    name                = "google-sso-project-id"
+    key_vault_secret_id = "${local.secret_http_prefix}/google-sso-project-id"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
+  }
+  secret {
+    name                = "google-sso-superuser-list"
+    key_vault_secret_id = "${local.secret_http_prefix}/google-sso-superuser-list"
+    identity            = azurerm_user_assigned_identity.web_app_identity.id
+  }
   # Postgres
   secret {
     name                = "postgres-db"
@@ -316,6 +342,27 @@ resource "azurerm_container_app" "web" {
       env {
         name        = "DJANGO_TRUSTED_ORIGINS"
         secret_name = "django-trusted-origins"
+      }
+      # Google SSO
+      env {
+        name        = "GOOGLE_SSO_ALLOWABLE_DOMAINS"
+        secret_name = "google-sso-allowable-domains"
+      }
+      env {
+        name        = "GOOGLE_SSO_CLIENT_ID"
+        secret_name = "google-sso-client-id"
+      }
+      env {
+        name        = "GOOGLE_SSO_CLIENT_SECRET"
+        secret_name = "google-sso-client-secret"
+      }
+      env {
+        name        = "GOOGLE_SSO_PROJECT_ID"
+        secret_name = "google-sso-project-id"
+      }
+      env {
+        name        = "GOOGLE_SSO_SUPERUSER_LIST"
+        secret_name = "google-sso-superuser-list"
       }
       # Postgres
       env {

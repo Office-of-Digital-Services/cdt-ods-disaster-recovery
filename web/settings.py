@@ -49,6 +49,22 @@ def RUNTIME_ENVIRONMENT():
     return env
 
 
+# Configuration for requests
+# https://requests.readthedocs.io/en/latest/user/advanced/#timeouts
+
+try:
+    REQUESTS_CONNECT_TIMEOUT = int(os.environ.get("REQUESTS_CONNECT_TIMEOUT"))
+except Exception:
+    REQUESTS_CONNECT_TIMEOUT = 5
+
+try:
+    REQUESTS_READ_TIMEOUT = int(os.environ.get("REQUESTS_READ_TIMEOUT"))
+except Exception:
+    REQUESTS_READ_TIMEOUT = 20
+
+REQUESTS_TIMEOUT = (REQUESTS_CONNECT_TIMEOUT, REQUESTS_READ_TIMEOUT)
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -59,6 +75,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "cdt_identity",
+    "django_google_sso",
     "django_q",
     "web.core",
     "web.vital_records",
@@ -322,3 +339,19 @@ CSP_STYLE_SRC = [
     "https://cdn.cdt.ca.gov",
     "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/",
 ]
+
+# Google SSO configuration
+# https://megalus.github.io/django-google-sso/quick_setup/
+GOOGLE_SSO_ALLOWABLE_DOMAINS = _filter_empty(os.environ.get("GOOGLE_SSO_ALLOWABLE_DOMAINS", "compiler.la").split(","))
+GOOGLE_SSO_CLIENT_ID = os.environ.get("GOOGLE_SSO_CLIENT_ID", "secret")
+GOOGLE_SSO_CLIENT_SECRET = os.environ.get("GOOGLE_SSO_CLIENT_SECRET", "secret")
+GOOGLE_SSO_LOGO_URL = "/static/icon/google_sso_logo.svg"
+GOOGLE_SSO_PRE_LOGIN_CALLBACK = "web.core.admin.pre_login_user"
+GOOGLE_SSO_PROJECT_ID = os.environ.get("GOOGLE_SSO_PROJECT_ID", "cdrc-admin")
+GOOGLE_SSO_SAVE_ACCESS_TOKEN = True
+GOOGLE_SSO_SCOPES = [
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+]
+GOOGLE_SSO_SUPERUSER_LIST = _filter_empty(os.environ.get("GOOGLE_SSO_SUPERUSER_LIST", "").split(","))
