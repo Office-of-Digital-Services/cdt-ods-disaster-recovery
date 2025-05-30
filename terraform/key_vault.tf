@@ -40,6 +40,10 @@ locals {
     "Backup",
     "Restore",
   ]
+  # Normalize key_vault_id to always start with a single slash
+  # This checks if azurerm_key_vault.main.id already starts with a slash.
+  # If it does, it uses it as is. If not, it prepends a slash.
+  normalized_key_vault_id = substr(azurerm_key_vault.main.id, 0, 1) == "/" ? azurerm_key_vault.main.id : "/${azurerm_key_vault.main.id}"
 }
 
 resource "azurerm_key_vault" "main" {
@@ -61,7 +65,7 @@ resource "azurerm_key_vault" "main" {
 
 # Access policy for ENGINEERING_GROUP
 resource "azurerm_key_vault_access_policy" "engineering_group_policy" {
-  key_vault_id = azurerm_key_vault.main.id
+  key_vault_id = local.normalized_key_vault_id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = var.ENGINEERING_GROUP_OBJECT_ID
 
@@ -74,7 +78,7 @@ resource "azurerm_key_vault_access_policy" "engineering_group_policy" {
 
 # Access policy for DEVSECOPS_GROUP
 resource "azurerm_key_vault_access_policy" "devsecops_group_policy" {
-  key_vault_id = azurerm_key_vault.main.id
+  key_vault_id = local.normalized_key_vault_id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = var.DEVSECOPS_OBJECT_ID
 
