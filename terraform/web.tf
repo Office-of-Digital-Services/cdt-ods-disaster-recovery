@@ -84,6 +84,20 @@ resource "azurerm_user_assigned_identity" "web_app_identity" {
   }
 }
 
+# https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?tabs=azure-cli#granting-your-app-access-to-key-vault
+resource "azurerm_key_vault_access_policy" "container_app_web_access" {
+  key_vault_id = local.normalized_key_vault_id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_user_assigned_identity.web_app_identity.principal_id
+
+  secret_permissions = ["Get", "List"]
+
+  depends_on = [
+    azurerm_key_vault.main,
+    azurerm_user_assigned_identity.web_app_identity
+  ]
+}
+
 resource "azurerm_container_app" "web" {
   name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-web")
   container_app_environment_id = azurerm_container_app_environment.main.id
@@ -412,25 +426,11 @@ resource "azurerm_container_app" "web" {
 
   depends_on = [
     azurerm_postgresql_flexible_server.main,
+    azurerm_key_vault_access_policy.container_app_web_access,
     azurerm_key_vault_secret.django_db_password,
     azurerm_key_vault_secret.django_secret_key,
     azurerm_key_vault_secret.django_superuser_password,
     azurerm_key_vault_secret.postgres_admin_password,
-    azurerm_key_vault_secret.tasks_db_password,
-    azurerm_user_assigned_identity.web_app_identity
-  ]
-}
-
-# https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?tabs=azure-cli#granting-your-app-access-to-key-vault
-resource "azurerm_key_vault_access_policy" "container_app_web_access" {
-  key_vault_id = azurerm_key_vault.main.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_user_assigned_identity.web_app_identity.principal_id
-
-  secret_permissions = ["Get", "List"]
-
-  depends_on = [
-    azurerm_key_vault.main,
-    azurerm_user_assigned_identity.web_app_identity
+    azurerm_key_vault_secret.tasks_db_password
   ]
 }
