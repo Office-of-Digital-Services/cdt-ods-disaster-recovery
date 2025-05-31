@@ -1,2 +1,12 @@
+.pytest_cache/
 *.egg-info
-*.db
+.coverage
+.env*
+.flake8
+.pre-commit-config.yaml
+compose.yml
+*fixtures.json
+app/
+inbox/
+terraform/
+tests/
