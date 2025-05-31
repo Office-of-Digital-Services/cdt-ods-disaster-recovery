@@ -101,8 +101,12 @@ ENV PYTHONUNBUFFERED=${PYTHONUNBUFFERED} \
 EXPOSE 8000
 
 USER root
+
+# install apt packages using the archives and lists cache
+RUN --mount=type=cache,id=apt-archives,sharing=locked,target=/var/cache/apt/archives \
+    --mount=type=cache,id=apt-lists,sharing=locked,target=/var/lib/apt/lists \
     # (re)create non-root $USER and home directory (since it isn't copied from previous stage)
-RUN groupadd --gid ${USER_GID} ${USER} 2>/dev/null || true && \
+    groupadd --gid ${USER_GID} ${USER} 2>/dev/null || true && \
     useradd --uid ${USER_UID} --gid ${USER_GID} --create-home --shell /bin/bash ${USER} && \
     # pip cache dir must be created and owned by the user to work with BuildKit cache
     mkdir -p ${PIP_CACHE_DIR} && \
@@ -125,7 +129,9 @@ RUN groupadd --gid ${USER_GID} ${USER} 2>/dev/null || true && \
     chown -R $USER:$USER /$USER && \
     # install server components
     apt-get update && \
-    apt-get install -qq --no-install-recommends build-essential nginx gettext && \
+    apt-get install -y --no-install-recommends build-essential nginx gettext && \
+    # this cleanup is still important for the final image layer size
+    # remove lists from the image layer, but they remain in the BuildKit cache mount
     rm -rf /var/lib/apt/lists/*
 
 # enter source directory
