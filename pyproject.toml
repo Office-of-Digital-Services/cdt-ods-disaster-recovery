@@ -3,7 +3,7 @@ name = "cdt-disaster-recovery"
 dynamic = ["version"]
 description = "State of California Digital Disaster Recovery Center."
 readme = "README.md"
-license = { file = "LICENSE" }
+license-files = ["LICENSE"]
 classifiers = ["Programming Language :: Python :: 3 :: Only"]
 requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
@@ -15,6 +15,7 @@ dependencies = [
     "django-google-sso==8.0.0",
     "django-q2==1.8.0",
     "gunicorn==23.0.0",
+    "pandas==2.2.3",
     "psycopg[binary,pool]==3.2.9",
     "pypdf==5.5.0",
     "requests==2.32.3",
@@ -51,6 +52,11 @@ source = ["web"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.pytest.settings"
+
+# This section ensures setuptools is fully aware that non-code files within
+# these packages should be bundled
+[tool.setuptools]
+include-package-data = true
 
 [tool.setuptools.packages.find]
 include = ["web*"]
