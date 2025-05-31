@@ -11,7 +11,13 @@ RUN apt install webp -y
 
 USER $USER
 
-COPY . .
+COPY .git .git
+COPY pyproject.toml pyproject.toml
 
-# install devcontainer requirements
-RUN pip install -e .[dev,test]
+# this RUN command uses pipcache
+# setting uid,gid here is critical, as otherwise the Buildkit cache is mounted as root
+# even though we are running in the context of non-root $USER
+RUN --mount=type=cache,id=pipcache,target=${PIP_CACHE_DIR},uid=${USER_UID},gid=${USER_GID} \
+     pip install -e .[dev,test]
+
+COPY . .
