@@ -13,11 +13,11 @@ from web.vital_records.models import VitalRecordsRequest
 
 logger = logging.getLogger(__name__)
 
-TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "SOE_B.pdf")
+APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "application.pdf")
 
 
 @dataclass
-class Package:
+class Application:
     package_id: str = str(uuid4())
     CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_B0A6353F1"
     WildfireName: Optional[str] = None
@@ -75,7 +75,7 @@ class PackageTask(Task):
         logger.debug(f"Creating request package for: {request_id}")
         request = get_request_with_status(request_id, "enqueued")
 
-        package = Package(
+        application = Application(
             package_id=request_id,
             WildfireName=request.fire.capitalize(),
             NumberOfCopies=request.number_of_records,
@@ -99,10 +99,10 @@ class PackageTask(Task):
             RequestorTelephone=request.phone_number,
         )
 
-        reader = PdfReader(TEMPLATE)
+        app_reader = PdfReader(APPLICATION_TEMPLATE)
         writer = PdfWriter()
-        writer.append(reader)
-        writer.update_page_form_field_values(writer.pages[0], package.dict(), auto_regenerate=False)
+        writer.append(app_reader)
+        writer.update_page_form_field_values(writer.pages[0], application.dict(), auto_regenerate=False)
 
         filename = os.path.join(settings.STORAGE_DIR, f"vital-records-{package.package_id}.pdf")
         with open(filename, "wb") as output_stream:
