@@ -14,6 +14,7 @@ from web.vital_records.models import VitalRecordsRequest
 logger = logging.getLogger(__name__)
 
 APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "application.pdf")
+SWORNSTATEMENT_TEMPLATE = APPLICATION_TEMPLATE.replace("application.pdf", "sworn-statement.pdf")
 
 
 @dataclass
