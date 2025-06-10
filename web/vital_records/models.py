@@ -26,7 +26,13 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
-    FIRE_CHOICES = [("palisades", "Palisades fire"), ("eaton", "Eaton fire")]
+    FIRE_CHOICES = [
+        ("eaton", "Eaton fire"),
+        ("hurst", "Hurst fire"),
+        ("lidia", "Lidia fire"),
+        ("palisades", "Palisades fire"),
+        ("woodley", "Woodley fire"),
+    ]
 
     RELATIONSHIP_CHOICES = [
         ("self", "Self"),
