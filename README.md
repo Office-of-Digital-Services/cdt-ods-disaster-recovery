@@ -29,7 +29,7 @@
 | web/vital\_records/migrations/0001\_initial.py   |        7 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/\_\_init\_\_.py    |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/mixins.py                     |        9 |        0 |        2 |        0 |    100% |           |
-| web/vital\_records/models.py                     |       78 |       14 |        0 |        0 |     82% |202-203, 207, 211, 215, 219, 223, 227, 231-232, 236, 240, 244, 248 |
+| web/vital\_records/models.py                     |       78 |       14 |        0 |        0 |     82% |208-209, 213, 217, 221, 225, 229, 233, 237-238, 242, 246, 250, 254 |
 | web/vital\_records/routes.py                     |       17 |        1 |        0 |        0 |     94% |        20 |
 | web/vital\_records/session.py                    |       26 |        0 |        6 |        0 |    100% |           |
 | web/vital\_records/tasks.py                      |       99 |       44 |        6 |        0 |     52% |52-53, 57-66, 74, 77-117, 120-126, 134, 137-156, 161-167 |
