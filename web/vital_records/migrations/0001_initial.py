@@ -39,7 +39,19 @@ class Migration(migrations.Migration):
                         max_length=50,
                     ),
                 ),
-                ("fire", models.CharField(choices=[("palisades", "Palisades fire"), ("eaton", "Eaton fire")], max_length=50)),
+                (
+                    "fire",
+                    models.CharField(
+                        choices=[
+                            ("eaton", "Eaton fire"),
+                            ("hurst", "Hurst fire"),
+                            ("lidia", "Lidia fire"),
+                            ("palisades", "Palisades fire"),
+                            ("woodley", "Woodley fire"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
                 (
                     "relationship",
                     models.CharField(
