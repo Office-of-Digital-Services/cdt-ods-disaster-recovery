@@ -155,7 +155,7 @@ class ParentsNamesForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_1_helptext"}),
     )
     parent_1_last_name = forms.CharField(
-        label="Last name",
+        label="Last name at birth",
         max_length=100,
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_1_helptext"}),
     )
@@ -166,7 +166,7 @@ class ParentsNamesForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_2_helptext"}),
     )
     parent_2_last_name = forms.CharField(
-        label="Last name",
+        label="Last name at birth",
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_2_helptext"}),
