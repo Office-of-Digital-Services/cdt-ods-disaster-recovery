@@ -3,7 +3,7 @@
 {% block inner-content %}
     <div class="col-md-10 m-b-40">
         <h2>We received your request</h2>
-        <p>
+        <p class="m-t-md">
             We’ll process your request within 1-2 business days and notify you by email once it’s complete. If you have any questions about your order, you can reach out to us at:
         </p>
         <ul class="list-unstyled m-b-md">
@@ -18,10 +18,11 @@
                 </p>
             </li>
         </ul>
-        <p>
+        <p class="m-b-0">
             If you’re done, sign out below or <a href="{% url 'vital_records:request_start' %}">request another birth record</a>.
         </p>
-        <button class="btn btn-primary login-button" href="{% url 'cdt:logout' %}">
+        <button class="btn btn-primary login-button m-t-md"
+                href="{% url 'cdt:logout' %}">
             Sign out of
             <svg xmlns="http://www.w3.org/2000/svg"
                  viewBox="0 0 292.1 39.47"
