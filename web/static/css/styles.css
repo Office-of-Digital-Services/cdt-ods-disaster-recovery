@@ -171,7 +171,16 @@ header {
 }
 
 #vital-records {
-  h1 {
+  .main-primary {
+    margin-top: 80px;
+  }
+
+  .main-primary:has(.error) {
+    margin-top: 32px;
+  }
+
+  h1,
+  .h1 {
     font-size: 47px;
     padding-top: 20px;
     padding-bottom: 40px;
@@ -194,10 +203,6 @@ header {
   p {
     font-size: 18px;
     line-height: 32px;
-  }
-
-  .main-primary {
-    margin-top: 80px;
   }
 
   .main-header ol {
@@ -274,13 +279,5 @@ header {
   dd {
     font-size: 18px;
     line-height: 2rem;
-  }
-}
-
-#vital-records .main-primary.error {
-  margin-top: 32px;
-
-  h2 {
-    font-size: 47px;
   }
 }
