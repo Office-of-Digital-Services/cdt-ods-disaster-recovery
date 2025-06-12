@@ -17,7 +17,7 @@
                     </legend>
                     <hr>
                     {% csrf_token %}
-                    <h3>How many replacements do you need?</h3>
+                    <h3>How many replacement records are needed to recover those lost due to the fire(s)?</h3>
                     <div class="row">
                         <div class="col-md-3 p-b-sm m-b-md">
                             {{ form.number_of_records|label_with_required }}
@@ -28,8 +28,8 @@
                     <hr>
                     <h3>Where should we mail your order?</h3>
                     <p class="p-b-md m-b-0">
-                        Please enter an address in the United States. If you would like to request documents to an international address, please <strong><a href="https://www.ca.gov/lafires/vital-records/#Records-from-California"
-   target="_blank">complete your request with a notary</a></strong>.
+                        Please enter an address in the United States. If you would like to request documents to an international address, please exit this process and <strong><a href="https://www.ca.gov/lafires/vital-records/#Records-from-California"
+   target="_blank">complete your request via Docusign</a></strong>.
                     </p>
                     {% include "vital_records/_two_column_form.html" with form=form fields=name_fields %}
                     <div class="row">
