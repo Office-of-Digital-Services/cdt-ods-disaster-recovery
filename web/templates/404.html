@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block title %}
+    {% translate "Replacement birth record" %}
+{% endblock title %}
+{% block main-content %}
+    <div id="vital-records">
+        <div class="main-header p-t-md bg-primary">
+            <div class="container">
+                <nav aria-label="You are here" class="breadcrumbs">
+                    <ol>
+                        <li>
+                            {% comment %} This is a placeholder link for now {% endcomment %}
+                            <a href="https://www.test-cagov.cdt.ca.gov/lafires/vital-records/"
+                               class="small no-underline underline-hover">< Go back to vital records home</a>
+                        </li>
+                    </ol>
+                </nav>
+                <h1>
+                    {% block headline %}
+                        {% translate "Replacement birth record" %}
+                    {% endblock headline %}
+                </h1>
+            </div>
+        </div>
+        <div class="container">
+            <div class="main-primary error">
+                {% block inner-content %}
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <h2 class="h1 m-b-md">We’re sorry, that link didn’t work.</h2>
+                            <p class="text-1-5rem m-b-md">To find what you need, you can:</p>
+                            <ul class="p-b-md m-b-md">
+                                <li>Double-check that link</li>
+                                <li>Check out support and resources for those impacted by the wildfires:</li>
+                                <ul>
+                                    <li>
+                                        <a href="https://www.ca.gov/lafires/help-for-you/">Help for you and your family</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.ca.gov/lafires/help-for-you/replace-personal-documents/">Replace personal documents</a>
+                                    </li>
+                                </ul>
+                            </ul>
+                            <img src="{% static 'img/error-bear.jpg' %}"
+                                 alt="A bear wearing a yellow construction hard hat"
+                                 class="d-block mx-auto m-t-md p-b-md m-b-md"
+                                 width="400"
+                                 height="548">
+                            <p class="font-size-14">Error: Page not found (404)</p>
+                        </div>
+                    </div>
+                {% endblock inner-content %}
+            </div>
+        </div>
+    </div>
+{% endblock main-content %}
