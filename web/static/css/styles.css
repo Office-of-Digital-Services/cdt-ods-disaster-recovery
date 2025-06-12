@@ -276,3 +276,20 @@ header {
     line-height: 2rem;
   }
 }
+
+.login-button {
+  font-size: 18px;
+  border: 0;
+  border-radius: 4px;
+  padding: 10.5px 16px;
+}
+
+.login-button__logo {
+  margin-left: 4px;
+}
+
+.login-button:hover,
+.login-button:focus {
+  background-color: #035376;
+  box-shadow: none;
+}
