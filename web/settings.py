@@ -244,7 +244,8 @@ else:
     EMAIL_FILE_PATH = STORAGE_DIR
     Path(EMAIL_FILE_PATH).mkdir(parents=True, exist_ok=True)
 
-VITAL_RECORDS_EMAIL_FROM = os.environ.get("VITAL_RECORDS_EMAIL_FROM", "noreply@example.ca.gov")
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-from-email
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@example.ca.gov")
 VITAL_RECORDS_EMAIL_TO = os.environ.get("VITAL_RECORDS_EMAIL_TO", "example@example.ca.gov")
 
 # Default primary key field type
