@@ -5,12 +5,12 @@ locals {
 
 # Generate a random password for the Tasks DB
 resource "random_password" "tasks_db" {
-  length           = 32
-  min_lower        = 4
-  min_upper        = 4
-  min_numeric      = 4
-  min_special      = 4
-  special          = true
+  length      = 32
+  min_lower   = 4
+  min_upper   = 4
+  min_numeric = 4
+  min_special = 4
+  special     = true
 }
 
 # Create the secret for Tasks DB password using the generated secret
