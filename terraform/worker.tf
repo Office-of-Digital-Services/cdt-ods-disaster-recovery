@@ -79,21 +79,6 @@ resource "azurerm_container_app" "worker" {
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
   secret {
-    name                = "django-email-host"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-email-host"
-    identity            = azurerm_user_assigned_identity.worker_app_identity.id
-  }
-  secret {
-    name                = "django-email-user"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-email-user"
-    identity            = azurerm_user_assigned_identity.worker_app_identity.id
-  }
-  secret {
-    name                = "django-email-password"
-    key_vault_secret_id = "${local.secret_http_prefix}/django-email-password"
-    identity            = azurerm_user_assigned_identity.worker_app_identity.id
-  }
-  secret {
     name                = "django-log-level"
     key_vault_secret_id = "${local.secret_http_prefix}/django-log-level"
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
@@ -103,7 +88,23 @@ resource "azurerm_container_app" "worker" {
     key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.django_secret_key.name}"
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
-  # Tasks
+  # Email
+  secret {
+    name                = azurerm_key_vault_secret.azure_communication_connection_string.name
+    key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.azure_communication_connection_string.name}"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
+  }
+  secret {
+    name                = azurerm_key_vault_secret.azure_communication_from_email.name
+    key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.azure_communication_from_email.name}"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
+  }
+  secret {
+    name                = "vital-records-email-to"
+    key_vault_secret_id = "${local.secret_http_prefix}/vital-records-email-to"
+    identity            = azurerm_user_assigned_identity.worker_app_identity.id
+  }
+  # Postgres
   secret {
     name                = "tasks-db-name"
     key_vault_secret_id = "${local.secret_http_prefix}/tasks-db-name"
@@ -119,17 +120,6 @@ resource "azurerm_container_app" "worker" {
     key_vault_secret_id = "${local.secret_http_prefix}/${azurerm_key_vault_secret.tasks_db_password.name}"
     identity            = azurerm_user_assigned_identity.worker_app_identity.id
   }
-  # Vital records
-  secret {
-    name                = "vital-records-email-from"
-    key_vault_secret_id = "${local.secret_http_prefix}/vital-records-email-from"
-    identity            = azurerm_user_assigned_identity.worker_app_identity.id
-  }
-  secret {
-    name                = "vital-records-email-to"
-    key_vault_secret_id = "${local.secret_http_prefix}/vital-records-email-to"
-    identity            = azurerm_user_assigned_identity.worker_app_identity.id
-  }
 
   template {
     min_replicas = 1
@@ -143,7 +133,7 @@ resource "azurerm_container_app" "worker" {
       cpu     = 0.5
       memory  = "1Gi"
 
-      # Django settings
+      # Django
       env {
         name        = "DJANGO_DB_NAME"
         secret_name = "django-db-name"
@@ -155,18 +145,6 @@ resource "azurerm_container_app" "worker" {
       env {
         name        = "DJANGO_DB_PASSWORD"
         secret_name = azurerm_key_vault_secret.django_db_password.name
-      }
-      env {
-        name        = "DJANGO_EMAIL_HOST"
-        secret_name = "django-email-host"
-      }
-      env {
-        name        = "DJANGO_EMAIL_USER"
-        secret_name = "django-email-user"
-      }
-      env {
-        name        = "DJANGO_EMAIL_PASSWORD"
-        secret_name = "django-email-password"
       }
       env {
         name        = "DJANGO_LOG_LEVEL"
@@ -181,6 +159,20 @@ resource "azurerm_container_app" "worker" {
         # match the volume mount path below
         value = "/cdt/app/requests"
       }
+      # Email
+      env {
+        name        = "AZURE_COMMUNICATION_CONNECTION_STRING"
+        secret_name = azurerm_key_vault_secret.azure_communication_connection_string.name
+      }
+      env {
+        name        = "DEFAULT_FROM_EMAIL"
+        secret_name = azurerm_key_vault_secret.azure_communication_from_email.name
+      }
+      env {
+        name        = "VITAL_RECORDS_EMAIL_TO"
+        secret_name = "vital-records-email-to"
+      }
+      # Postgres
       env {
         name = "POSTGRES_HOSTNAME"
         # reference the internal name of the database container app
@@ -197,14 +189,6 @@ resource "azurerm_container_app" "worker" {
       env {
         name        = "TASKS_DB_PASSWORD"
         secret_name = "tasks-db-password"
-      }
-      env {
-        name        = "VITAL_RECORDS_EMAIL_FROM"
-        secret_name = "vital-records-email-from"
-      }
-      env {
-        name        = "VITAL_RECORDS_EMAIL_TO"
-        secret_name = "vital-records-email-to"
       }
 
       volume_mounts {
@@ -230,6 +214,8 @@ resource "azurerm_container_app" "worker" {
   depends_on = [
     azurerm_postgresql_flexible_server.main,
     azurerm_key_vault_access_policy.container_app_worker_access,
+    azurerm_key_vault_secret.azure_communication_connection_string,
+    azurerm_key_vault_secret.azure_communication_from_email,
     azurerm_key_vault_secret.django_db_password,
     azurerm_key_vault_secret.django_secret_key,
     azurerm_key_vault_secret.tasks_db_password
