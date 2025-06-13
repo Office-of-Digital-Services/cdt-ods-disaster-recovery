@@ -233,14 +233,12 @@ STORAGE_DIR = os.environ.get("DJANGO_STORAGE_DIR", BASE_DIR)
 
 # Email
 # https://docs.djangoproject.com/en/5.1/ref/settings/#email-backend
-EMAIL_HOST = os.environ.get("DJANGO_EMAIL_HOST")
-EMAIL_HOST_USER = os.environ.get("DJANGO_EMAIL_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_PASSWORD")
+# https://github.com/retech-us/django-azure-communication-email
+AZURE_COMMUNICATION_CONNECTION_STRING = os.environ.get("AZURE_COMMUNICATION_CONNECTION_STRING")
 
-if all((EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)):
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+if AZURE_COMMUNICATION_CONNECTION_STRING:
+    EMAIL_BACKEND = "django_azure_communication_email.EmailBackend"
     EMAIL_USE_TLS = True
-    EMAIL_PORT = 587
 else:
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     EMAIL_FILE_PATH = STORAGE_DIR
