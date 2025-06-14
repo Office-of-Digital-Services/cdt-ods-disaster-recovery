@@ -233,4 +233,36 @@ class Migration(migrations.Migration):
                 ("sent_at", models.DateTimeField(blank=True, null=True)),
             ],
         ),
+        migrations.CreateModel(
+            name="VitalRecordsRequestMetadata",
+            fields=[
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("request_id", models.UUIDField(editable=False)),
+                (
+                    "fire",
+                    models.CharField(
+                        choices=[
+                            ("eaton", "Eaton fire"),
+                            ("hurst", "Hurst fire"),
+                            ("lidia", "Lidia fire"),
+                            ("palisades", "Palisades fire"),
+                            ("woodley", "Woodley fire"),
+                        ],
+                        editable=False,
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "number_of_records",
+                    models.IntegerField(
+                        choices=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)],
+                        editable=False,
+                    ),
+                ),
+                ("submitted_at", models.DateTimeField(editable=False)),
+                ("enqueued_at", models.DateTimeField(editable=False)),
+                ("packaged_at", models.DateTimeField(editable=False)),
+                ("sent_at", models.DateTimeField(editable=False)),
+            ],
+        ),
     ]
