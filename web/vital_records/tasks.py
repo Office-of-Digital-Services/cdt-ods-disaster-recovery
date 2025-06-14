@@ -1,17 +1,16 @@
 import logging
 import os
-from uuid import UUID, uuid4
-
 from dataclasses import asdict, dataclass
 from typing import Optional
+from uuid import UUID, uuid4
 
 from django.conf import settings
 from django.core.mail import EmailMessage
-
 from pypdf import PdfReader, PdfWriter
 
-from web.core.tasks import Task
-from web.vital_records.models import VitalRecordsRequest
+
+from web.core.tasks import ScheduledTask, Task
+from web.vital_records.models import VitalRecordsRequest, VitalRecordsRequestMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +153,24 @@ class EmailTask(Task):
         logger.debug(f"Request package sent for: {request_id} with response {result}")
 
         return result
+
+    def post_handler(self, task):
+        return CleanupTask()
+
+
+class CleanupTask(ScheduledTask):
+    group = "vital-records"
+    name = "cleanup"
+    schedule_type = ScheduledTask.CRON
+    cron = "*/2 * * * *"
+
+    @classmethod
+    def handler(cls):
+        logger.debug("Running cleanup task")
+
+        logger.debug("Cleanup task complete")
+
+        return True
 
 
 def submit_request(request_id: UUID):
