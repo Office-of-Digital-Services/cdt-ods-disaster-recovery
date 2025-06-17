@@ -23,6 +23,34 @@ EMAIL_HTML_TEMPLATE = "vital_records/email.html"
 EMAIL_TXT_TEMPLATE = EMAIL_HTML_TEMPLATE.replace(".html", ".txt")
 
 
+def get_package_filename(request_id: UUID) -> str:
+    return os.path.join(settings.STORAGE_DIR, f"vital-records-{request_id}.pdf")
+
+
+def get_request_with_status(request_id: UUID, required_status: str):
+    request = VitalRecordsRequest.objects.filter(pk=request_id).first()
+
+    if request is None:
+        raise RuntimeError(f"Couldn't find VitalRecordsRequest: {request_id}")
+    if request.status != required_status:
+        raise RuntimeError(
+            f"VitalRecordsRequest: {request_id} has an invalid status. Expected: {required_status}, Actual: {request.status}"
+        )
+
+    return request
+
+
+def submit_request(request_id: UUID):
+    """Submit a user request to the task queue for processing."""
+    logger.debug(f"Creating package task for: {request_id}")
+    # create a new task instance
+    task = PackageTask(request_id)
+    # calling task.run() submits the task to the queue for processing
+    task.run()
+    # if callers want to interrogate the status, etc.
+    return task
+
+
 @dataclass
 class Application:
     package_id: str = str(uuid4())
@@ -84,34 +112,6 @@ class SwornStatement:
     def dict(self):
         d = asdict(self)
         return {k: v for k, v in d.items() if v}
-
-
-def get_package_filename(request_id: UUID) -> str:
-    return os.path.join(settings.STORAGE_DIR, f"vital-records-{request_id}.pdf")
-
-
-def get_request_with_status(request_id: UUID, required_status: str):
-    request = VitalRecordsRequest.objects.filter(pk=request_id).first()
-
-    if request is None:
-        raise RuntimeError(f"Couldn't find VitalRecordsRequest: {request_id}")
-    if request.status != required_status:
-        raise RuntimeError(
-            f"VitalRecordsRequest: {request_id} has an invalid status. Expected: {required_status}, Actual: {request.status}"
-        )
-
-    return request
-
-
-def submit_request(request_id: UUID):
-    """Submit a user request to the task queue for processing."""
-    logger.debug(f"Creating package task for: {request_id}")
-    # create a new task instance
-    task = PackageTask(request_id)
-    # calling task.run() submits the task to the queue for processing
-    task.run()
-    # if callers want to interrogate the status, etc.
-    return task
 
 
 class PackageTask(Task):
