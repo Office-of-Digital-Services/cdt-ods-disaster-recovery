@@ -253,3 +253,19 @@ class VitalRecordsRequest(models.Model):
     @transition(field=status, source="sent", target="finished")
     def finish(self):
         pass
+
+
+class VitalRecordsRequestMetadata(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    request_id = models.UUIDField(editable=False)
+    fire = models.CharField(max_length=50, choices=VitalRecordsRequest.FIRE_CHOICES, editable=False)
+    number_of_records = models.IntegerField(choices=VitalRecordsRequest.NUMBER_CHOICES, editable=False)
+    submitted_at = models.DateTimeField(editable=False)
+    enqueued_at = models.DateTimeField(editable=False)
+    packaged_at = models.DateTimeField(editable=False)
+    sent_at = models.DateTimeField(editable=False)
+    cleaned_at = models.DateTimeField(editable=False)
+
+    class Meta:
+        verbose_name = "Request metadata"
+        verbose_name_plural = "Request metadata"
