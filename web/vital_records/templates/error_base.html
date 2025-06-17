@@ -1,0 +1,30 @@
+{% extends "vital_records/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block inner-content %}
+    <div class="error row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="h1">We’re sorry, that link didn’t work.</h2>
+            <p class="text-1-5rem m-b-md">To find what you need, you can:</p>
+            <ul class="p-b-md m-b-md">
+                <li>Double-check that link</li>
+                <li>Check out support and resources for those impacted by the wildfires:</li>
+                <ul>
+                    <li>
+                        <a href="https://www.ca.gov/lafires/help-for-you/">Help for you and your family</a>
+                    </li>
+                    <li>
+                        <a href="https://www.ca.gov/lafires/help-for-you/replace-personal-documents/">Replace personal documents</a>
+                    </li>
+                </ul>
+            </ul>
+            <img src="{% static 'img/error-bear.jpg' %}"
+                 alt="A bear wearing a yellow construction hard hat"
+                 class="d-block mx-auto m-t-md p-b-md m-b-md"
+                 width="400"
+                 height="548">
+            {% block error-type %}
+            {% endblock error-type %}
+        </div>
+    </div>
+{% endblock inner-content %}
