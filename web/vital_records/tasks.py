@@ -8,7 +8,6 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
-
 from pypdf import PdfReader, PdfWriter
 
 from web.core.tasks import Task
@@ -99,6 +98,10 @@ def get_request_with_status(request_id: UUID, required_status: str):
     return request
 
 
+def get_filename(request_id: UUID) -> str:
+    return os.path.join(settings.STORAGE_DIR, f"vital-records-{request_id}.pdf")
+
+
 class PackageTask(Task):
     group = "vital-records"
     name = "package"
@@ -154,7 +157,7 @@ class PackageTask(Task):
         writer.append(ss_reader)
         writer.update_page_form_field_values(writer.pages[1], sworn_statement.dict(), auto_regenerate=False)
 
-        filename = os.path.join(settings.STORAGE_DIR, f"vital-records-{application.package_id}.pdf")
+        filename = get_filename(request_id)
         with open(filename, "wb") as output_stream:
             writer.write(output_stream)
 
