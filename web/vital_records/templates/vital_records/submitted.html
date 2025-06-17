@@ -8,14 +8,19 @@
         </p>
         <ul class="list-unstyled m-b-md">
             <li>
-                <strong>Phone:</strong> <a href="tel:+916-445-2684">916-445-2684</a>
+                <p>
+                    Phone: <a href="tel:+916-445-2684">(916) 445-2684</a>
+                </p>
             </li>
             <li>
-                <strong>Email:</strong> <a href="mailto:SOEVitalRecords@cdph.ca.gov">SOEVitalRecords@cdph.ca.gov</a>
+                <p>
+                    Email: <a href="mailto:SOEVitalRecords@cdph.ca.gov">SOEVitalRecords@cdph.ca.gov</a>
+                </p>
             </li>
         </ul>
-        <a class="btn btn-primary m-r-md m-b-md"
-           href="{% url 'vital_records:request_start' %}">Request another birth record</a><a class="btn btn-outline-primary m-b-md"
-   href="https://www.ca.gov/lafires/get-help-online/">See more recovery resources</a>
+        <p>
+            If you’re done, sign out below or <a href="{% url 'vital_records:request_start' %}">request another birth record</a>.
+        </p>
+        <a class="btn btn-secondary" href="{% url 'cdt:logout' %}">Sign out of Login.gov</a>
     </div>
 {% endblock inner-content %}
