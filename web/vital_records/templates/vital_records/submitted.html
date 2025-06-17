@@ -21,8 +21,8 @@
         <p class="m-b-0">
             If you’re done, sign out below or <a href="{% url 'vital_records:request_start' %}">request another birth record</a>.
         </p>
-        <button class="btn btn-primary login-button m-t-md"
-                href="{% url 'cdt:logout' %}">
+        <a class="btn btn-primary login-button m-t-md"
+           href="{% url 'cdt:logout' %}">
             Sign out of
             <svg xmlns="http://www.w3.org/2000/svg"
                  viewBox="0 0 292.1 39.47"
@@ -37,6 +37,6 @@
                 </path>
                 <title>Login.gov</title>
             </svg>
-        </button>
+        </a>
     </div>
 {% endblock inner-content %}
