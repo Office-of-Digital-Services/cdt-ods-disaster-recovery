@@ -7,7 +7,7 @@ class DisasterRecoveryHooks(DefaultHooks):
     @classmethod
     def post_logout(cls, request):
         super().post_logout(request)
-        return redirect("core:post_logout")
+        return redirect("https://www.ca.gov/LAfires/")
 
     @classmethod
     def system_error(cls, request, exception, operation):
