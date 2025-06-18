@@ -118,6 +118,20 @@ def test_submit_request(mocker, request_id, mock_PackageTask):
     assert result == mock_inst
 
 
+class TestPackage:
+    def test_asdict(self):
+        package = tasks.Package()
+
+        d = package.dict()
+
+        assert d["package_id"] == package.package_id
+        assert d["CDPH_VR_FORMTYPE"] == package.CDPH_VR_FORMTYPE
+        assert d["CopyType"] == package.CopyType
+        assert d["RelationshipToRegistrant"] == package.RelationshipToRegistrant
+        assert d["NumberOfCopies"] == package.NumberOfCopies
+        assert d["EventType"] == package.EventType
+
+
 class TestPackageTask:
     @pytest.fixture
     def task(self, request_id) -> tasks.PackageTask:
