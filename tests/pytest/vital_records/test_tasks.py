@@ -6,13 +6,38 @@ from web.vital_records import tasks
 
 
 @pytest.fixture
+def mock_PdfReader(mocker):
+    return mocker.patch.object(tasks, "PdfReader")
+
+
+@pytest.fixture
+def mock_PdfWriter(mocker):
+    return mocker.patch.object(tasks, "PdfWriter")
+
+
+@pytest.fixture
 def mock_VitalRecordsRequest(mocker):
     return mocker.patch.object(tasks, "VitalRecordsRequest")
 
 
 @pytest.fixture
+def mock_get_request_with_status(mocker):
+    return mocker.patch.object(tasks, "get_request_with_status")
+
+
+@pytest.fixture
+def mock_Package(mocker):
+    return mocker.patch.object(tasks, "Package")
+
+
+@pytest.fixture
 def mock_PackageTask(mocker):
     return mocker.patch.object(tasks, "PackageTask")
+
+
+@pytest.fixture
+def mock_EmailTask(mocker):
+    return mocker.patch.object(tasks, "EmailTask")
 
 
 def test_template(settings):
@@ -73,3 +98,80 @@ def test_submit_request(mocker, request_id, mock_PackageTask):
     mock_PackageTask.assert_called_once_with(request_id)
     mock_inst.run.assert_called_once()
     assert result == mock_inst
+
+
+class TestPackageTask:
+    @pytest.fixture
+    def task(self, request_id) -> tasks.PackageTask:
+        return tasks.PackageTask(request_id)
+
+    def test_task(self, request_id, task):
+        assert task.group == "vital-records"
+        assert task.name == "package"
+        assert task.kwargs["request_id"] == request_id
+        assert task.started is False
+
+    def test_handler(
+        self, mocker, request_id, mock_PdfReader, mock_PdfWriter, mock_get_request_with_status, mock_Package, task
+    ):
+        mock_inst = mocker.MagicMock()
+        mock_get_request_with_status.return_value = mock_inst
+
+        mock_pkg = mock_Package.return_value
+        mock_pkg.dict.return_value = {}
+
+        result = task.handler(request_id)
+
+        mock_Package.assert_called_once_with(
+            package_id=request_id,
+            WildfireName=mock_inst.fire.capitalize(),
+            NumberOfCopies=mock_inst.number_of_records,
+            RegFirstName=mock_inst.first_name,
+            RegMiddleName=mock_inst.middle_name,
+            RegLastName=mock_inst.last_name,
+            County=mock_inst.county_of_birth,
+            RegDOE=mock_inst.date_of_birth.strftime("%m/%d/%Y"),
+            Parent1FirstName=mock_inst.parent_1_first_name,
+            Parent1LastName=mock_inst.parent_1_last_name,
+            Parent2FirstName=mock_inst.parent_2_first_name,
+            Parent2LastName=mock_inst.parent_2_last_name,
+            RequestorFirstName=mock_inst.order_first_name,
+            RequestorLastName=mock_inst.order_last_name,
+            RequestorMailingAddress=mock_inst.address,
+            RequestorCity=mock_inst.city,
+            RequestorStateProvince=mock_inst.state,
+            RequestorZipCode=mock_inst.zip_code,
+            RequestorCountry="United States",
+            RequestorEmail=mock_inst.email_address,
+            RequestorTelephone=mock_inst.phone_number,
+        )
+
+        mock_PdfReader.assert_called_once_with(tasks.TEMPLATE)
+        mock_reader = mock_PdfReader.return_value
+
+        mock_PdfWriter.assert_called_once()
+        mock_writer = mock_PdfWriter.return_value
+        mock_writer.append.assert_called_once_with(mock_reader)
+        mock_writer.update_page_form_field_values.assert_called_once_with(mock_writer.pages[0], {}, auto_regenerate=False)
+        mock_writer.write.assert_called_once()
+
+        mock_inst.complete_package.assert_called_once()
+        mock_inst.save.assert_called_once()
+
+        assert result == tasks.get_package_filename(request_id)
+
+    def test_post_handler__not_success(self, mocker, mock_EmailTask, task):
+        patched_task = mocker.MagicMock(wraps=task, success=False)
+
+        task.post_handler(patched_task)
+
+        mock_EmailTask.assert_not_called()
+
+    def test_post_handler__success(self, mocker, request_id, mock_EmailTask, task):
+        patched_task = mocker.MagicMock(wraps=task, success=True, result="result")
+
+        task.post_handler(patched_task)
+
+        mock_EmailTask.assert_called_once_with(request_id, patched_task.result)
+        mock_email = mock_EmailTask.return_value
+        mock_email.run.assert_called_once()
