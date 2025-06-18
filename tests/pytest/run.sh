@@ -5,6 +5,6 @@ set -eu
 coverage run -m pytest
 
 # clean out old coverage results
-rm -rf app/static/coverage
+rm -rf web/static/coverage
 
-coverage html --directory app/static/coverage
+coverage html --directory web/static/coverage
