@@ -1,13 +1,11 @@
 import logging
 import os
-from uuid import UUID, uuid4
-
 from dataclasses import asdict, dataclass
 from typing import Optional
+from uuid import UUID, uuid4
 
 from django.conf import settings
 from django.core.mail import EmailMessage
-
 from pypdf import PdfReader, PdfWriter
 
 from web.core.tasks import Task
@@ -140,7 +138,6 @@ class EmailTask(Task):
         email = EmailMessage(
             subject="Vital records request",
             body="A new request is attached.",
-            from_email=settings.VITAL_RECORDS_EMAIL_FROM,
             to=[settings.VITAL_RECORDS_EMAIL_TO],
             cc=[request.email_address],
         )

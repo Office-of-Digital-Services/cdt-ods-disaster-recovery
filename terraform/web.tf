@@ -1,38 +1,38 @@
 locals {
   # Define secret names for clarity
-  django_db_password_name = "django-db-password"
-  django_secret_key_name = "django-secret-key"
+  django_db_password_name        = "django-db-password"
+  django_secret_key_name         = "django-secret-key"
   django_superuser_password_name = "django-superuser-password"
 }
 
 # Generate a random password for the Django DB
 resource "random_password" "django_db" {
-  length           = 32
-  min_lower        = 4
-  min_upper        = 4
-  min_numeric      = 4
-  min_special      = 4
-  special          = true
+  length      = 32
+  min_lower   = 4
+  min_upper   = 4
+  min_numeric = 4
+  min_special = 4
+  special     = true
 }
 
 # Generate a random secret key for Django
 resource "random_password" "django_secret_key" {
-  length           = 32
-  min_lower        = 4
-  min_upper        = 4
-  min_numeric      = 4
-  min_special      = 4
-  special          = true
+  length      = 32
+  min_lower   = 4
+  min_upper   = 4
+  min_numeric = 4
+  min_special = 4
+  special     = true
 }
 
 # Generate a random password for the Django superuser
 resource "random_password" "django_superuser" {
-  length           = 32
-  min_lower        = 4
-  min_upper        = 4
-  min_numeric      = 4
-  min_special      = 4
-  special          = true
+  length      = 32
+  min_lower   = 4
+  min_upper   = 4
+  min_numeric = 4
+  min_special = 4
+  special     = true
 }
 
 
