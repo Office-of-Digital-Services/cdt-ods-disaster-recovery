@@ -143,7 +143,7 @@ class EmailTask(Task):
         }
         html_message = render_to_string("web/vital_records/templates/vital_records/email.html", context)
         email = EmailMessage(
-            subject="Thank you for submitting your vital records request via CDRC/CA.gov",
+            subject="Completed: Birth Record Request",
             body=html_message,
             from_email=settings.VITAL_RECORDS_EMAIL_FROM,
             to=[settings.VITAL_RECORDS_EMAIL_TO],
