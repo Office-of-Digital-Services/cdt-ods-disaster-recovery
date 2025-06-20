@@ -4,6 +4,29 @@ locals {
   postgres_admin_password_secret_name = "postgres-admin-password"
 }
 
+# Subnet for the database
+resource "azurerm_subnet" "db" {
+  name                            = "${local.subnet_name_prefix}-db"
+  virtual_network_name            = azurerm_virtual_network.main.name
+  resource_group_name             = data.azurerm_resource_group.main.name
+  address_prefixes                = ["10.0.4.0/27"]
+  default_outbound_access_enabled = false
+  # Recommended Azure practice to ensure traffic is not blocked from reaching private endpoint
+  private_endpoint_network_policies = "Disabled"
+}
+
+resource "azurerm_private_dns_zone" "db" {
+  name                = "privatelink.postgres.database.azure.com"
+  resource_group_name = data.azurerm_resource_group.main.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "db" {
+  name                  = "db-link-${local.env_letter}"
+  resource_group_name   = data.azurerm_resource_group.main.name
+  private_dns_zone_name = azurerm_private_dns_zone.db.name
+  virtual_network_id    = azurerm_virtual_network.main.id
+}
+
 # Generate a random password for PostgreSQL
 resource "random_password" "postgres_admin_password" {
   length           = 32
@@ -27,6 +50,7 @@ resource "azurerm_key_vault_secret" "postgres_admin_password" {
   ]
 }
 
+# The database resource
 resource "azurerm_postgresql_flexible_server" "main" {
   name                = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-db")
   resource_group_name = data.azurerm_resource_group.main.name
@@ -43,58 +67,36 @@ resource "azurerm_postgresql_flexible_server" "main" {
     active_directory_auth_enabled = false
     password_auth_enabled         = true
   }
-  public_network_access_enabled = true
+  public_network_access_enabled = false
   administrator_login           = local.postgres_admin_login
   administrator_password        = azurerm_key_vault_secret.postgres_admin_password.value
 
   lifecycle {
     ignore_changes = [tags]
   }
+
+  depends_on = [
+    azurerm_subnet.db
+  ]
 }
 
-resource "azurerm_postgresql_flexible_server_firewall_rule" "azure" {
-  # https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-firewall-rules#programmatically-manage-firewall-rules
-  # a firewall rule setting with a starting and ending address equal to 0.0.0.0 does the equivalent of the
-  # 'Allow public access from any Azure service within Azure to this server' option
-  name             = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-firewall-azure")
-  server_id        = azurerm_postgresql_flexible_server.main.id
-  start_ip_address = "0.0.0.0"
-  end_ip_address   = "0.0.0.0"
-}
+# Private endpoint for the database
+resource "azurerm_private_endpoint" "db" {
+  name                = "${local.private_endpoint_prefix}-db"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  subnet_id           = azurerm_subnet.db.id
 
-resource "azurerm_container_app" "pgweb" {
-  name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-pgweb")
-  container_app_environment_id = azurerm_container_app_environment.main.id
-  resource_group_name          = data.azurerm_resource_group.main.name
-  revision_mode                = "Single"
-  max_inactive_revisions       = 10
-
-  # external, auto port 8081
-  ingress {
-    external_enabled = true
-    target_port      = 8081
-    transport        = "auto"
-    traffic_weight {
-      percentage      = 100
-      latest_revision = true
-    }
+  private_service_connection {
+    name                           = "${local.private_service_connection_prefix}-db"
+    is_manual_connection           = false
+    private_connection_resource_id = azurerm_postgresql_flexible_server.main.id
+    subresource_names              = ["postgresqlServer"]
   }
 
-  template {
-    min_replicas = 1
-    max_replicas = 1
-
-    container {
-      name   = "pgweb"
-      image  = "sosedoff/pgweb:latest"
-      cpu    = 0.25
-      memory = "0.5Gi"
-
-      env {
-        name  = "PGWEB_SESSIONS"
-        value = "1"
-      }
-    }
+  private_dns_zone_group {
+    name                 = azurerm_private_dns_zone.db.name
+    private_dns_zone_ids = [azurerm_private_dns_zone.db.id]
   }
 
   lifecycle {
@@ -102,6 +104,7 @@ resource "azurerm_container_app" "pgweb" {
   }
 
   depends_on = [
+    azurerm_private_dns_zone.db,
     azurerm_postgresql_flexible_server.main
   ]
 }
