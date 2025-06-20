@@ -9,15 +9,17 @@ from django.core.mail import EmailMessage
 from pypdf import PdfReader, PdfWriter
 
 from web.core.tasks import Task
+from web.settings import _filter_empty
 from web.vital_records.models import VitalRecordsRequest
 
 logger = logging.getLogger(__name__)
 
-TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "SOE_B.pdf")
+APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "application.pdf")
+SWORNSTATEMENT_TEMPLATE = APPLICATION_TEMPLATE.replace("application.pdf", "sworn-statement.pdf")
 
 
 @dataclass
-class Package:
+class Application:
     package_id: str = str(uuid4())
     CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_B0A6353F1"
     WildfireName: Optional[str] = None
@@ -51,6 +53,33 @@ class Package:
         return {k: v for k, v in d.items() if v}
 
 
+@dataclass
+class SwornStatement:
+    registrantNameRow1: Optional[str] = None
+    registrantNameRow2: Optional[str] = None
+    registrantNameRow3: Optional[str] = None
+    applicantRelationToRegistrantRow1: Optional[str] = None
+    applicantRelationToRegistrantRow2: Optional[str] = None
+    applicantRelationToRegistrantRow3: Optional[str] = None
+    day: Optional[str] = None
+    month: Optional[str] = None
+    year: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    applicantSignature: Optional[str] = None
+    stateOfNotarization: Optional[str] = None
+    countyOfNotarization: Optional[str] = None
+    dateOfNotarization: Optional[str] = None
+    notarySignature: Optional[str] = None
+    notaryNameAndTitle: Optional[str] = None
+    applicantName: Optional[str] = None
+    registrantName: Optional[str] = None
+
+    def dict(self):
+        d = asdict(self)
+        return {k: v for k, v in d.items() if v}
+
+
 def get_request_with_status(request_id: UUID, required_status: str):
     request = VitalRecordsRequest.objects.filter(pk=request_id).first()
 
@@ -75,7 +104,7 @@ class PackageTask(Task):
         logger.debug(f"Creating request package for: {request_id}")
         request = get_request_with_status(request_id, "enqueued")
 
-        package = Package(
+        application = Application(
             package_id=request_id,
             WildfireName=request.fire.capitalize(),
             NumberOfCopies=request.number_of_records,
@@ -99,12 +128,27 @@ class PackageTask(Task):
             RequestorTelephone=request.phone_number,
         )
 
-        reader = PdfReader(TEMPLATE)
-        writer = PdfWriter()
-        writer.append(reader)
-        writer.update_page_form_field_values(writer.pages[0], package.dict(), auto_regenerate=False)
+        registrant_name = " ".join(_filter_empty((request.first_name, request.middle_name, request.last_name)))
+        auth = f"Authorized via California Identity Gateway {request.started_at}"
+        signature = " ".join((request.legal_attestation, auth))
 
-        filename = os.path.join(settings.STORAGE_DIR, f"vital-records-{package.package_id}.pdf")
+        sworn_statement = SwornStatement(
+            registrantNameRow1=registrant_name,
+            applicantRelationToRegistrantRow1=request.relationship,
+            applicantName=request.legal_attestation,
+            applicantSignature=signature,
+        )
+
+        app_reader = PdfReader(APPLICATION_TEMPLATE)
+        writer = PdfWriter()
+        writer.append(app_reader)
+        writer.update_page_form_field_values(writer.pages[0], application.dict(), auto_regenerate=False)
+
+        ss_reader = PdfReader(SWORNSTATEMENT_TEMPLATE)
+        writer.append(ss_reader)
+        writer.update_page_form_field_values(writer.pages[1], sworn_statement.dict(), auto_regenerate=False)
+
+        filename = os.path.join(settings.STORAGE_DIR, f"vital-records-{application.package_id}.pdf")
         with open(filename, "wb") as output_stream:
             writer.write(output_stream)
 
