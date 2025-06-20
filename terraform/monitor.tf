@@ -25,11 +25,6 @@ resource "azurerm_application_insights" "main" {
   }
 }
 
-data "azurerm_key_vault_secret" "slack_ddrc_notify_email" {
-  name         = "slack-ddrc-notify-email"
-  key_vault_id = azurerm_key_vault.main.id
-}
-
 resource "azurerm_monitor_action_group" "eng_email" {
   name                = "ddrc-notify Slack channel email"
   resource_group_name = data.azurerm_resource_group.main.name
@@ -37,7 +32,7 @@ resource "azurerm_monitor_action_group" "eng_email" {
 
   email_receiver {
     name          = "ddrc engineering team"
-    email_address = data.azurerm_key_vault_secret.slack_ddrc_notify_email.value
+    email_address = var.SLACK_NOTIFY_EMAIL
   }
 
   lifecycle {
