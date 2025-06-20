@@ -1,3 +1,64 @@
+# Subnet for the Storage Private Endpoint
+resource "azurerm_subnet" "storage" {
+  name                            = "${local.subnet_name_prefix}-storage"
+  virtual_network_name            = azurerm_virtual_network.main.name
+  resource_group_name             = data.azurerm_resource_group.main.name
+  address_prefixes                = ["10.0.5.0/27"]
+  default_outbound_access_enabled = false
+  # Recommended Azure practice to ensure traffic is not blocked from reaching private endpoint
+  private_endpoint_network_policies = "Disabled"
+}
+
+resource "azurerm_private_dns_zone" "storage_blob" {
+  name                = "privatelink.blob.core.windows.net"
+  resource_group_name = data.azurerm_resource_group.main.name
+}
+
+resource "azurerm_private_dns_zone" "storage_file" {
+  name                = "privatelink.file.core.windows.net"
+  resource_group_name = data.azurerm_resource_group.main.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "storage_blob" {
+  name                  = "storage-blob-link-${local.env_letter}"
+  resource_group_name   = data.azurerm_resource_group.main.name
+  private_dns_zone_name = azurerm_private_dns_zone.storage_blob.name
+  virtual_network_id    = azurerm_virtual_network.main.id
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "storage_file" {
+  name                  = "storage-file-link-${local.env_letter}"
+  resource_group_name   = data.azurerm_resource_group.main.name
+  private_dns_zone_name = azurerm_private_dns_zone.storage_file.name
+  virtual_network_id    = azurerm_virtual_network.main.id
+}
+
+resource "azurerm_private_endpoint" "storage" {
+  name                = "${local.private_endpoint_prefix}-storage"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  subnet_id           = azurerm_subnet.storage.id
+
+  private_service_connection {
+    name                           = "${local.private_service_connection_prefix}-storage"
+    is_manual_connection           = false
+    private_connection_resource_id = azurerm_storage_account.main.id
+    subresource_names              = ["blob", "file"]
+  }
+
+  private_dns_zone_group {
+    name = "storage-dns-group"
+    private_dns_zone_ids = [
+      azurerm_private_dns_zone.storage_blob.id,
+      azurerm_private_dns_zone.storage_file.id
+    ]
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
 resource "azurerm_storage_account" "main" {
   name                             = "sacdtddrc${lower(local.env_letter)}001"
   location                         = data.azurerm_resource_group.main.location
@@ -17,6 +78,15 @@ resource "azurerm_storage_account" "main" {
     delete_retention_policy {
       days = 7
     }
+  }
+
+  network_rules {
+    default_action = "Deny"
+    # Allow AzureServices to connect directly, avoiding private endpoint
+    # temporary so e.g. Terraform can connect from Azure DevOps
+    # until we figure out a more robust (IP based?) ACL
+    bypass                     = ["AzureServices"]
+    virtual_network_subnet_ids = []
   }
 
   lifecycle {
