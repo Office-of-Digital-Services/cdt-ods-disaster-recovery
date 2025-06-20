@@ -35,8 +35,6 @@ resource "random_password" "django_superuser" {
   special     = true
 }
 
-
-
 # Create the secret for Django DB password using the generated secret
 resource "azurerm_key_vault_secret" "django_db_password" {
   name         = local.django_db_password_name
@@ -99,7 +97,7 @@ resource "azurerm_key_vault_access_policy" "container_app_web_access" {
 }
 
 resource "azurerm_container_app" "web" {
-  name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-web")
+  name                         = "${local.app_name_prefix}-web"
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = data.azurerm_resource_group.main.name
   revision_mode                = "Single"
@@ -227,10 +225,9 @@ resource "azurerm_container_app" "web" {
 
   # external, auto port 8000
   ingress {
-    client_certificate_mode = "ignore"
-    external_enabled        = true
-    target_port             = 8000
-    transport               = "auto"
+    external_enabled = false
+    target_port      = 8000
+    transport        = "auto"
     traffic_weight {
       percentage      = 100
       latest_revision = true
@@ -425,6 +422,7 @@ resource "azurerm_container_app" "web" {
   }
 
   depends_on = [
+    azurerm_container_app_environment.main,
     azurerm_postgresql_flexible_server.main,
     azurerm_key_vault_access_policy.container_app_web_access,
     azurerm_key_vault_secret.django_db_password,
@@ -432,5 +430,49 @@ resource "azurerm_container_app" "web" {
     azurerm_key_vault_secret.django_superuser_password,
     azurerm_key_vault_secret.postgres_admin_password,
     azurerm_key_vault_secret.tasks_db_password
+  ]
+}
+
+resource "azurerm_container_app" "pgweb" {
+  name                         = "${local.app_name_prefix}-pgweb"
+  container_app_environment_id = azurerm_container_app_environment.main.id
+  resource_group_name          = data.azurerm_resource_group.main.name
+  revision_mode                = "Single"
+  max_inactive_revisions       = 10
+
+  ingress {
+    external_enabled = false
+    target_port      = 8081
+    transport        = "auto"
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
+    }
+  }
+
+  template {
+    min_replicas = 1
+    max_replicas = 1
+
+    container {
+      name   = "pgweb"
+      image  = "sosedoff/pgweb:0.16.2"
+      cpu    = 0.25
+      memory = "0.5Gi"
+
+      env {
+        name  = "PGWEB_SESSIONS"
+        value = "1"
+      }
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  depends_on = [
+    azurerm_subnet.public,
+    azurerm_postgresql_flexible_server.main
   ]
 }

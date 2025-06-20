@@ -5,6 +5,7 @@ locals {
   env_name           = local.is_prod ? "prod" : terraform.workspace
   env_letter         = upper(substr(local.env_name, 0, 1))
   hostname           = local.is_prod ? "recovery.cdt.ca.gov" : "${local.env_name}.recovery.cdt.ca.gov"
+  app_name_prefix    = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}")
   secret_http_prefix = "https://KV-CDT-PUB-DDRC-${local.env_letter}-001.vault.azure.net/secrets"
 }
 
@@ -13,14 +14,20 @@ data "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_container_app_environment" "main" {
-  name                       = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
-  location                   = data.azurerm_resource_group.main.location
-  resource_group_name        = data.azurerm_resource_group.main.name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+  name                           = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
+  location                       = data.azurerm_resource_group.main.location
+  resource_group_name            = data.azurerm_resource_group.main.name
+  log_analytics_workspace_id     = azurerm_log_analytics_workspace.main.id
+  infrastructure_subnet_id       = azurerm_subnet.public.id
+  internal_load_balancer_enabled = true
 
   lifecycle {
     ignore_changes = [tags]
   }
+
+  depends_on = [
+    azurerm_subnet.public
+  ]
 }
 
 resource "azurerm_container_app_environment_storage" "config" {

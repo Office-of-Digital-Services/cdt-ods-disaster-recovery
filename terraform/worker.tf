@@ -3,6 +3,127 @@ locals {
   tasks_db_password_name = "tasks-db-password"
 }
 
+resource "azurerm_subnet" "worker" {
+  name                 = "${local.subnet_name_prefix}-worker"
+  virtual_network_name = azurerm_virtual_network.main.name
+  resource_group_name  = data.azurerm_resource_group.main.name
+  address_prefixes     = ["10.0.2.0/24"]
+  delegation {
+    name = "Microsoft.App/environments"
+    service_delegation {
+      name    = "Microsoft.App/environments"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
+  default_outbound_access_enabled = false
+}
+
+resource "azurerm_network_security_group" "worker" {
+  name                = "${local.nsg_prefix}-worker"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+
+  # Rule to deny inbound to the worker
+  security_rule {
+    name                       = "DenyInbound"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  # Low-priority catch-all to Deny outbound
+  security_rule {
+    name                       = "DenyAllOutbound"
+    priority                   = 4096
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  # Rule to allow outbound to the database
+  security_rule {
+    name                       = "AllowOutbound-db"
+    priority                   = 200
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "5432"
+    source_address_prefix      = "*"
+    destination_address_prefix = azurerm_private_endpoint.db.private_service_connection[0].private_ip_address
+  }
+  # Rule to allow outbound to the Azure Communication Service
+  security_rule {
+    name                       = "AllowOutbound-acs"
+    priority                   = 210
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "AzureCommunicationService"
+  }
+  # Rule to allow outbound to the key vault
+  security_rule {
+    name                       = "AllowOutbound-kv"
+    priority                   = 220
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443" # Standard HTTPS port
+    source_address_prefix      = "*"
+    destination_address_prefix = azurerm_private_endpoint.keyvault.private_service_connection[0].private_ip_address
+  }
+  # Rule to allow outbound to the storage account
+  security_rule {
+    name                       = "AllowOutbound-Storage"
+    priority                   = 230
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "445" # Port for Azure Files (SMB)
+    source_address_prefix      = "*"
+    destination_address_prefix = azurerm_private_endpoint.storage.private_service_connection[0].private_ip_address
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "worker" {
+  network_security_group_id = azurerm_network_security_group.worker.id
+  subnet_id                 = azurerm_subnet.worker.id
+}
+
+resource "azurerm_subnet_nat_gateway_association" "worker_subnet" {
+  subnet_id      = azurerm_subnet.worker.id
+  nat_gateway_id = azurerm_nat_gateway.main.id
+}
+
+resource "azurerm_container_app_environment" "worker" {
+  name                           = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-worker"
+  location                       = data.azurerm_resource_group.main.location
+  resource_group_name            = data.azurerm_resource_group.main.name
+  log_analytics_workspace_id     = azurerm_log_analytics_workspace.main.id
+  infrastructure_subnet_id       = azurerm_subnet.worker.id
+  internal_load_balancer_enabled = true
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  depends_on = [
+    azurerm_subnet.worker
+  ]
+}
+
 # Generate a random password for the Tasks DB
 resource "random_password" "tasks_db" {
   length      = 32
@@ -51,8 +172,8 @@ resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
 }
 
 resource "azurerm_container_app" "worker" {
-  name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-worker")
-  container_app_environment_id = azurerm_container_app_environment.main.id
+  name                         = "${local.app_name_prefix}-worker"
+  container_app_environment_id = azurerm_container_app_environment.worker.id
   resource_group_name          = data.azurerm_resource_group.main.name
   revision_mode                = "Single"
   max_inactive_revisions       = 10
@@ -212,6 +333,7 @@ resource "azurerm_container_app" "worker" {
   }
 
   depends_on = [
+    azurerm_container_app_environment.worker,
     azurerm_postgresql_flexible_server.main,
     azurerm_key_vault_access_policy.container_app_worker_access,
     azurerm_key_vault_secret.azure_communication_connection_string,
