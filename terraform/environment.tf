@@ -13,14 +13,20 @@ data "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_container_app_environment" "main" {
-  name                       = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
-  location                   = data.azurerm_resource_group.main.location
-  resource_group_name        = data.azurerm_resource_group.main.name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+  name                           = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
+  location                       = data.azurerm_resource_group.main.location
+  resource_group_name            = data.azurerm_resource_group.main.name
+  log_analytics_workspace_id     = azurerm_log_analytics_workspace.main.id
+  infrastructure_subnet_id       = azurerm_subnet.public.id
+  internal_load_balancer_enabled = true
 
   lifecycle {
     ignore_changes = [tags]
   }
+
+  depends_on = [
+    azurerm_subnet.public
+  ]
 }
 
 resource "azurerm_container_app_environment_storage" "config" {

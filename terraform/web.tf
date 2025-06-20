@@ -425,6 +425,7 @@ resource "azurerm_container_app" "web" {
   }
 
   depends_on = [
+    azurerm_container_app_environment.main,
     azurerm_postgresql_flexible_server.main,
     azurerm_key_vault_access_policy.container_app_web_access,
     azurerm_key_vault_secret.django_db_password,
