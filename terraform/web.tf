@@ -225,10 +225,9 @@ resource "azurerm_container_app" "web" {
 
   # external, auto port 8000
   ingress {
-    client_certificate_mode = "ignore"
-    external_enabled        = true
-    target_port             = 8000
-    transport               = "auto"
+    external_enabled = false
+    target_port      = 8000
+    transport        = "auto"
     traffic_weight {
       percentage      = 100
       latest_revision = true
