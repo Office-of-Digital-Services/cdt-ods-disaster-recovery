@@ -149,6 +149,18 @@ resource "azurerm_network_security_group" "public" {
     source_address_prefix      = "*"
     destination_address_prefix = azurerm_private_endpoint.keyvault.private_service_connection[0].private_ip_address
   }
+  # Rule to allow outbound to the storage account
+  security_rule {
+    name                       = "AllowOutbound-Storage"
+    priority                   = 320
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "445" # Port for Azure Files (SMB)
+    source_address_prefix      = "*"
+    destination_address_prefix = azurerm_private_endpoint.storage.private_service_connection[0].private_ip_address
+  }
 }
 
 resource "azurerm_subnet_network_security_group_association" "public" {
