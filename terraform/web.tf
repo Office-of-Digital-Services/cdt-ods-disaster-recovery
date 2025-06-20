@@ -35,8 +35,6 @@ resource "random_password" "django_superuser" {
   special     = true
 }
 
-
-
 # Create the secret for Django DB password using the generated secret
 resource "azurerm_key_vault_secret" "django_db_password" {
   name         = local.django_db_password_name
@@ -99,7 +97,7 @@ resource "azurerm_key_vault_access_policy" "container_app_web_access" {
 }
 
 resource "azurerm_container_app" "web" {
-  name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-web")
+  name                         = "${local.app_name_prefix}-web"
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = data.azurerm_resource_group.main.name
   revision_mode                = "Single"

@@ -5,6 +5,7 @@ locals {
   env_name           = local.is_prod ? "prod" : terraform.workspace
   env_letter         = upper(substr(local.env_name, 0, 1))
   hostname           = local.is_prod ? "recovery.cdt.ca.gov" : "${local.env_name}.recovery.cdt.ca.gov"
+  app_name_prefix    = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}")
   secret_http_prefix = "https://KV-CDT-PUB-DDRC-${local.env_letter}-001.vault.azure.net/secrets"
 }
 

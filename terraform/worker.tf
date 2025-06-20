@@ -160,7 +160,7 @@ resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
 }
 
 resource "azurerm_container_app" "worker" {
-  name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-worker")
+  name                         = "${local.app_name_prefix}-worker"
   container_app_environment_id = azurerm_container_app_environment.worker.id
   resource_group_name          = data.azurerm_resource_group.main.name
   revision_mode                = "Single"
