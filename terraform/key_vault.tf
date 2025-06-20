@@ -40,12 +40,38 @@ locals {
     "Backup",
     "Restore",
   ]
-  # Normalize key_vault_id to always start with a single slash
+  # Normalize key_vault_id to always start with a single slash.
   # This checks if azurerm_key_vault.main.id already starts with a slash.
   # If it does, it uses it as is. If not, it prepends a slash.
+
+  # Workaround some weirdness between different envs, where sometimes the slash is present and other times not...
   normalized_key_vault_id = substr(azurerm_key_vault.main.id, 0, 1) == "/" ? azurerm_key_vault.main.id : "/${azurerm_key_vault.main.id}"
 }
 
+# Subnet for the Key Vault
+resource "azurerm_subnet" "keyvault" {
+  name                            = "${local.subnet_name_prefix}-kv"
+  virtual_network_name            = azurerm_virtual_network.main.name
+  resource_group_name             = data.azurerm_resource_group.main.name
+  address_prefixes                = ["10.0.3.0/27"]
+  default_outbound_access_enabled = false
+  # Recommended Azure practice to ensure traffic is not blocked from reaching private endpoint
+  private_endpoint_network_policies = "Disabled"
+}
+
+resource "azurerm_private_dns_zone" "keyvault" {
+  name                = "privatelink.vaultcore.azure.net"
+  resource_group_name = data.azurerm_resource_group.main.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "keyvault" {
+  name                  = "keyvault-link-${local.env_letter}"
+  resource_group_name   = data.azurerm_resource_group.main.name
+  private_dns_zone_name = azurerm_private_dns_zone.keyvault.name
+  virtual_network_id    = azurerm_virtual_network.main.id
+}
+
+# The Key Vault resource
 resource "azurerm_key_vault" "main" {
   name                     = "KV-CDT-PUB-DDRC-${local.env_letter}-001"
   location                 = data.azurerm_resource_group.main.location
@@ -54,12 +80,45 @@ resource "azurerm_key_vault" "main" {
   tenant_id                = data.azurerm_client_config.current.tenant_id
   purge_protection_enabled = true
 
+  network_acls {
+    default_action = "Deny"
+    bypass         = "None"
+  }
+
   lifecycle {
     prevent_destroy = true
     ignore_changes = [
       tags,
       access_policy # IMPORTANT: Tell Terraform to ignore changes to access policies here since we aren't using inline policies
     ]
+  }
+
+  depends_on = [
+    azurerm_subnet.keyvault
+  ]
+}
+
+# Private endpoint for the Key Vault
+resource "azurerm_private_endpoint" "keyvault" {
+  name                = "${local.private_endpoint_prefix}-kv"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  subnet_id           = azurerm_subnet.keyvault.id
+
+  private_service_connection {
+    name                           = "${local.private_service_connection_prefix}-kv"
+    is_manual_connection           = false
+    private_connection_resource_id = azurerm_key_vault.main.id
+    subresource_names              = ["vault"]
+  }
+
+  private_dns_zone_group {
+    name                 = azurerm_private_dns_zone.keyvault.name
+    private_dns_zone_ids = [azurerm_private_dns_zone.keyvault.id]
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
 
