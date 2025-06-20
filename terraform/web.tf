@@ -432,3 +432,47 @@ resource "azurerm_container_app" "web" {
     azurerm_key_vault_secret.tasks_db_password
   ]
 }
+
+resource "azurerm_container_app" "pgweb" {
+  name                         = "${local.app_name_prefix}-pgweb"
+  container_app_environment_id = azurerm_container_app_environment.main.id
+  resource_group_name          = data.azurerm_resource_group.main.name
+  revision_mode                = "Single"
+  max_inactive_revisions       = 10
+
+  ingress {
+    external_enabled = false
+    target_port      = 8081
+    transport        = "auto"
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
+    }
+  }
+
+  template {
+    min_replicas = 1
+    max_replicas = 1
+
+    container {
+      name   = "pgweb"
+      image  = "sosedoff/pgweb:0.16.2"
+      cpu    = 0.25
+      memory = "0.5Gi"
+
+      env {
+        name  = "PGWEB_SESSIONS"
+        value = "1"
+      }
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  depends_on = [
+    azurerm_subnet.public,
+    azurerm_postgresql_flexible_server.main
+  ]
+}
