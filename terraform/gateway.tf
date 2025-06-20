@@ -185,6 +185,10 @@ resource "azurerm_application_gateway" "main" {
     name  = local.backend_address_pool_name
     fqdns = ["${azurerm_container_app.web.name}.${azurerm_container_app_environment.main.default_domain}"]
   }
+  backend_address_pool {
+    name  = "${local.backend_address_pool_name}-pgweb"
+    fqdns = ["${azurerm_container_app.pgweb.name}.${azurerm_container_app_environment.main.default_domain}"]
+  }
 
   backend_http_settings {
     name                                = local.backend_address_pool_name
@@ -193,6 +197,15 @@ resource "azurerm_application_gateway" "main" {
     pick_host_name_from_backend_address = true
     port                                = 8000
     probe_name                          = local.probe_name
+    protocol                            = "Http"
+    request_timeout                     = 20
+  }
+  backend_http_settings {
+    name                                = "${local.http_setting_name}-pgweb"
+    cookie_based_affinity               = "Disabled"
+    path                                = "/"
+    pick_host_name_from_backend_address = true
+    port                                = 8081 # pgweb's target port
     protocol                            = "Http"
     request_timeout                     = 20
   }
@@ -215,10 +228,24 @@ resource "azurerm_application_gateway" "main" {
     pick_host_name_from_backend_http_settings = true
   }
 
+  url_path_map {
+    name                               = "${local.request_routing_rule_name}-pathmap"
+    default_backend_address_pool_name  = local.backend_address_pool_name
+    default_backend_http_settings_name = local.http_setting_name
+
+    path_rule {
+      name                       = "pgweb-rule"
+      paths                      = ["/pgweb", "/pgweb/*"]
+      backend_address_pool_name  = "${local.backend_address_pool_name}-pgweb"
+      backend_http_settings_name = "${local.http_setting_name}-pgweb"
+    }
+  }
+
   request_routing_rule {
     name               = local.request_routing_rule_name
-    rule_type          = "Basic"
+    rule_type          = "PathBasedRouting"
     http_listener_name = local.listener_name
+    url_path_map_name  = "${local.request_routing_rule_name}-pathmap"
     priority           = 100
   }
 
@@ -238,5 +265,6 @@ resource "azurerm_application_gateway" "main" {
     azurerm_public_ip.gateway,
     azurerm_container_app_environment.main,
     azurerm_container_app.web,
+    azurerm_container_app.pgweb,
   ]
 }
