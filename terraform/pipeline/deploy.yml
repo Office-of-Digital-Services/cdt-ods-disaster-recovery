@@ -43,6 +43,17 @@ steps:
       REASON: $(Build.Reason)
       INDIVIDUAL_SOURCE: $(Build.SourceBranchName)
       SOURCE_BRANCH: $(Build.SourceBranch)
+  # Fetch the secret from Key Vault
+  # This makes the secret available as $(slack-ddrc-notify-email) to subsequent tasks
+  - task: AzureKeyVault@2
+    displayName: "Get Slack notify email from Key Vault"
+    inputs:
+      connectedServiceName: "${{ parameters.service_connection }}"
+      # Read the notification secret from the production vault
+      # This is a chicken-and-egg if running for the very first time or rebuilding from scratch
+      # So some manual steps must be taken to create the production KV and secret
+      keyVaultName: "KV-CDT-PUB-DDRC-P-001"
+      secretsFilter: "slack-ddrc-notify-email"
   - task: TerraformTaskV4@4
     displayName: Terraform plan
     inputs:
@@ -50,7 +61,7 @@ steps:
       command: plan
       # wait for lock to be released, in case being used by another pipeline run
       # https://discuss.hashicorp.com/t/terraform-plan-wait-for-lock-to-be-released/6870/2
-      commandOptions: -input=false -lock-timeout=5m -var="container_tag=$(container_tag)"
+      commandOptions: -input=false -lock-timeout=5m -var="container_tag=$(container_tag)" -var="SLACK_NOTIFY_EMAIL=$(slack-ddrc-notify-email)"
       workingDirectory: "$(System.DefaultWorkingDirectory)/terraform"
       # service connection
       environmentServiceNameAzureRM: "${{ parameters.service_connection }}"
@@ -67,7 +78,7 @@ steps:
       provider: azurerm
       command: apply
       # (ditto the lock comment above)
-      commandOptions: -input=false -lock-timeout=5m -var="container_tag=$(container_tag)"
+      commandOptions: -input=false -lock-timeout=5m -var="container_tag=$(container_tag)" -var="SLACK_NOTIFY_EMAIL=$(slack-ddrc-notify-email)"
       workingDirectory: "$(System.DefaultWorkingDirectory)/terraform"
       # service connection
       environmentServiceNameAzureRM: "${{ parameters.service_connection }}"

@@ -16,6 +16,11 @@ variable "ENGINEERING_GROUP_OBJECT_ID" {
   type        = string
 }
 
+variable "SLACK_NOTIFY_EMAIL" {
+  description = "Slack channel email for the DDRC engineering team"
+  type        = string
+}
+
 variable "container_registry" {
   type        = string
   description = "The name of the container registry (e.g., 'ghcr.io')"
