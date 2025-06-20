@@ -18,6 +18,83 @@ resource "azurerm_subnet" "worker" {
   default_outbound_access_enabled = false
 }
 
+resource "azurerm_network_security_group" "worker" {
+  name                = "${local.nsg_prefix}-worker"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+
+  # Rule to deny inbound to the worker
+  security_rule {
+    name                       = "DenyInbound"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  # Low-priority catch-all to Deny outbound
+  security_rule {
+    name                       = "DenyAllOutbound"
+    priority                   = 4096
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  # Rule to allow outbound to the database
+  security_rule {
+    name                       = "AllowOutbound-db"
+    priority                   = 200
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "5432"
+    source_address_prefix      = "*"
+    destination_address_prefix = azurerm_private_endpoint.db.private_service_connection[0].private_ip_address
+  }
+  # Rule to allow outbound to the Azure Communication Service
+  security_rule {
+    name                       = "AllowOutbound-acs"
+    priority                   = 210
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "AzureCommunicationService"
+  }
+  # Rule to allow outbound to the key vault
+  security_rule {
+    name                       = "AllowOutbound-kv"
+    priority                   = 220
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443" # Standard HTTPS port
+    source_address_prefix      = "*"
+    destination_address_prefix = azurerm_private_endpoint.keyvault.private_service_connection[0].private_ip_address
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "worker" {
+  network_security_group_id = azurerm_network_security_group.worker.id
+  subnet_id                 = azurerm_subnet.worker.id
+}
+
+resource "azurerm_subnet_nat_gateway_association" "worker_subnet" {
+  subnet_id      = azurerm_subnet.worker.id
+  nat_gateway_id = azurerm_nat_gateway.main.id
+}
+
 resource "azurerm_container_app_environment" "worker" {
   name                           = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-worker"
   location                       = data.azurerm_resource_group.main.location
