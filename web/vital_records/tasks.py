@@ -191,7 +191,6 @@ class EmailTask(Task):
         email = EmailMessage(
             subject="Completed: Birth Record Request",
             body=html_message,
-            from_email=settings.VITAL_RECORDS_EMAIL_FROM,
             to=[settings.VITAL_RECORDS_EMAIL_TO],
             cc=[request.email_address],
         )
