@@ -1,6 +1,8 @@
 locals {
-  vnet_name          = "VNET-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
-  subnet_name_prefix = "SNET-CDT-PUB-VIP-DDRC-${local.env_letter}"
+  vnet_name                         = "VNET-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
+  subnet_name_prefix                = "SNET-CDT-PUB-VIP-DDRC-${local.env_letter}"
+  private_endpoint_prefix           = lower("pe-cdt-pub-vip-ddrc-${local.env_letter}")
+  private_service_connection_prefix = lower("psc-cdt-pub-vip-ddrc-${local.env_letter}")
 }
 
 # The primary VNet (per environment)
