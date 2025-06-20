@@ -25,6 +25,137 @@ resource "azurerm_public_ip" "gateway" {
   sku                 = "Standard"
 }
 
+resource "azurerm_network_security_group" "gateway" {
+  name                = "${local.nsg_prefix}-gateway"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+
+  # Rule to allow health and management probes from the Application Gateway service. This is required.
+  security_rule {
+    name                       = "AllowInbound-GatewayManager"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "65200-65535"
+    source_address_prefix      = "GatewayManager"
+    destination_address_prefix = "*"
+  }
+  # Rule to allow inbound traffic from the Azure FrontDoor to the gateway listener.
+  security_rule {
+    name                       = "AllowInbound-FrontDoor"
+    priority                   = 200
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80" # Matches the frontend_port
+    source_address_prefix      = "AzureFrontDoor.Backend"
+    destination_address_prefix = "*"
+  }
+  # Rule to allow the gateway to send traffic (including health probes) to the backend apps
+  security_rule {
+    name                       = "AllowOutbound-ToApps"
+    priority                   = 300
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8000,8081" # Matches the web and pgweb backend ports
+    source_address_prefix      = azurerm_subnet.gateway.address_prefixes[0]
+    destination_address_prefix = azurerm_subnet.public.address_prefixes[0]
+  }
+  # Low-priority catch-all Deny for In/Outbound traffic to be more explicit
+  security_rule {
+    name                       = "DenyAllInbound"
+    priority                   = 4096
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "DenyAllOutbound"
+    priority                   = 4096
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "gateway" {
+  subnet_id                 = azurerm_subnet.gateway.id
+  network_security_group_id = azurerm_network_security_group.gateway.id
+}
+
+resource "azurerm_network_security_group" "public" {
+  name                = "${local.nsg_prefix}-public"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+
+  # Rule to allow traffic from the Application Gateway's subnet
+  security_rule {
+    name                       = "AllowInbound-AppGateway"
+    priority                   = 200
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8000,8081" # the web and pgweb ports
+    source_address_prefix      = azurerm_subnet.gateway.address_prefixes[0]
+    destination_address_prefix = "*"
+  }
+  # Rule to allow outbound traffic to the internet for API calls
+  security_rule {
+    name                       = "AllowOutbound-Internet"
+    priority                   = 100
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "Internet"
+  }
+  # Rule to allow outbound to the database
+  security_rule {
+    name                       = "AllowOutbound-db"
+    priority                   = 300
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "5432"
+    source_address_prefix      = "*"
+    destination_address_prefix = azurerm_private_endpoint.db.private_service_connection[0].private_ip_address
+  }
+  # Rule to allow outbound to the key vault
+  security_rule {
+    name                       = "AllowOutbound-kv"
+    priority                   = 310
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = azurerm_private_endpoint.keyvault.private_service_connection[0].private_ip_address
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "public" {
+  subnet_id                 = azurerm_subnet.public.id
+  network_security_group_id = azurerm_network_security_group.public.id
+}
+
 resource "azurerm_application_gateway" "main" {
   name                = "AGW-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   resource_group_name = data.azurerm_resource_group.main.name
