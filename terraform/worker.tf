@@ -3,6 +3,38 @@ locals {
   tasks_db_password_name = "tasks-db-password"
 }
 
+resource "azurerm_subnet" "worker" {
+  name                 = "${local.subnet_name_prefix}-worker"
+  virtual_network_name = azurerm_virtual_network.main.name
+  resource_group_name  = data.azurerm_resource_group.main.name
+  address_prefixes     = ["10.0.2.0/24"]
+  delegation {
+    name = "Microsoft.App/environments"
+    service_delegation {
+      name    = "Microsoft.App/environments"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
+  default_outbound_access_enabled = false
+}
+
+resource "azurerm_container_app_environment" "worker" {
+  name                           = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-worker"
+  location                       = data.azurerm_resource_group.main.location
+  resource_group_name            = data.azurerm_resource_group.main.name
+  log_analytics_workspace_id     = azurerm_log_analytics_workspace.main.id
+  infrastructure_subnet_id       = azurerm_subnet.worker.id
+  internal_load_balancer_enabled = true
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  depends_on = [
+    azurerm_subnet.worker
+  ]
+}
+
 # Generate a random password for the Tasks DB
 resource "random_password" "tasks_db" {
   length      = 32
@@ -52,7 +84,7 @@ resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
 
 resource "azurerm_container_app" "worker" {
   name                         = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}-worker")
-  container_app_environment_id = azurerm_container_app_environment.main.id
+  container_app_environment_id = azurerm_container_app_environment.worker.id
   resource_group_name          = data.azurerm_resource_group.main.name
   revision_mode                = "Single"
   max_inactive_revisions       = 10
@@ -212,6 +244,7 @@ resource "azurerm_container_app" "worker" {
   }
 
   depends_on = [
+    azurerm_container_app_environment.worker,
     azurerm_postgresql_flexible_server.main,
     azurerm_key_vault_access_policy.container_app_worker_access,
     azurerm_key_vault_secret.azure_communication_connection_string,
