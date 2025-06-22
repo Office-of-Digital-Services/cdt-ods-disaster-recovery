@@ -87,11 +87,6 @@ resource "azurerm_subnet_network_security_group_association" "worker" {
   subnet_id                 = azurerm_subnet.worker.id
 }
 
-resource "azurerm_subnet_nat_gateway_association" "worker_subnet" {
-  subnet_id      = azurerm_subnet.worker.id
-  nat_gateway_id = azurerm_nat_gateway.main.id
-}
-
 resource "azurerm_container_app_environment" "worker" {
   name                           = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-worker"
   location                       = data.azurerm_resource_group.main.location
