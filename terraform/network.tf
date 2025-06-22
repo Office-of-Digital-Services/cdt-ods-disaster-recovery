@@ -1,25 +1,8 @@
 locals {
-  subnet_name_prefix                = "SNET-CDT-PUB-VIP-DDRC-${local.env_letter}"
   nsg_prefix                        = "NSG-CDT-PUB-VIP-DDRC-${local.env_letter}"
   private_endpoint_prefix           = lower("pe-cdt-pub-vip-ddrc-${local.env_letter}")
   private_service_connection_prefix = lower("psc-cdt-pub-vip-ddrc-${local.env_letter}")
   public_ip_prefix                  = lower("pip-cdt-pub-vip-ddrc-${local.env_letter}")
-}
-
-# The primary subnet for public (Internet) access
-resource "azurerm_subnet" "public" {
-  name                 = "${local.subnet_name_prefix}-public"
-  virtual_network_name = azurerm_virtual_network.main.name
-  resource_group_name  = data.azurerm_resource_group.main.name
-  address_prefixes     = ["10.0.1.0/24"]
-  delegation {
-    name = "Microsoft.App/environments"
-    service_delegation {
-      name    = "Microsoft.App/environments"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-    }
-  }
-  default_outbound_access_enabled = false
 }
 
 # NAT Gateway routes private->public traffic from inside the VNet/subnets to the Internet

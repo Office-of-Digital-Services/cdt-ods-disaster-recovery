@@ -1,14 +1,3 @@
-# Subnet for the Storage Private Endpoint
-resource "azurerm_subnet" "storage" {
-  name                            = "${local.subnet_name_prefix}-storage"
-  virtual_network_name            = azurerm_virtual_network.main.name
-  resource_group_name             = data.azurerm_resource_group.main.name
-  address_prefixes                = ["10.0.5.0/27"]
-  default_outbound_access_enabled = false
-  # Recommended Azure practice to ensure traffic is not blocked from reaching private endpoint
-  private_endpoint_network_policies = "Disabled"
-}
-
 resource "azurerm_private_dns_zone" "storage_blob" {
   name                = "privatelink.blob.core.windows.net"
   resource_group_name = data.azurerm_resource_group.main.name

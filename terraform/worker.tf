@@ -3,21 +3,6 @@ locals {
   tasks_db_password_name = "tasks-db-password"
 }
 
-resource "azurerm_subnet" "worker" {
-  name                 = "${local.subnet_name_prefix}-worker"
-  virtual_network_name = azurerm_virtual_network.main.name
-  resource_group_name  = data.azurerm_resource_group.main.name
-  address_prefixes     = ["10.0.2.0/24"]
-  delegation {
-    name = "Microsoft.App/environments"
-    service_delegation {
-      name    = "Microsoft.App/environments"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-    }
-  }
-  default_outbound_access_enabled = false
-}
-
 resource "azurerm_network_security_group" "worker" {
   name                = "${local.nsg_prefix}-worker"
   location            = data.azurerm_resource_group.main.location

@@ -4,17 +4,6 @@ locals {
   postgres_admin_password_secret_name = "postgres-admin-password"
 }
 
-# Subnet for the database
-resource "azurerm_subnet" "db" {
-  name                            = "${local.subnet_name_prefix}-db"
-  virtual_network_name            = azurerm_virtual_network.main.name
-  resource_group_name             = data.azurerm_resource_group.main.name
-  address_prefixes                = ["10.0.4.0/27"]
-  default_outbound_access_enabled = false
-  # Recommended Azure practice to ensure traffic is not blocked from reaching private endpoint
-  private_endpoint_network_policies = "Disabled"
-}
-
 resource "azurerm_private_dns_zone" "db" {
   name                = "privatelink.postgres.database.azure.com"
   resource_group_name = data.azurerm_resource_group.main.name

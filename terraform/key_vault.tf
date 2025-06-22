@@ -48,17 +48,6 @@ locals {
   normalized_key_vault_id = substr(azurerm_key_vault.main.id, 0, 1) == "/" ? azurerm_key_vault.main.id : "/${azurerm_key_vault.main.id}"
 }
 
-# Subnet for the Key Vault
-resource "azurerm_subnet" "keyvault" {
-  name                            = "${local.subnet_name_prefix}-kv"
-  virtual_network_name            = azurerm_virtual_network.main.name
-  resource_group_name             = data.azurerm_resource_group.main.name
-  address_prefixes                = ["10.0.3.0/27"]
-  default_outbound_access_enabled = false
-  # Recommended Azure practice to ensure traffic is not blocked from reaching private endpoint
-  private_endpoint_network_policies = "Disabled"
-}
-
 resource "azurerm_private_dns_zone" "keyvault" {
   name                = "privatelink.vaultcore.azure.net"
   resource_group_name = data.azurerm_resource_group.main.name

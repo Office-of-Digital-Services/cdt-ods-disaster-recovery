@@ -10,13 +10,6 @@ locals {
   request_routing_rule_name      = "${azurerm_virtual_network.main.name}-rule"
 }
 
-resource "azurerm_subnet" "gateway" {
-  name                 = "${local.subnet_name_prefix}-gateway"
-  virtual_network_name = azurerm_virtual_network.main.name
-  resource_group_name  = data.azurerm_resource_group.main.name
-  address_prefixes     = ["10.0.0.0/24"]
-}
-
 resource "azurerm_public_ip" "gateway" {
   name                = "${local.public_ip_prefix}-gateway"
   location            = data.azurerm_resource_group.main.location
