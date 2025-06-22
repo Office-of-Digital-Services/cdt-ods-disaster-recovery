@@ -52,9 +52,11 @@ module "key_vault" {
     engineering_group = var.ENGINEERING_GROUP_OBJECT_ID
     devsecops_group   = var.DEVSECOPS_OBJECT_ID
   }
+  diagnostic_setting_prefix         = local.diagnostic_setting_prefix
   env_letter                        = local.env_letter
   key_vault_name                    = local.key_vault_name
   key_vault_subnet_id               = module.network.subnet_ids.key_vault
+  log_analytics_workspace_id        = module.monitoring.log_analytics_workspace_id
   private_endpoint_prefix           = local.private_endpoint_prefix
   private_service_connection_prefix = local.private_service_connection_prefix
   virtual_network_id                = module.network.vnet_id

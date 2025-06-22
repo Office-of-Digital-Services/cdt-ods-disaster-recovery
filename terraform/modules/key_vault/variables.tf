@@ -88,3 +88,13 @@ variable "all_certificate_permissions" {
   type        = list(string)
   default = []
 }
+
+variable "log_analytics_workspace_id" {
+  description = "The unique ID of the Log Analytics Workspace, needed for NSG diagnostic settings."
+  type       = string
+}
+
+variable "diagnostic_setting_prefix" {
+    description = "The standard name prefix for diagnostic settings."
+    type  = string
+}

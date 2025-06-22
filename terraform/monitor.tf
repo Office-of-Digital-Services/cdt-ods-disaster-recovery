@@ -31,18 +31,3 @@ resource "azurerm_monitor_diagnostic_setting" "db" {
     category_group = "AllMetrics"
   }
 }
-
-# Diagnostic settings for the Key Vault
-resource "azurerm_monitor_diagnostic_setting" "keyvault" {
-  name                       = "${local.diagnostic_setting_name_prefix}-kv"
-  target_resource_id         = azurerm_key_vault.main.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
-
-  enabled_log {
-    category_group = "allLogs"
-  }
-
-  enabled_log {
-    category_group = "AllMetrics"
-  }
-}
