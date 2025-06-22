@@ -2,43 +2,6 @@ locals {
   diagnostic_setting_name_prefix = lower("MDS-CDT-PUB-VIP-DDRC-${local.env_letter}")
 }
 
-resource "azurerm_log_analytics_workspace" "main" {
-  name                = "CDT-OET-PUB-DDRC-${local.env_letter}-001"
-  location            = data.azurerm_resource_group.main.location
-  resource_group_name = data.azurerm_resource_group.main.name
-
-  lifecycle {
-    ignore_changes = [tags]
-  }
-}
-
-resource "azurerm_application_insights" "main" {
-  name                = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
-  application_type    = "web"
-  location            = data.azurerm_resource_group.main.location
-  resource_group_name = data.azurerm_resource_group.main.name
-  sampling_percentage = 0
-  workspace_id        = azurerm_log_analytics_workspace.main.id
-
-  lifecycle {
-    ignore_changes = [tags]
-  }
-}
-
-resource "azurerm_monitor_action_group" "eng_email" {
-  name                = "ddrc-notify Slack channel email"
-  resource_group_name = data.azurerm_resource_group.main.name
-  short_name          = "slack-notify"
-
-  email_receiver {
-    name          = "ddrc engineering team"
-    email_address = var.SLACK_NOTIFY_EMAIL
-  }
-
-  lifecycle {
-    ignore_changes = [tags]
-  }
-}
 # Diagnostic settings for the Application Gateway
 resource "azurerm_monitor_diagnostic_setting" "gateway" {
   name                       = "${local.diagnostic_setting_name_prefix}-gateway"
