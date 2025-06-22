@@ -2,6 +2,7 @@
 locals {
   application_insights_name         = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   diagnostic_setting_prefix         = lower("MDS-CDT-PUB-VIP-DDRC-${local.env_letter}")
+  key_vault_name                    = "KV-CDT-PUB-DDRC-${local.env_letter}-001"
   location                          = data.azurerm_resource_group.main.location
   log_analytics_workspace_name      = "CDT-OET-PUB-DDRC-${local.env_letter}-001"
   nat_gateway_name                  = lower("nat-cdt-pub-vip-ddrc-${local.env_letter}-001")
@@ -40,4 +41,21 @@ module "monitoring" {
   action_group_name            = "Slack channel email"
   action_group_short_name      = "slack-notify"
   notification_email_address   = var.SLACK_NOTIFY_EMAIL
+}
+
+module "key_vault" {
+  source              = "./modules/key_vault"
+  resource_group_name = local.resource_group_name
+  location            = local.location
+  tenant_id           = local.tenant_id
+  base_access_policy_object_ids = {
+    engineering_group = var.ENGINEERING_GROUP_OBJECT_ID
+    devsecops_group   = var.DEVSECOPS_OBJECT_ID
+  }
+  env_letter                        = local.env_letter
+  key_vault_name                    = local.key_vault_name
+  key_vault_subnet_id               = module.network.subnet_ids.key_vault
+  private_endpoint_prefix           = local.private_endpoint_prefix
+  private_service_connection_prefix = local.private_service_connection_prefix
+  virtual_network_id                = module.network.vnet_id
 }
