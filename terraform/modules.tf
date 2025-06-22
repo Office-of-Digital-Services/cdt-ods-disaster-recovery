@@ -1,6 +1,7 @@
 # Imports all the submodules and wires together necessary input/outputs
 locals {
   application_insights_name         = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
+  diagnostic_setting_prefix         = lower("MDS-CDT-PUB-VIP-DDRC-${local.env_letter}")
   location                          = data.azurerm_resource_group.main.location
   log_analytics_workspace_name      = "CDT-OET-PUB-DDRC-${local.env_letter}-001"
   nat_gateway_name                  = lower("nat-cdt-pub-vip-ddrc-${local.env_letter}-001")
@@ -21,6 +22,8 @@ module "network" {
   location                   = local.location
   env_letter                 = local.env_letter
   is_prod                    = local.is_prod
+  diagnostic_setting_prefix  = local.diagnostic_setting_prefix
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
   nat_gateway_name           = local.nat_gateway_name
   nsg_prefix                 = local.nsg_prefix
   public_ip_prefix           = local.public_ip_prefix
