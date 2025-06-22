@@ -1,6 +1,8 @@
 # Imports all the submodules and wires together necessary input/outputs
 locals {
+  application_insights_name         = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   location                          = data.azurerm_resource_group.main.location
+  log_analytics_workspace_name      = "CDT-OET-PUB-DDRC-${local.env_letter}-001"
   nat_gateway_name                  = lower("nat-cdt-pub-vip-ddrc-${local.env_letter}-001")
   nsg_prefix                        = "NSG-CDT-PUB-VIP-DDRC-${local.env_letter}"
   private_endpoint_prefix           = lower("pe-cdt-pub-vip-ddrc-${local.env_letter}")
@@ -24,4 +26,15 @@ module "network" {
   public_ip_prefix           = local.public_ip_prefix
   subnet_prefix              = local.subnet_prefix
   vnet_name                  = local.vnet_name
+}
+
+module "monitoring" {
+  source                       = "./modules/monitoring"
+  resource_group_name          = local.resource_group_name
+  location                     = local.location
+  log_analytics_workspace_name = local.log_analytics_workspace_name
+  application_insights_name    = local.application_insights_name
+  action_group_name            = "Slack channel email"
+  action_group_short_name      = "slack-notify"
+  notification_email_address   = var.SLACK_NOTIFY_EMAIL
 }
