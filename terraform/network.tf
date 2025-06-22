@@ -1,22 +1,9 @@
 locals {
-  vnet_name                         = "VNET-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   subnet_name_prefix                = "SNET-CDT-PUB-VIP-DDRC-${local.env_letter}"
   nsg_prefix                        = "NSG-CDT-PUB-VIP-DDRC-${local.env_letter}"
   private_endpoint_prefix           = lower("pe-cdt-pub-vip-ddrc-${local.env_letter}")
   private_service_connection_prefix = lower("psc-cdt-pub-vip-ddrc-${local.env_letter}")
   public_ip_prefix                  = lower("pip-cdt-pub-vip-ddrc-${local.env_letter}")
-}
-
-# The primary VNet (per environment)
-resource "azurerm_virtual_network" "main" {
-  name                = local.vnet_name
-  location            = data.azurerm_resource_group.main.location
-  resource_group_name = data.azurerm_resource_group.main.name
-  address_space       = ["10.0.0.0/16"]
-
-  lifecycle {
-    ignore_changes = [tags]
-  }
 }
 
 # The primary subnet for public (Internet) access
