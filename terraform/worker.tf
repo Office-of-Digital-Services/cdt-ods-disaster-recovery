@@ -3,23 +3,6 @@ locals {
   tasks_db_password_name = "tasks-db-password"
 }
 
-resource "azurerm_container_app_environment" "worker" {
-  name                           = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-worker"
-  location                       = data.azurerm_resource_group.main.location
-  resource_group_name            = data.azurerm_resource_group.main.name
-  log_analytics_workspace_id     = azurerm_log_analytics_workspace.main.id
-  infrastructure_subnet_id       = azurerm_subnet.worker.id
-  internal_load_balancer_enabled = true
-
-  lifecycle {
-    ignore_changes = [tags]
-  }
-
-  depends_on = [
-    azurerm_subnet.worker
-  ]
-}
-
 # Generate a random password for the Tasks DB
 resource "random_password" "tasks_db" {
   length      = 32

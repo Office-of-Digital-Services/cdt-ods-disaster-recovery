@@ -12,38 +12,3 @@ locals {
 data "azurerm_resource_group" "main" {
   name = "RG-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
 }
-
-resource "azurerm_container_app_environment" "main" {
-  name                           = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
-  location                       = data.azurerm_resource_group.main.location
-  resource_group_name            = data.azurerm_resource_group.main.name
-  log_analytics_workspace_id     = azurerm_log_analytics_workspace.main.id
-  infrastructure_subnet_id       = azurerm_subnet.public.id
-  internal_load_balancer_enabled = true
-
-  lifecycle {
-    ignore_changes = [tags]
-  }
-
-  depends_on = [
-    azurerm_subnet.public
-  ]
-}
-
-resource "azurerm_container_app_environment_storage" "config" {
-  account_name                 = azurerm_storage_account.main.name
-  access_key                   = azurerm_storage_account.main.primary_access_key
-  access_mode                  = "ReadOnly"
-  container_app_environment_id = azurerm_container_app_environment.main.id
-  name                         = azurerm_storage_share.config.name
-  share_name                   = azurerm_storage_share.config.name
-}
-
-resource "azurerm_container_app_environment_storage" "requests" {
-  account_name                 = azurerm_storage_account.main.name
-  access_key                   = azurerm_storage_account.main.primary_access_key
-  access_mode                  = "ReadWrite"
-  container_app_environment_id = azurerm_container_app_environment.main.id
-  name                         = azurerm_storage_share.requests.name
-  share_name                   = azurerm_storage_share.requests.name
-}
