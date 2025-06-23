@@ -1,3 +1,12 @@
+locals {
+  is_prod    = terraform.workspace == "default"
+  is_test    = terraform.workspace == "test"
+  is_dev     = !(local.is_prod || local.is_test)
+  env_name   = local.is_prod ? "prod" : terraform.workspace
+  env_letter = upper(substr(local.env_name, 0, 1))
+  hostname   = local.is_prod ? "recovery.cdt.ca.gov" : "${local.env_name}.recovery.cdt.ca.gov"
+}
+
 terraform {
   // see version in azure-pipelines.yml
 
@@ -27,3 +36,7 @@ provider "azurerm" {
 }
 
 data "azurerm_client_config" "current" {}
+
+data "azurerm_resource_group" "main" {
+  name = "RG-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
+}

@@ -4,9 +4,11 @@ locals {
   app_gateway_name                  = "AGW-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   communication_service_name        = "ACS-PUB-VIP-DDRC-${local.env_letter}-001"
   container_app_environment_prefix  = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}"
+  container_app_prefix              = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}")
   database_server_name              = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-db")
   diagnostic_setting_prefix         = lower("MDS-CDT-PUB-VIP-DDRC-${local.env_letter}")
   key_vault_name                    = "KV-CDT-PUB-DDRC-${local.env_letter}-001"
+  key_vault_secret_uri_prefix       = "https://${local.key_vault_name}.vault.azure.net/secrets"
   location                          = data.azurerm_resource_group.main.location
   log_analytics_workspace_name      = "CDT-OET-PUB-DDRC-${local.env_letter}-001"
   nat_gateway_name                  = lower("nat-cdt-pub-vip-ddrc-${local.env_letter}-001")
@@ -130,13 +132,13 @@ module "application" {
   is_prod                             = local.is_prod
   virtual_network_id                  = module.network.vnet_id
   container_app_environment_prefix    = local.container_app_environment_prefix
-  container_app_prefix                = local.app_name_prefix
+  container_app_prefix                = local.container_app_prefix
   container_tag                       = var.container_tag
   database_fqdn                       = module.database.server_fqdn
   email_connection_string_secret_name = module.email.connection_string_secret_name
   from_email_secret_name              = module.email.from_email_secret_name
   key_vault_id                        = module.key_vault.key_vault_id
-  key_vault_secret_uri_prefix         = local.secret_http_prefix
+  key_vault_secret_uri_prefix         = local.key_vault_secret_uri_prefix
   log_analytics_workspace_id          = module.monitoring.log_analytics_workspace_id
   postgres_admin_login                = "postgres_admin"
   postgres_admin_password_secret_name = module.database.admin_password_secret_name
