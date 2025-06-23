@@ -1,6 +1,7 @@
 # Imports all the submodules and wires together necessary input/outputs
 locals {
   application_insights_name         = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
+  communication_service_name        = "ACS-PUB-VIP-DDRC-${local.env_letter}-001"
   diagnostic_setting_prefix         = lower("MDS-CDT-PUB-VIP-DDRC-${local.env_letter}")
   key_vault_name                    = "KV-CDT-PUB-DDRC-${local.env_letter}-001"
   location                          = data.azurerm_resource_group.main.location
@@ -60,4 +61,13 @@ module "key_vault" {
   private_endpoint_prefix           = local.private_endpoint_prefix
   private_service_connection_prefix = local.private_service_connection_prefix
   virtual_network_id                = module.network.vnet_id
+}
+
+module "email" {
+  source                     = "./modules/email"
+  resource_group_name        = local.resource_group_name
+  communication_service_name = local.communication_service_name
+  diagnostic_setting_prefix  = local.diagnostic_setting_prefix
+  key_vault_id               = module.key_vault.key_vault_id
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
 }
