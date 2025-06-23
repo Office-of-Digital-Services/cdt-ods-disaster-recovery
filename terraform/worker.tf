@@ -1,30 +1,3 @@
-locals {
-  # Define secret names for clarity
-  tasks_db_password_name = "tasks-db-password"
-}
-
-# Generate a random password for the Tasks DB
-resource "random_password" "tasks_db" {
-  length      = 32
-  min_lower   = 4
-  min_upper   = 4
-  min_numeric = 4
-  min_special = 4
-  special     = true
-}
-
-# Create the secret for Tasks DB password using the generated secret
-resource "azurerm_key_vault_secret" "tasks_db_password" {
-  name         = local.tasks_db_password_name
-  value        = random_password.tasks_db.result
-  key_vault_id = azurerm_key_vault.main.id
-  content_type = "password"
-  depends_on = [
-    azurerm_key_vault.main,
-    random_password.tasks_db # Ensure password is generated first
-  ]
-}
-
 # https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?tabs=azure-cli#granting-your-app-access-to-key-vault
 resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
   key_vault_id = local.normalized_key_vault_id
