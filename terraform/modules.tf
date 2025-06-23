@@ -3,6 +3,7 @@ locals {
   application_insights_name         = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   app_gateway_name                  = "AGW-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   communication_service_name        = "ACS-PUB-VIP-DDRC-${local.env_letter}-001"
+  database_server_name              = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-db")
   diagnostic_setting_prefix         = lower("MDS-CDT-PUB-VIP-DDRC-${local.env_letter}")
   key_vault_name                    = "KV-CDT-PUB-DDRC-${local.env_letter}-001"
   location                          = data.azurerm_resource_group.main.location
@@ -97,5 +98,20 @@ module "storage" {
   private_endpoint_prefix           = local.private_endpoint_prefix
   private_service_connection_prefix = local.private_service_connection_prefix
   storage_subnet_id                 = module.network.subnet_ids.storage
+  virtual_network_id                = module.network.vnet_id
+}
+
+module "database" {
+  source                            = "./modules/database"
+  resource_group_name               = local.resource_group_name
+  location                          = local.location
+  env_letter                        = local.env_letter
+  db_subnet_id                      = module.network.subnet_ids.db
+  diagnostic_setting_prefix         = local.diagnostic_setting_prefix
+  key_vault_id                      = module.key_vault.key_vault_id
+  log_analytics_workspace_id        = module.monitoring.log_analytics_workspace_id
+  private_endpoint_prefix           = local.private_endpoint_prefix
+  private_service_connection_prefix = local.private_service_connection_prefix
+  server_name                       = local.database_server_name
   virtual_network_id                = module.network.vnet_id
 }
