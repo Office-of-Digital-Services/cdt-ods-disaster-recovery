@@ -71,17 +71,6 @@ resource "azurerm_key_vault_secret" "django_superuser_password" {
   ]
 }
 
-# Create a User-Assigned Managed Identity for the Web App
-resource "azurerm_user_assigned_identity" "web_app_identity" {
-  name                = lower("umi-aca-web-${local.env_name}")
-  resource_group_name = data.azurerm_resource_group.main.name
-  location            = data.azurerm_resource_group.main.location
-
-  lifecycle {
-    ignore_changes = [tags]
-  }
-}
-
 # https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?tabs=azure-cli#granting-your-app-access-to-key-vault
 resource "azurerm_key_vault_access_policy" "container_app_web_access" {
   key_vault_id = local.normalized_key_vault_id
