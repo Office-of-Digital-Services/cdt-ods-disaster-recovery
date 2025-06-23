@@ -3,6 +3,7 @@ locals {
   application_insights_name         = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   app_gateway_name                  = "AGW-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   communication_service_name        = "ACS-PUB-VIP-DDRC-${local.env_letter}-001"
+  container_app_environment_prefix  = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}"
   database_server_name              = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-db")
   diagnostic_setting_prefix         = lower("MDS-CDT-PUB-VIP-DDRC-${local.env_letter}")
   key_vault_name                    = "KV-CDT-PUB-DDRC-${local.env_letter}-001"
@@ -81,6 +82,10 @@ module "app_gateway" {
   is_prod               = local.is_prod
   app_gateway_name      = local.app_gateway_name
   app_gateway_subnet_id = module.network.subnet_ids.app_gateway
+  backend_fqdns = {
+    web   = module.application.app_fqdns.web
+    pgweb = module.application.app_fqdns.pgweb
+  }
   diagnostic_setting_prefix  = local.diagnostic_setting_prefix
   log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
   hostname                   = local.hostname
@@ -114,4 +119,59 @@ module "database" {
   private_service_connection_prefix = local.private_service_connection_prefix
   server_name                       = local.database_server_name
   virtual_network_id                = module.network.vnet_id
+}
+
+module "application" {
+  source                              = "./modules/application"
+  resource_group_name                 = local.resource_group_name
+  location                            = local.location
+  env_letter                          = local.env_letter
+  env_name                            = local.env_name
+  is_prod                             = local.is_prod
+  virtual_network_id                  = module.network.vnet_id
+  container_app_environment_prefix    = local.container_app_environment_prefix
+  container_app_prefix                = local.app_name_prefix
+  container_tag                       = var.container_tag
+  database_fqdn                       = module.database.server_fqdn
+  email_connection_string_secret_name = module.email.connection_string_secret_name
+  from_email_secret_name              = module.email.from_email_secret_name
+  key_vault_id                        = module.key_vault.key_vault_id
+  key_vault_secret_uri_prefix         = local.secret_http_prefix
+  log_analytics_workspace_id          = module.monitoring.log_analytics_workspace_id
+  postgres_admin_login                = "postgres_admin"
+  postgres_admin_password_secret_name = module.database.admin_password_secret_name
+  public_subnet_id                    = module.network.subnet_ids.public
+  storage_account_name                = local.storage_account_name
+  storage_account_primary_access_key  = module.storage.storage_account_primary_access_key
+  storage_share_names                 = module.storage.share_names
+  # pre-existing secrets not managed via Terraform, to reference in the web app
+  web_app_config_secrets = {
+    DjangoAllowedHosts        = "django-allowed-hosts"
+    DjangoDbName              = "django-db-name"
+    DjangoDbUser              = "django-db-user"
+    DjangoDbFixtures          = "django-db-fixtures"
+    DjangoDebug               = "django-debug"
+    DjangoLogLevel            = "django-log-level"
+    DjangoSuperuserUsername   = "django-superuser-username"
+    DjangoSuperuserEmail      = "django-superuser-email"
+    DjangoTrustedOrigins      = "django-trusted-origins"
+    GoogleSsoAllowableDomains = "google-sso-allowable-domains"
+    GoogleSsoClientId         = "google-sso-client-id"
+    GoogleSsoClientSecret     = "google-sso-client-secret"
+    GoogleSsoProjectId        = "google-sso-project-id"
+    GoogleSsoSuperuserList    = "google-sso-superuser-list"
+    PostgresDbName            = "postgres-db-name"
+    TasksDbName               = "tasks-db-name"
+    TasksDbUser               = "tasks-db-user"
+  }
+  # pre-existing secrets not managed via Terraform, to reference in the worker app
+  worker_app_config_secrets = {
+    DjangoDbName        = "django-db-name"
+    DjangoDbUser        = "django-db-user"
+    DjangoLogLevel      = "django-log-level"
+    TasksDbName         = "tasks-db-name"
+    TasksDbUser         = "tasks-db-user"
+    VitalRecordsEmailTo = "vital-records-email-to"
+  }
+  worker_subnet_id = module.network.subnet_ids.worker
 }
