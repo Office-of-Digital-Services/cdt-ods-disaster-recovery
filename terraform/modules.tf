@@ -85,3 +85,17 @@ module "app_gateway" {
   hostname                   = local.hostname
   public_ip_prefix           = local.public_ip_prefix
 }
+
+module "storage" {
+  source                            = "./modules/storage"
+  resource_group_name               = local.resource_group_name
+  location                          = local.location
+  env_letter                        = local.env_letter
+  diagnostic_setting_prefix         = local.diagnostic_setting_prefix
+  log_analytics_workspace_id        = module.monitoring.log_analytics_workspace_id
+  storage_account_name              = local.storage_account_name
+  private_endpoint_prefix           = local.private_endpoint_prefix
+  private_service_connection_prefix = local.private_service_connection_prefix
+  storage_subnet_id                 = module.network.subnet_ids.storage
+  virtual_network_id                = module.network.vnet_id
+}
