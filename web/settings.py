@@ -157,8 +157,8 @@ WSGI_APPLICATION = "web.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 sslmode = os.environ.get("POSTGRES_SSLMODE", "verify-full")
-# resolve to get the absolute, normalized path to the bundle
-sslrootcert = Path(BASE_DIR, "certs", "azure_postgres_ca_bundle.pem").resolve() if sslmode == "verify-full" else None
+# resolve to make the path absolute from the root of the filesystem
+sslrootcert = Path("cdt", "app", "certs", "azure_postgres_ca_bundle.pem").resolve() if sslmode == "verify-full" else None
 PG_CONFIG = {
     "ENGINE": "django.db.backends.postgresql",
     "HOST": os.environ.get("POSTGRES_HOSTNAME", "postgres"),
