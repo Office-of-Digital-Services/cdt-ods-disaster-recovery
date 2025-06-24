@@ -45,16 +45,6 @@ jobs:
           cache: pip
           cache-dependency-path: "**/pyproject.toml"
 
-      - name: Write python packages to file
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install pipdeptree
-          pip install -e .
-          mkdir -p web/static
-          pipdeptree
-          pipdeptree >> web/static/requirements.txt
-
       - name: Write commit SHA to file
         run: echo "${{ github.sha }}" >> web/static/sha.txt
 
