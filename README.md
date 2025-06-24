@@ -20,7 +20,7 @@
 | web/core/tasks.py                                |       15 |        6 |        0 |        0 |     60% |53-56, 60, 64 |
 | web/core/urls.py                                 |        4 |        0 |        0 |        0 |    100% |           |
 | web/core/views.py                                |        9 |        0 |        2 |        0 |    100% |           |
-| web/settings.py                                  |      103 |       11 |       14 |        4 |     82% |42-49, 113->117, 125->128, 137, 240-241 |
+| web/settings.py                                  |      103 |       11 |       14 |        4 |     82% |42-49, 113->117, 125->128, 137, 241-242 |
 | web/urls.py                                      |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/\_\_init\_\_.py               |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/apps.py                       |        5 |        0 |        0 |        0 |    100% |           |
