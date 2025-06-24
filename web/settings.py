@@ -17,6 +17,8 @@ def _filter_empty(ls):
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# The working directory at runtime
+RUNTIME_DIR = Path(os.environ.get("RUNTIME_DIR", BASE_DIR))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "secret")
@@ -215,7 +217,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "web", "static")]
+STATICFILES_DIRS = [os.path.join(RUNTIME_DIR, "web", "static")]
 # use Manifest Static Files Storage by default
 STORAGES = {
     "default": {
@@ -227,10 +229,10 @@ STORAGES = {
         )
     },
 }
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(RUNTIME_DIR, "static")
 
 # Storage for e.g. generated files, not routable from the website
-STORAGE_DIR = os.environ.get("DJANGO_STORAGE_DIR", BASE_DIR)
+STORAGE_DIR = os.environ.get("DJANGO_STORAGE_DIR", RUNTIME_DIR)
 
 # Email
 # https://docs.djangoproject.com/en/5.1/ref/settings/#email-backend
