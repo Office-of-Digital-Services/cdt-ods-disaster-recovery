@@ -160,6 +160,7 @@ ENV GUNICORN_CONF="/$USER/run/gunicorn.conf.py"
 
 # copy runtime files
 COPY bin bin
+COPY web/static web/static
 
 # install the locally built wheel and its dependencies using the pip cache
 # setting uid,gid here is critical, as otherwise the Buildkit cache is mounted as root

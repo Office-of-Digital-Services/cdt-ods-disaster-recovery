@@ -217,7 +217,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "web", "static")]
+STATICFILES_DIRS = [os.path.join(RUNTIME_DIR, "web", "static")]
 # use Manifest Static Files Storage by default
 STORAGES = {
     "default": {
@@ -229,10 +229,10 @@ STORAGES = {
         )
     },
 }
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(RUNTIME_DIR, "static")
 
 # Storage for e.g. generated files, not routable from the website
-STORAGE_DIR = os.environ.get("DJANGO_STORAGE_DIR", BASE_DIR)
+STORAGE_DIR = os.environ.get("DJANGO_STORAGE_DIR", RUNTIME_DIR)
 
 # Email
 # https://docs.djangoproject.com/en/5.1/ref/settings/#email-backend
