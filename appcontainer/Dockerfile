@@ -96,7 +96,8 @@ ENV PYTHONUNBUFFERED=${PYTHONUNBUFFERED} \
     PYTHONUSERBASE="/home/${USER}/.local" \
     # where to store the pip cache (use the default)
     # https://pip.pypa.io/en/stable/cli/pip/#cmdoption-cache-dir
-    PIP_CACHE_DIR="/home/${USER}/.cache/pip"
+    PIP_CACHE_DIR="/home/${USER}/.cache/pip" \
+    POSTGRES_SSLROOTCERT_PATH="/${USER}/app/certs/azure_postgres_ca_bundle.pem"
 
 EXPOSE 8000
 
@@ -144,7 +145,7 @@ COPY appcontainer/gunicorn.conf.py run/gunicorn.conf.py
 # overwrite default nginx.conf
 COPY appcontainer/nginx.conf /etc/nginx/nginx.conf
 # copy certs for PostgreSQL verify-full
-COPY appcontainer/certs/azure_postgres_ca_bundle.pem app/certs/azure_postgres_ca_bundle.pem
+COPY appcontainer/certs/azure_postgres_ca_bundle.pem "${POSTGRES_SSLROOTCERT_PATH}"
 # copy the wheel built in the previous stage
 COPY --from=build_wheel /build/dist /build/dist
 
