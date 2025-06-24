@@ -97,7 +97,9 @@ ENV PYTHONUNBUFFERED=${PYTHONUNBUFFERED} \
     # where to store the pip cache (use the default)
     # https://pip.pypa.io/en/stable/cli/pip/#cmdoption-cache-dir
     PIP_CACHE_DIR="/home/${USER}/.cache/pip" \
-    POSTGRES_SSLROOTCERT_PATH="/${USER}/app/certs/azure_postgres_ca_bundle.pem"
+    RUNTIME_DIR="/${USER}/app"
+
+ENV POSTGRES_SSLROOTCERT_PATH="${RUNTIME_DIR}/certs/azure_postgres_ca_bundle.pem"
 
 EXPOSE 8000
 
@@ -151,7 +153,7 @@ COPY --from=build_wheel /build/dist /build/dist
 
 # switch to non-root $USER
 USER $USER
-WORKDIR /$USER/app
+WORKDIR ${RUNTIME_DIR}
 
 # env var needed for gunicorn
 ENV GUNICORN_CONF="/$USER/run/gunicorn.conf.py"

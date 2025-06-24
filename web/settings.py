@@ -17,6 +17,8 @@ def _filter_empty(ls):
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# The working directory at runtime
+RUNTIME_DIR = Path(os.environ.get("RUNTIME_DIR", BASE_DIR))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "secret")
