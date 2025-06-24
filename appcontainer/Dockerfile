@@ -127,8 +127,8 @@ RUN --mount=type=cache,id=apt-archives,sharing=locked,target=/var/cache/apt/arch
     touch /var/run/nginx.pid && \
     chown -R $USER:$USER /var/run/nginx.pid && \
     # setup directories and permissions for gunicorn, (eventual) app
-    mkdir -p /$USER/app && \
     mkdir -p /$USER/run && \
+    mkdir -p $RUNTIME_DIR/web && \
     chown -R $USER:$USER /$USER && \
     # install server components
     apt-get update && \
@@ -148,8 +148,12 @@ COPY appcontainer/gunicorn.conf.py run/gunicorn.conf.py
 COPY appcontainer/nginx.conf /etc/nginx/nginx.conf
 # copy certs for PostgreSQL verify-full
 COPY appcontainer/certs/azure_postgres_ca_bundle.pem "${POSTGRES_SSLROOTCERT_PATH}"
+# copy actual static files
+COPY web/static app/web/static
 # copy the wheel built in the previous stage
 COPY --from=build_wheel /build/dist /build/dist
+
+RUN chown -R $USER:$USER $RUNTIME_DIR/web
 
 # switch to non-root $USER
 USER $USER
@@ -160,14 +164,14 @@ ENV GUNICORN_CONF="/$USER/run/gunicorn.conf.py"
 
 # copy runtime files
 COPY bin bin
-COPY web/static web/static
 
 # install the locally built wheel and its dependencies using the pip cache
 # setting uid,gid here is critical, as otherwise the Buildkit cache is mounted as root
 # even though we are running in the context of non-root $USER
 RUN --mount=type=cache,id=pipcache,target=${PIP_CACHE_DIR},uid=${USER_UID},gid=${USER_GID} \
     python -m pip install --user --upgrade pip && \
-    pip install --user $(find /build/dist -name "cdt_disaster_recovery*.whl")
+    pip install --user $(find /build/dist -name "cdt_disaster_recovery*.whl") pipdeptree && \
+    pipdeptree > web/static/requirements.txt
 
 # configure container executable
 ENTRYPOINT ["/bin/bash"]
