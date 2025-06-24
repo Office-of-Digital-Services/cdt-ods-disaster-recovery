@@ -104,13 +104,50 @@ jobs:
         run: |
           echo ${{ secrets.ADO_PAT }} | az devops login --organization ${{ secrets.ADO_ORG_URL }}
 
-      - name: Trigger Azure pipeline
+      - name: Trigger Azure pipeline run
+        id: trigger_pipeline
         run: |
-          az pipelines run \
+          RUN_ID=$(az pipelines run \
             --id "${{ secrets.ADO_PIPELINE_ID }}" \
             --org "${{ secrets.ADO_ORG_URL }}" \
             --project "${{ secrets.ADO_PROJECT }}" \
-            --commit-id ${{ github.sha }}
+            --commit-id ${{ github.sha }} \
+            --query "id" -o tsv)
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+
+      - name: Wait for Azure pipeline run to complete
+        run: |
+          echo "Waiting for Azure DevOps Pipeline run to complete..."
+          while true; do
+            PIPELINE_STATUS=$(az pipelines runs show \
+              --id ${{ steps.trigger_pipeline.outputs.run_id }} \
+              --org "${{ secrets.ADO_ORG_URL }}" \
+              --project "${{ secrets.ADO_PROJECT }}" \
+              --query "status" -o tsv)
+
+            echo "Current pipeline status: $PIPELINE_STATUS"
+
+            if [[ "$PIPELINE_STATUS" == "completed" ]]; then
+              PIPELINE_RESULT=$(az pipelines runs show \
+                --id ${{ steps.trigger_pipeline.outputs.run_id }} \
+                --org "${{ secrets.ADO_ORG_URL }}" \
+                --project "${{ secrets.ADO_PROJECT }}" \
+                --query "result" -o tsv)
+
+              echo "Pipeline completed with result: $PIPELINE_RESULT"
+              if [[ "$PIPELINE_RESULT" == "succeeded" ]]; then
+                exit 0
+              else
+                echo "Azure DevOps Pipeline failed with result: $PIPELINE_RESULT"
+                exit 1
+              fi
+            elif [[ "$PIPELINE_STATUS" == "cancelling" || "$PIPELINE_STATUS" == "notStarted" || "$PIPELINE_STATUS" == "inProgress" ]]; then
+              sleep 10
+            else
+              echo "Azure DevOps Pipeline finished with unexpected status: $PIPELINE_STATUS"
+              exit 1
+            fi
+          done
 
   release:
     runs-on: ubuntu-latest
