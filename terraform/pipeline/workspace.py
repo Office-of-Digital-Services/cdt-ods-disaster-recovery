@@ -23,9 +23,9 @@ if REASON == "PullRequest" and TARGET == "main":
 elif REASON in ["IndividualCI", "Manual"] and SOURCE == "main":
     # it's being run on the main branch, this is for the dev environment
     environment = "dev"
-elif REASON in ["IndividualCI"] and IS_TAG and re.fullmatch(r"20\d\d.\d\d.\d+-rc\d+", SOURCE):
+elif REASON in ["IndividualCI", "Manual"] and IS_TAG and re.fullmatch(r"20\d\d.\d\d.\d+-rc\d+", SOURCE):
     environment = "test"
-elif REASON in ["IndividualCI"] and IS_TAG and re.fullmatch(r"20\d\d.\d\d.\d+", SOURCE):
+elif REASON in ["IndividualCI", "Manual"] and IS_TAG and re.fullmatch(r"20\d\d.\d\d.\d+", SOURCE):
     environment = "prod"
 else:
     # default to running against dev
