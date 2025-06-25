@@ -186,6 +186,7 @@ class EmailTask(Task):
         context = {
             "number_of_copies": request.number_of_records,
             "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
+            "email_address": request.email_address,
         }
         html_message = render_to_string("web/vital_records/templates/vital_records/email.html", context)
         email = EmailMessage(
