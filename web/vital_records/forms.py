@@ -24,7 +24,7 @@ class StatementForm(forms.ModelForm):
     )
 
     legal_attestation = forms.CharField(
-        label="Type your full name to sign", max_length=100, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Type your full name to sign", max_length=256, widget=forms.TextInput(attrs={"class": "form-control"})
     )
 
     class Meta:
@@ -34,13 +34,13 @@ class StatementForm(forms.ModelForm):
 
 class NameForm(forms.ModelForm):
     first_name = forms.CharField(
-        label="First name at birth", max_length=100, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="First name at birth", max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
     )
     middle_name = forms.CharField(
-        label="Middle name at birth", max_length=100, widget=forms.TextInput(attrs={"class": "form-control"}), required=False
+        label="Middle name at birth", max_length=128, widget=forms.TextInput(attrs={"class": "form-control"}), required=False
     )
     last_name = forms.CharField(
-        label="Last name at birth", max_length=100, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Last name at birth", max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
     )
 
     class Meta:
@@ -151,23 +151,23 @@ class DateOfBirthForm(forms.ModelForm):
 class ParentsNamesForm(forms.ModelForm):
     parent_1_first_name = forms.CharField(
         label="First name",
-        max_length=100,
+        max_length=128,
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_1_helptext"}),
     )
     parent_1_last_name = forms.CharField(
         label="Last name at birth",
-        max_length=100,
+        max_length=128,
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_1_helptext"}),
     )
     parent_2_first_name = forms.CharField(
         label="First name",
-        max_length=100,
+        max_length=128,
         required=False,
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_2_helptext"}),
     )
     parent_2_last_name = forms.CharField(
         label="Last name at birth",
-        max_length=100,
+        max_length=128,
         required=False,
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_2_helptext"}),
     )
@@ -185,10 +185,10 @@ class OrderInfoForm(forms.ModelForm):
         widget=forms.Select(attrs={"class": "form-select"}),
     )
     order_first_name = forms.CharField(
-        label="First name", required=True, max_length=50, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="First name", required=True, max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
     )
     order_last_name = forms.CharField(
-        label="Last name", required=True, max_length=50, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Last name", required=True, max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
     )
     address = forms.CharField(label="Street address", max_length=50, widget=forms.TextInput(attrs={"class": "form-control"}))
     city = forms.CharField(label="City", max_length=50, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
