@@ -3,6 +3,22 @@ from django import forms
 
 from web.vital_records.models import VitalRecordsRequest
 
+MONTH_DISPLAY_CHOICES = [
+    ("", "Select"),
+    (1, "01 - January"),
+    (2, "02 - February"),
+    (3, "03 - March"),
+    (4, "04 - April"),
+    (5, "05 - May"),
+    (6, "06 - June"),
+    (7, "07 - July"),
+    (8, "08 - August"),
+    (9, "09 - September"),
+    (10, "10 - October"),
+    (11, "11 - November"),
+    (12, "12 - December"),
+]
+
 
 class EligibilityForm(forms.ModelForm):
     fire = forms.ChoiceField(
@@ -62,39 +78,27 @@ class CountyForm(forms.ModelForm):
 
 
 class DateOfBirthForm(forms.ModelForm):
-    birth_month = forms.CharField(
+    birth_month = forms.ChoiceField(
+        choices=MONTH_DISPLAY_CHOICES,
         label="Month",
-        help_text="MM",
-        widget=forms.TextInput(
-            attrs={
-                "class": "form-control",
-                "autocomplete": "bday-month",
-                "required": "",
-                "inputmode": "numeric",
-                "pattern": "[0-9]*",
-                "maxlength": "2",
-                "aria-describedby": "id_birth_month_helptext",
-            },
-        ),
+        required=True,
+        widget=forms.Select(attrs={"class": "form-select"}),
     )
     birth_day = forms.CharField(
         label="Day",
-        help_text="DD",
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
                 "autocomplete": "bday-day",
                 "required": "",
                 "inputmode": "numeric",
-                "pattern": "[0-9]*",
+                "pattern": "(3[01]|[12][0-9]|0?[1-9])",
                 "maxlength": "2",
-                "aria-describedby": "id_birth_day_helptext",
             },
         ),
     )
     birth_year = forms.CharField(
         label="Year",
-        help_text="YYYY",
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
@@ -104,7 +108,6 @@ class DateOfBirthForm(forms.ModelForm):
                 "pattern": "[0-9]*",
                 "minlength": "4",
                 "maxlength": "4",
-                "aria-describedby": "id_birth_year_helptext",
             },
         ),
     )

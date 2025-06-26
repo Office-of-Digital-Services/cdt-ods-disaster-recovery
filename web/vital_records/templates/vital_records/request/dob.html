@@ -18,20 +18,17 @@
                     <p id="dob-hint" class="m-b-40">If you’re not sure, enter your approximate date of birth.</p>
                     {% csrf_token %}
                     <div class="row gap-md-3">
-                        <div class="col-3 col-md-2">
+                        <div class="col-3 col-md-3">
                             {{ form.birth_month|label_with_required }}
                             {{ form.birth_month }}
-                            <small class="form-help">{{ form.birth_month.help_text }}</small>
                         </div>
                         <div class="col-3 col-md-2">
                             {{ form.birth_day|label_with_required }}
                             {{ form.birth_day }}
-                            <small class="form-help">{{ form.birth_day.help_text }}</small>
                         </div>
-                        <div class="col-4 col-md-3">
+                        <div class="col-4 col-md-2">
                             {{ form.birth_year|label_with_required }}
                             {{ form.birth_year }}
-                            <small class="form-help">{{ form.birth_year.help_text }}</small>
                         </div>
                     </div>
                 </fieldset>
