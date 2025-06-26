@@ -40,14 +40,20 @@ variable "base_access_policy_object_ids" {
   type        = map(string)
 }
 
+variable "allowed_ip_rules" {
+  description = "A list of IP CIDR ranges to explicitly allow in the Key Vault's network ACLs."
+  type        = list(string)
+  default     = []
+}
+
 variable "private_endpoint_prefix" {
   description = "The name prefix for private endpoints."
-  type = string
+  type        = string
 }
 
 variable "private_service_connection_prefix" {
   description = "The name prefix for private service connections."
-  type = string
+  type        = string
 }
 
 variable "all_secret_permissions" {
@@ -107,10 +113,10 @@ variable "all_certificate_permissions" {
 
 variable "log_analytics_workspace_id" {
   description = "The unique ID of the Log Analytics Workspace, needed for NSG diagnostic settings."
-  type       = string
+  type        = string
 }
 
 variable "diagnostic_setting_prefix" {
-    description = "The standard name prefix for diagnostic settings."
-    type  = string
+  description = "The standard name prefix for diagnostic settings."
+  type        = string
 }

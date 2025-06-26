@@ -16,6 +16,12 @@ variable "ENGINEERING_GROUP_OBJECT_ID" {
   type        = string
 }
 
+variable "KEY_VAULT_ALLOWED_IPS" {
+  description = "List of IP addresses to grant ACL access to Key Vault."
+  type        = list(string)
+  default     = []
+}
+
 variable "SLACK_NOTIFY_EMAIL" {
   description = "Slack channel email for the DDRC engineering team"
   type        = string

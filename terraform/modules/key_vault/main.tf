@@ -21,6 +21,7 @@ resource "azurerm_key_vault" "main" {
   network_acls {
     default_action = "Deny"
     bypass         = "None"
+    ip_rules       = var.allowed_ip_rules
   }
 
   lifecycle {
