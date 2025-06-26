@@ -10,6 +10,52 @@ steps:
     displayName: Install Terraform
     inputs:
       terraformVersion: 1.12.2
+
+  - task: Bash@3
+    name: GetAgentIP
+    displayName: "Get DevOps Agent Public IP"
+    inputs:
+      targetType: "inline"
+      script: |
+        agent_ip=$(curl -s ifconfig.me)
+        echo "Agent IP is $agent_ip"
+        echo "##vso[task.setvariable variable=agent_ip;isOutput=true]$agent_ip"
+
+  - task: Bash@3
+    name: GetKeyVaultEnv
+    displayName: "Determine Environment-Specific Key Vault Name"
+    inputs:
+      targetType: "inline"
+      script: |
+        # Replicate the env logic from main.tf
+        if [ "${{ parameters.workspace }}" == "default" ]; then
+          ENV_NAME="prod"
+        else
+          ENV_NAME="${{ parameters.workspace }}"
+        fi
+
+        # Get the first letter and convert to uppercase
+        ENV_LETTER=$(echo $ENV_NAME | cut -c1 | tr 'a-z' 'A-Z')
+
+        # Construct the environment-specific Key Vault name
+        KEY_VAULT_NAME="KV-CDT-PUB-DDRC-${ENV_LETTER}-001"
+
+        echo "Pipeline is targeting workspace: ${{ parameters.workspace }}"
+        echo "Dynamically determined Key Vault Name: $KEY_VAULT_NAME"
+
+        # Set the determined name as an output variable for reuse in later steps
+        echo "##vso[task.setvariable variable=key_vault_name;isOutput=true]$KEY_VAULT_NAME"
+
+  - task: AzureCLI@2
+    displayName: "Add Agent IP to Key Vault Firewall"
+    inputs:
+      azureSubscription: "${{ parameters.service_connection }}"
+      scriptType: "bash"
+      scriptLocation: "inlineScript"
+      inlineScript: |
+        echo "Adding IP $(GetAgentIP.agent_ip) to Key Vault: $(GetKeyVaultEnv.key_vault_name)"
+        az keyvault network-rule add --name "$(GetKeyVaultEnv.key_vault_name)" --ip-address "$(GetAgentIP.agent_ip)/32"
+
   # https://github.com/microsoft/azure-pipelines-terraform/tree/main/Tasks/TerraformTask/TerraformTaskV4#readme
   - task: TerraformTaskV4@4
     displayName: Terraform init
@@ -26,6 +72,7 @@ steps:
       backendAzureRmStorageAccountName: sacdtddrcp001
       backendAzureRmContainerName: tfstate
       backendAzureRmKey: terraform.tfstate
+
   - task: TerraformTaskV4@4
     displayName: Select environment
     inputs:
@@ -36,6 +83,7 @@ steps:
       workingDirectory: "$(System.DefaultWorkingDirectory)/terraform"
       # service connection
       environmentServiceNameAzureRM: "${{ parameters.service_connection }}"
+
   - bash: python terraform/pipeline/tags.py
     displayName: Set env variables
     env:
@@ -54,6 +102,7 @@ steps:
       # So some manual steps must be taken to create the production KV and secret
       keyVaultName: "KV-CDT-PUB-DDRC-P-001"
       secretsFilter: "slack-ddrc-notify-email"
+
   - task: TerraformTaskV4@4
     displayName: Terraform plan
     inputs:
@@ -72,6 +121,7 @@ steps:
         ne(variables['tag_type'], 'test'),
         ne(variables['tag_type'], 'prod')
       )
+
   - task: TerraformTaskV4@4
     displayName: Terraform apply
     inputs:
@@ -89,3 +139,21 @@ steps:
         eq(variables['tag_type'], 'test'),
         eq(variables['tag_type'], 'prod')
       )
+
+  - task: AzureCLI@2
+    displayName: "Remove Agent IP from Key Vault Firewall"
+    condition: always()
+    inputs:
+      azureSubscription: "${{ parameters.service_connection }}"
+      scriptType: "bash"
+      scriptLocation: "inlineScript"
+      inlineScript: |
+        KEY_VAULT_NAME="$(GetKeyVaultEnv.key_vault_name)"
+        AGENT_IP="$(GetAgentIP.agent_ip)/32"
+
+        if az keyvault show --name "$KEY_VAULT_NAME" --query "properties.networkAcls.ipRules[?value=='$AGENT_IP']" | grep -q "$AGENT_IP"; then
+          echo "Agent IP found in firewall. Proceeding with removal."
+          az keyvault network-rule remove --name "$KEY_VAULT_NAME" --ip-address "$AGENT_IP"
+        else
+          echo "Agent IP not found in firewall. Cleanup is not required."
+        fi
