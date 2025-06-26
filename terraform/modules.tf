@@ -142,10 +142,10 @@ module "application" {
   log_analytics_workspace_id          = module.monitoring.log_analytics_workspace_id
   postgres_admin_login                = "postgres_admin"
   postgres_admin_password_secret_name = module.database.admin_password_secret_name
-  public_subnet_id                    = module.network.subnet_ids.public
   storage_account_name                = local.storage_account_name
   storage_account_primary_access_key  = module.storage.storage_account_primary_access_key
   storage_share_names                 = module.storage.share_names
+  subnet_ids                          = module.network.subnet_ids
   # pre-existing secrets not managed via Terraform, to reference in the web app
   web_app_config_secrets = {
     DjangoAllowedHosts        = "django-allowed-hosts"
@@ -175,5 +175,4 @@ module "application" {
     TasksDbUser         = "tasks-db-user"
     VitalRecordsEmailTo = "vital-records-email-to"
   }
-  worker_subnet_id = module.network.subnet_ids.worker
 }

@@ -57,14 +57,9 @@ variable "log_analytics_workspace_id" {
   type        = string
 }
 
-variable "public_subnet_id" {
+variable "subnet_ids" {
   description = "The ID of the public subnet from the network module."
-  type        = string
-}
-
-variable "worker_subnet_id" {
-  description = "The ID of the worker subnet from the network module."
-  type        = string
+  type        = map(string)
 }
 
 variable "database_fqdn" {

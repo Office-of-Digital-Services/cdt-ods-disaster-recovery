@@ -4,7 +4,7 @@ resource "azurerm_container_app_environment" "public" {
   location                       = var.location
   resource_group_name            = var.resource_group_name
   log_analytics_workspace_id     = var.log_analytics_workspace_id
-  infrastructure_subnet_id       = var.public_subnet_id
+  infrastructure_subnet_id       = var.subnet_ids["public_infra"]
   internal_load_balancer_enabled = true
 
   # Add a Consumption profile
@@ -32,7 +32,7 @@ resource "azurerm_container_app_environment" "worker" {
   location                   = var.location
   resource_group_name        = var.resource_group_name
   log_analytics_workspace_id = var.log_analytics_workspace_id
-  infrastructure_subnet_id   = var.worker_subnet_id
+  infrastructure_subnet_id   = var.subnet_ids["worker_infra"]
 
   # Add a Consumption profile
   # This also enables Workload Profiles, which is required for the advanced networking

@@ -41,11 +41,10 @@ resource "azurerm_container_app" "web" {
     }
   }
 
-  # port 8000
   ingress {
-    external_enabled           = false
+    external_enabled           = true
     allow_insecure_connections = true
-    target_port                = 8000
+    target_port                = 8000 # Django's port
     transport                  = "auto"
     traffic_weight {
       percentage      = 100
@@ -253,11 +252,10 @@ resource "azurerm_container_app" "pgweb" {
   max_inactive_revisions       = 10
   workload_profile_name        = "Consumption"
 
-  # port 8081
   ingress {
-    external_enabled           = false
+    external_enabled           = true
     allow_insecure_connections = true
-    target_port                = 8081
+    target_port                = 8081 # pgweb's port
     transport                  = "auto"
     traffic_weight {
       percentage      = 100
