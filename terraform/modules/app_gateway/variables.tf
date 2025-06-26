@@ -40,6 +40,11 @@ variable "backend_fqdns" {
   type        = map(string)
 }
 
+variable "key_vault_id" {
+  description = "The ID of the Key Vault to use for generating the certificate."
+  type        = string
+}
+
 variable "log_analytics_workspace_id" {
   description = "The unique ID of the Log Analytics Workspace, needed for NSG diagnostic settings."
   type        = string

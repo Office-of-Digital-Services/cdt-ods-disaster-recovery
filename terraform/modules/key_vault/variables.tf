@@ -86,7 +86,23 @@ variable "all_key_permissions" {
 variable "all_certificate_permissions" {
   description = "The list of all certificate permissions to grant for base policies."
   type        = list(string)
-  default = []
+  default = [
+    "Get",
+    "List",
+    "Update",
+    "Create",
+    "Import",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore",
+    "ManageContacts",
+    "ManageIssuers",
+    "GetIssuers",
+    "ListIssuers",
+    "SetIssuers",
+    "DeleteIssuers"
+  ]
 }
 
 variable "log_analytics_workspace_id" {

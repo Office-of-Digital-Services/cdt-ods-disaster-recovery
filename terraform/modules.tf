@@ -89,6 +89,7 @@ module "app_gateway" {
     pgweb = module.application.app_fqdns.pgweb
   }
   diagnostic_setting_prefix  = local.diagnostic_setting_prefix
+  key_vault_id               = module.key_vault.key_vault_id
   log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
   hostname                   = local.hostname
   public_ip_prefix           = local.public_ip_prefix

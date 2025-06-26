@@ -23,10 +23,60 @@ resource "azurerm_public_ip" "app_gateway" {
   }
 }
 
+resource "azurerm_key_vault_certificate" "app_gateway_auto" {
+  name         = "${var.app_gateway_name}-cert-auto"
+  key_vault_id = var.key_vault_id
+
+  certificate_policy {
+    issuer_parameters {
+      name = "Self"
+    }
+    key_properties {
+      exportable = true
+      key_size   = 4096
+      key_type   = "RSA"
+      reuse_key  = false
+    }
+    lifetime_action {
+      action {
+        action_type = "AutoRenew"
+      }
+      trigger {
+        days_before_expiry = 30
+      }
+    }
+    secret_properties {
+      content_type = "application/x-pkcs12"
+    }
+    x509_certificate_properties {
+      subject            = "CN=${azurerm_public_ip.app_gateway.fqdn}"
+      validity_in_months = 12
+      key_usage = [
+        "digitalSignature",
+        "keyEncipherment",
+      ]
+      extended_key_usage = [
+        # Replaced "serverAuth" with its numerical OID to avoid an error
+        "1.3.6.1.5.5.7.3.1",
+      ]
+    }
+  }
+}
+
 resource "azurerm_application_gateway" "main" {
   name                = var.app_gateway_name
   resource_group_name = var.resource_group_name
   location            = var.location
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.app_gateway.id]
+  }
+
+  ssl_certificate {
+    name                = azurerm_key_vault_certificate.app_gateway_auto.name
+    key_vault_secret_id = azurerm_key_vault_certificate.app_gateway_auto.secret_id
+  }
 
   sku {
     name     = var.sku_name
@@ -42,6 +92,10 @@ resource "azurerm_application_gateway" "main" {
   frontend_port {
     name = local.frontend_port_name
     port = 80
+  }
+  frontend_port {
+    name = "${local.frontend_port_name}-443"
+    port = 443
   }
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
@@ -88,6 +142,14 @@ resource "azurerm_application_gateway" "main" {
     # Null configures a "basic" listener, the gateway responds to any request sent to its IP address or its default Azure FQDN
     host_name                      = var.is_prod ? var.hostname : null
   }
+  http_listener {
+    name                           = "${local.listener_name}-https"
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_port_name             = "${local.frontend_port_name}-443"
+    protocol                       = "Https"
+    ssl_certificate_name           = azurerm_key_vault_certificate.app_gateway_auto.name
+    host_name                      = var.is_prod ? var.hostname : null
+  }
 
   probe {
     name                                      = "${local.probe_name}-web"
@@ -127,10 +189,25 @@ resource "azurerm_application_gateway" "main" {
     }
   }
 
+  redirect_configuration {
+    name                 = "http-to-https-redirect"
+    redirect_type        = "Permanent"
+    target_listener_name = "${local.listener_name}-https"
+    include_path         = true
+    include_query_string = true
+  }
+
+  request_routing_rule {
+    name                 = "${local.request_routing_rule_name}-redirect"
+    rule_type            = "Basic"
+    http_listener_name   = local.listener_name
+    redirect_configuration_name = "http-to-https-redirect"
+    priority             = 10
+  }
   request_routing_rule {
     name               = local.request_routing_rule_name
     rule_type          = "PathBasedRouting"
-    http_listener_name = local.listener_name
+    http_listener_name = "${local.listener_name}-https"
     url_path_map_name  = "${local.request_routing_rule_name}-pathmap"
     priority           = 100
   }
