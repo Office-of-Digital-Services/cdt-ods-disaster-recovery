@@ -1,3 +1,7 @@
 ARM_SUBSCRIPTION_ID         = "object-id"
 DEVSECOPS_OBJECT_ID         = "object-id"
 ENGINEERING_GROUP_OBJECT_ID = "object-id"
+# These are the IPV4 ranges for the geography where the DevOps project is located (United States)
+# https://learn.microsoft.com/en-us/azure/devops/organizations/security/allow-list-ip-url?view=azure-devops&tabs=IP-V4#inbound-connections
+KEY_VAULT_ALLOWED_IPS       = []
+SLACK_NOTIFY_EMAIL          = "channel-email@org.slack.com"

@@ -16,16 +16,15 @@ variable "ENGINEERING_GROUP_OBJECT_ID" {
   type        = string
 }
 
-variable "container_registry" {
-  type        = string
-  description = "The name of the container registry (e.g., 'ghcr.io')"
-  default     = "ghcr.io"
+variable "KEY_VAULT_ALLOWED_IPS" {
+  description = "List of IP addresses to grant ACL access to Key Vault."
+  type        = list(string)
+  default     = []
 }
 
-variable "container_repository" {
+variable "SLACK_NOTIFY_EMAIL" {
+  description = "Slack channel email for the DDRC engineering team"
   type        = string
-  description = "The repository path within the registry"
-  default     = "office-of-digital-services/cdt-ods-disaster-recovery"
 }
 
 variable "container_tag" {
