@@ -47,7 +47,7 @@ steps:
         echo "##vso[task.setvariable variable=key_vault_name;isOutput=true]$KEY_VAULT_NAME"
 
   - task: AzureCLI@2
-    displayName: "Add Agent IP to Key Vault Firewall"
+    displayName: "Add Agent IP to Firewall Rules"
     inputs:
       azureSubscription: "${{ parameters.service_connection }}"
       scriptType: "bash"
@@ -55,6 +55,15 @@ steps:
       inlineScript: |
         echo "Adding IP $(GetAgentIP.agent_ip) to Key Vault: $(GetKeyVaultEnv.key_vault_name)"
         az keyvault network-rule add --name "$(GetKeyVaultEnv.key_vault_name)" --ip-address "$(GetAgentIP.agent_ip)/32"
+
+        echo "Adding IP $(GetAgentIP.agent_ip) to Key Vault: KV-CDT-PUB-DDRC-P-001"
+        az keyvault network-rule add --name "KV-CDT-PUB-DDRC-P-001" --ip-address "$(GetAgentIP.agent_ip)/32"
+
+        echo "Adding IP $(GetAgentIP.agent_ip) to Storage Account: sacdtddrcp001"
+        az storage account network-rule add --account-name "sacdtddrcp001" --ip-address "$(GetAgentIP.agent_ip)"
+
+        echo "Pausing for 30 seconds to allow firewall rules to propagate..."
+        sleep 30
 
   # https://github.com/microsoft/azure-pipelines-terraform/tree/main/Tasks/TerraformTask/TerraformTaskV4#readme
   - task: TerraformTaskV4@4
@@ -91,6 +100,7 @@ steps:
       REASON: $(Build.Reason)
       INDIVIDUAL_SOURCE: $(Build.SourceBranchName)
       SOURCE_BRANCH: $(Build.SourceBranch)
+
   # Fetch the secret from Key Vault
   # This makes the secret available as $(slack-ddrc-notify-email) to subsequent tasks
   - task: AzureKeyVault@2
@@ -141,19 +151,33 @@ steps:
       )
 
   - task: AzureCLI@2
-    displayName: "Remove Agent IP from Key Vault Firewall"
+    displayName: "Remove Agent IP from Firewall Rules"
     condition: always()
     inputs:
       azureSubscription: "${{ parameters.service_connection }}"
       scriptType: "bash"
       scriptLocation: "inlineScript"
       inlineScript: |
-        KEY_VAULT_NAME="$(GetKeyVaultEnv.key_vault_name)"
-        AGENT_IP="$(GetAgentIP.agent_ip)/32"
+        AGENT_IP_RAW="$(GetAgentIP.agent_ip)"
+        AGENT_IP_CIDR="$AGENT_IP_RAW/32"
 
-        if az keyvault show --name "$KEY_VAULT_NAME" --query "properties.networkAcls.ipRules[?value=='$AGENT_IP']" | grep -q "$AGENT_IP"; then
-          echo "Agent IP found in firewall. Proceeding with removal."
-          az keyvault network-rule remove --name "$KEY_VAULT_NAME" --ip-address "$AGENT_IP"
+        if az keyvault show --name "$(GetKeyVaultEnv.key_vault_name)" --query "properties.networkAcls.ipRules[?value=='$AGENT_IP_CIDR']" | grep -q "$AGENT_IP_CIDR"; then
+          echo "Agent IP found in Key Vault firewall. Proceeding with removal."
+          az keyvault network-rule remove --name "$(GetKeyVaultEnv.key_vault_name)" --ip-address "$AGENT_IP_CIDR"
         else
-          echo "Agent IP not found in firewall. Cleanup is not required."
+          echo "Agent IP not found in Key Vault firewall. Cleanup is not required."
+        fi
+
+        if az keyvault show --name "KV-CDT-PUB-DDRC-P-001" --query "properties.networkAcls.ipRules[?value=='$AGENT_IP_CIDR']" | grep -q "$AGENT_IP_CIDR"; then
+          echo "Agent IP found in prod Key Vault firewall. Proceeding with removal."
+          az keyvault network-rule remove --name "KV-CDT-PUB-DDRC-P-001" --ip-address "$AGENT_IP_CIDR"
+        else
+          echo "Agent IP not found in prod Key Vault firewall. Cleanup is not required."
+        fi
+
+        if az storage account network-rule list --account-name "sacdtddrcp001" --query "ipRules[?ipAddressOrRange=='$AGENT_IP_RAW']" -o tsv | grep -q "$AGENT_IP_RAW"; then
+          echo "Agent IP found in Storage Account firewall. Proceeding with removal."
+          az storage account network-rule remove --account-name "sacdtddrcp001" --ip-address "$AGENT_IP_RAW"
+        else
+          echo "Agent IP not found in Storage Account firewall. Cleanup is not required."
         fi
