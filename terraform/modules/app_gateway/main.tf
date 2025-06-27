@@ -198,14 +198,14 @@ resource "azurerm_application_gateway" "main" {
 
   probe {
     name                                      = "${local.probe_name}-web"
-    interval                                  = 30
     path                                      = var.probe_path
     protocol                                  = "Http"
+    interval                                  = 30
     timeout                                   = 15
     unhealthy_threshold                       = 3
     host                                      = var.backend_fqdns.web
     match {
-      status_code = ["200-399"]
+      status_code = ["200"]
     }
   }
   probe {
