@@ -219,8 +219,7 @@ class OrderInfoForm(forms.ModelForm):
             attrs={
                 "class": "form-control",
                 "inputmode": "numeric",
-                "minlength": "5",
-                "maxlength": "10",
+                "pattern": "[\d]{5}(-[\d]{4})?",
             }
         ),
     )
