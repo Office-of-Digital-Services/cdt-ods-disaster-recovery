@@ -9,7 +9,7 @@ resource "azurerm_key_vault_access_policy" "app_gateway_cert_access" {
   tenant_id    = local.tenant_id
   object_id    = module.app_gateway.identity_principal_id
 
-  # certificate_permissions are not needed here
+  certificate_permissions = ["Get"]
   secret_permissions = ["Get"]
 }
 
