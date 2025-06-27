@@ -114,7 +114,11 @@ resource "azurerm_application_gateway" "main" {
   backend_http_settings {
     name                                = "${local.http_setting_name}-web"
     cookie_based_affinity               = "Disabled"
-    host_name                           = var.backend_fqdns.web
+    # Always override the host header.
+    pick_host_name_from_backend_address = false
+    # In prod, use the custom hostname.
+    # In non-prod, use the App Gateway's default FQDN.
+    host_name                           = var.is_prod ? var.hostname : azurerm_public_ip.app_gateway.fqdn
     path                                = "/"
     port                                = 80
     probe_name                          = "${local.probe_name}-web"
@@ -123,56 +127,98 @@ resource "azurerm_application_gateway" "main" {
   }
   backend_http_settings {
     name                                = "${local.http_setting_name}-pgweb"
-    host_name                           = var.backend_fqdns.pgweb
     cookie_based_affinity               = "Disabled"
-    path                                = "/"
+    host_name                           = var.backend_fqdns.pgweb
+    # needs a trailing slash
+    path                                = "/pgweb/"
     port                                = 80
     probe_name                          = "${local.probe_name}-pgweb"
     protocol                            = "Http"
     request_timeout                     = 20
   }
 
-  http_listener {
-    name                           = local.listener_name
-    frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = local.frontend_port_name
-    protocol                       = "Http"
-    # host_name setting configures the public-facing side of the Application Gateway.
-    # It tells the gateway which domain names it should listen to from the end-user's browser.
-    # Null configures a "basic" listener, the gateway responds to any request sent to its IP address or its default Azure FQDN
-    host_name                      = var.is_prod ? var.hostname : null
+  # For non-prod, create simple "basic" listeners that respond to the default Azure domain.
+  dynamic "http_listener" {
+    for_each = var.is_prod ? [] : [1] # Using dynamic block since count isn't available
+    content {
+      name                           = local.listener_name
+      frontend_ip_configuration_name = local.frontend_ip_configuration_name
+      frontend_port_name             = local.frontend_port_name
+      protocol                       = "Http"
+      host_name                      = azurerm_public_ip.app_gateway.fqdn
+    }
   }
-  http_listener {
-    name                           = "${local.listener_name}-https"
-    frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = "${local.frontend_port_name}-443"
-    protocol                       = "Https"
-    ssl_certificate_name           = azurerm_key_vault_certificate.app_gateway_auto.name
-    host_name                      = var.is_prod ? var.hostname : null
+  dynamic "http_listener" {
+    for_each = var.is_prod ? [] : [1] # Using dynamic block since count isn't available
+    content {
+      name                           = "${local.listener_name}-https"
+      frontend_ip_configuration_name = local.frontend_ip_configuration_name
+      frontend_port_name             = "${local.frontend_port_name}-443"
+      protocol                       = "Https"
+      ssl_certificate_name           = azurerm_key_vault_certificate.app_gateway_auto.name
+      host_name                      = azurerm_public_ip.app_gateway.fqdn
+    }
+  }
+
+  # For prod, create specific listeners to handle the custom domain (HTTP-only) and the default domain (HTTP->HTTPS).
+  dynamic "http_listener" {
+    # Prod listener for the production domain (e.g., *.ca.gov) on HTTP.
+    for_each = var.is_prod ? [1] : [] # Using dynamic block since count isn't available
+    content {
+      name                           = "${local.listener_name}-prod-http"
+      frontend_ip_configuration_name = local.frontend_ip_configuration_name
+      frontend_port_name             = local.frontend_port_name
+      protocol                       = "Http"
+      host_name                      = var.hostname
+    }
+  }
+  dynamic "http_listener" {
+    # Prod listener for the default Azure domain on HTTP, used for redirection.
+    for_each = var.is_prod ? [1] : [] # Using dynamic block since count isn't available
+    content {
+      name                           = "${local.listener_name}-default-http"
+      frontend_ip_configuration_name = local.frontend_ip_configuration_name
+      frontend_port_name             = local.frontend_port_name
+      protocol                       = "Http"
+      host_name                      = azurerm_public_ip.app_gateway.fqdn
+    }
+  }
+  dynamic "http_listener" {
+    # Prod listener for the default Azure domain on HTTPS, using the self-signed cert.
+    for_each = var.is_prod ? [1] : [] # Using dynamic block since count isn't available
+    content {
+      name                           = "${local.listener_name}-default-https"
+      frontend_ip_configuration_name = local.frontend_ip_configuration_name
+      frontend_port_name             = "${local.frontend_port_name}-443"
+      protocol                       = "Https"
+      ssl_certificate_name           = azurerm_key_vault_certificate.app_gateway_auto.name
+      host_name                      = azurerm_public_ip.app_gateway.fqdn
+    }
   }
 
   probe {
     name                                      = "${local.probe_name}-web"
-    interval                                  = 30
     path                                      = var.probe_path
     protocol                                  = "Http"
+    interval                                  = 30
     timeout                                   = 15
     unhealthy_threshold                       = 3
     host                                      = var.backend_fqdns.web
     match {
-      status_code = ["200-399"]
+      status_code = ["200"]
     }
   }
   probe {
     name                                      = "${local.probe_name}-pgweb"
-    interval                                  = 30
-    path                                      = "/"
+    # needs a trailing slash
+    path                                      = "/pgweb/"
     protocol                                  = "Http"
+    interval                                  = 30
     timeout                                   = 15
     unhealthy_threshold                       = 3
     host                                      = var.backend_fqdns.pgweb
     match {
-      status_code = ["200-399"]
+      status_code = ["200"]
     }
   }
 
@@ -192,24 +238,66 @@ resource "azurerm_application_gateway" "main" {
   redirect_configuration {
     name                 = "http-to-https-redirect"
     redirect_type        = "Permanent"
-    target_listener_name = "${local.listener_name}-https"
+    target_listener_name = var.is_prod ? "${local.listener_name}-default-https" : "${local.listener_name}-https"
     include_path         = true
     include_query_string = true
   }
 
-  request_routing_rule {
-    name                 = "${local.request_routing_rule_name}-redirect"
-    rule_type            = "Basic"
-    http_listener_name   = local.listener_name
-    redirect_configuration_name = "http-to-https-redirect"
-    priority             = 10
+  # Non-prod routing rules
+  dynamic "request_routing_rule" {
+    for_each = var.is_prod ? [] : [1] # Using dynamic block since count isn't available
+    content {
+      name                        = "${local.request_routing_rule_name}-redirect"
+      rule_type                   = "Basic"
+      http_listener_name          = local.listener_name
+      redirect_configuration_name = "http-to-https-redirect"
+      priority                    = 10
+    }
   }
-  request_routing_rule {
-    name               = local.request_routing_rule_name
-    rule_type          = "PathBasedRouting"
-    http_listener_name = "${local.listener_name}-https"
-    url_path_map_name  = "${local.request_routing_rule_name}-pathmap"
-    priority           = 100
+  dynamic "request_routing_rule" {
+    for_each = var.is_prod ? [] : [1] # Using dynamic block since count isn't available
+    content {
+      name               = local.request_routing_rule_name
+      rule_type          = "PathBasedRouting"
+      http_listener_name = "${local.listener_name}-https"
+      url_path_map_name  = "${local.request_routing_rule_name}-pathmap"
+      priority           = 100
+    }
+  }
+
+  # Production routing rules
+  dynamic "request_routing_rule" {
+    # Rule for the custom domain: serves content directly over HTTP (no redirect).
+    for_each = var.is_prod ? [1] : [] # Using dynamic block since count isn't available
+    content {
+      name               = "${local.request_routing_rule_name}-prod-http"
+      rule_type          = "PathBasedRouting"
+      http_listener_name = "${local.listener_name}-prod-http"
+      url_path_map_name  = "${local.request_routing_rule_name}-pathmap"
+      priority           = 100
+    }
+  }
+  dynamic "request_routing_rule" {
+    # Rule for the default domain: redirects from HTTP to HTTPS.
+    for_each = var.is_prod ? [1] : [] # Using dynamic block since count isn't available
+    content {
+      name                        = "${local.request_routing_rule_name}-default-redirect"
+      rule_type                   = "Basic"
+      http_listener_name          = "${local.listener_name}-default-http"
+      redirect_configuration_name = "http-to-https-redirect"
+      priority                    = 10
+    }
+  }
+  dynamic "request_routing_rule" {
+    # Rule for the default domain: serves content over HTTPS.
+    for_each = var.is_prod ? [1] : [] # Using dynamic block since count isn't available
+    content {
+      name               = "${local.request_routing_rule_name}-default-https"
+      rule_type          = "PathBasedRouting"
+      http_listener_name = "${local.listener_name}-default-https"
+      url_path_map_name  = "${local.request_routing_rule_name}-pathmap"
+      priority           = 101
+    }
   }
 
   waf_configuration {

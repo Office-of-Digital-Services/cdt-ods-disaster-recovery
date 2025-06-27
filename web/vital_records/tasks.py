@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "application.pdf")
 SWORNSTATEMENT_TEMPLATE = APPLICATION_TEMPLATE.replace("application.pdf", "sworn-statement.pdf")
+EMAIL_TEMPLATE = "vital_records/email.html"
 
 
 @dataclass
@@ -188,7 +189,7 @@ class EmailTask(Task):
             "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
             "email_address": request.email_address,
         }
-        html_message = render_to_string("web/vital_records/templates/vital_records/email.html", context)
+        html_message = render_to_string(EMAIL_TEMPLATE, context)
         email = EmailMessage(
             subject="Completed: Birth Record Request",
             body=html_message,

@@ -20,7 +20,9 @@ resource "azurerm_key_vault" "main" {
 
   network_acls {
     default_action = "Deny"
-    bypass         = "None"
+    # Necessary exception allowing the trusted Application Gateway
+    # management service to read certificates.
+    bypass         = "AzureServices"
     ip_rules       = var.allowed_ip_rules
   }
 

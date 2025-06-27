@@ -273,6 +273,11 @@ resource "azurerm_container_app" "pgweb" {
       cpu    = 0.25
       memory = "0.5Gi"
 
+      # This argument tells pgweb to serve all assets from the /pgweb subpath,
+      # since the container app is served from the app gateway at that subpath.
+      # NOTE: the / should not be part of the prefix value
+      args = ["--prefix", "pgweb"]
+
       env {
         name  = "PGWEB_SESSIONS"
         value = "1"
