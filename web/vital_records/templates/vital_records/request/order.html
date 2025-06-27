@@ -38,6 +38,11 @@
                             {{ form.address }}
                             {{ form.address.errors }}
                         </div>
+                        <div class="form-group col-md-12">
+                            {{ form.address_2|label_with_required }}
+                            {{ form.address_2 }}
+                            {{ form.address.errors }}
+                        </div>
                         <div class="form-group col-md-5">
                             {{ form.city|label_with_required }}
                             {{ form.city }}
