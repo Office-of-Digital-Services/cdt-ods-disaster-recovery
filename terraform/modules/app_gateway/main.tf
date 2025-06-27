@@ -127,9 +127,10 @@ resource "azurerm_application_gateway" "main" {
   }
   backend_http_settings {
     name                                = "${local.http_setting_name}-pgweb"
-    host_name                           = var.backend_fqdns.pgweb
     cookie_based_affinity               = "Disabled"
-    path                                = "/"
+    host_name                           = var.backend_fqdns.pgweb
+    # needs a trailing slash
+    path                                = "/pgweb/"
     port                                = 80
     probe_name                          = "${local.probe_name}-pgweb"
     protocol                            = "Http"
@@ -209,14 +210,15 @@ resource "azurerm_application_gateway" "main" {
   }
   probe {
     name                                      = "${local.probe_name}-pgweb"
-    interval                                  = 30
-    path                                      = "/"
+    # needs a trailing slash
+    path                                      = "/pgweb/"
     protocol                                  = "Http"
+    interval                                  = 30
     timeout                                   = 15
     unhealthy_threshold                       = 3
     host                                      = var.backend_fqdns.pgweb
     match {
-      status_code = ["200-399"]
+      status_code = ["200"]
     }
   }
 
