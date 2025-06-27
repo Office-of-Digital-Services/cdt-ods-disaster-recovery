@@ -7,6 +7,8 @@ from uuid import UUID, uuid4
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils import timezone
+from django.template.loader import render_to_string
+
 from pypdf import PdfReader, PdfWriter
 
 from web.core.tasks import Task
@@ -181,12 +183,19 @@ class EmailTask(Task):
         logger.debug(f"Sending request package for: {request_id}")
         request = get_request_with_status(request_id, "packaged")
 
+        context = {
+            "number_of_copies": request.number_of_records,
+            "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
+            "email_address": request.email_address,
+        }
+        html_message = render_to_string("web/vital_records/templates/vital_records/email.html", context)
         email = EmailMessage(
-            subject="Vital records request",
-            body="A new request is attached.",
+            subject="Completed: Birth Record Request",
+            body=html_message,
             to=[settings.VITAL_RECORDS_EMAIL_TO],
             cc=[request.email_address],
         )
+        email.content_subtype = "html"
         email.attach_file(package, "application/pdf")
         result = email.send()
 
