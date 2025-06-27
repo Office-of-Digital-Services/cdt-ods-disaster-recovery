@@ -28,9 +28,10 @@ resource "azurerm_network_security_rule" "app_gateway_allow_inbound_manager" {
   network_security_group_name = azurerm_network_security_group.app_gateway.name
 }
 
-# Rule to allow inbound traffic from the Azure FrontDoor to the gateway listener.
-resource "azurerm_network_security_rule" "app_gateway_allow_inbound_frontdoor" {
-  name                        = "AllowInbound-FrontDoor"
+# Rules to allow inbound traffic from the Azure FrontDoor to the gateway listener.
+# Separate rules for 80, 443 were necessary as a combined rule wasn't taking effect.
+resource "azurerm_network_security_rule" "app_gateway_allow_inbound_frontdoor_http" {
+  name                        = "AllowInbound-FrontDoor-HTTP"
   priority                    = 110
   direction                   = "Inbound"
   access                      = "Allow"
@@ -42,18 +43,43 @@ resource "azurerm_network_security_rule" "app_gateway_allow_inbound_frontdoor" {
   resource_group_name         = var.resource_group_name
   network_security_group_name = azurerm_network_security_group.app_gateway.name
 }
+resource "azurerm_network_security_rule" "app_gateway_allow_inbound_frontdoor_https" {
+  name                        = "AllowInbound-FrontDoor-HTTPS"
+  priority                    = 115
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "AzureFrontDoor.Backend"
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.app_gateway.name
+}
 
-# Allow inbound HTTP from the general Internet ONLY for non-production environments.
-resource "azurerm_network_security_rule" "app_gateway_allow_inbound_internet" {
-  count = var.is_prod ? 0 : 1
-
+# Allow inbound from the general Internet.
+# Separate rules for 80, 443 were necessary as a combined rule wasn't taking effect.
+resource "azurerm_network_security_rule" "app_gateway_allow_inbound_internet_http" {
   name                        = "AllowInbound-Internet-HTTP"
   priority                    = 120
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_ranges     = ["80", "443"]
+  destination_port_range      = "80"
+  source_address_prefix       = "Internet"
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.app_gateway.name
+}
+resource "azurerm_network_security_rule" "app_gateway_allow_inbound_internet_https" {
+  name                        = "AllowInbound-Internet-HTTPS"
+  priority                    = 125
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
   source_address_prefix       = "Internet"
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group_name
