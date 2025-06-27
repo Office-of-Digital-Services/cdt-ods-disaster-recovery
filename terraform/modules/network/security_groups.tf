@@ -126,7 +126,8 @@ resource "azurerm_network_security_rule" "app_gateway_allow_outbound_apps" {
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_ranges     = ["8000", "8081"]
+  # The apps only listen on port 80, TLS is terminated at the gateway or before
+  destination_port_range      = "80"
   source_address_prefix       = azurerm_subnet.main["app_gateway"].address_prefixes[0]
   destination_address_prefix  = azurerm_subnet.main["public"].address_prefixes[0]
   resource_group_name         = var.resource_group_name
