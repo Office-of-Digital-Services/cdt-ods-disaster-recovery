@@ -7,8 +7,7 @@ resource "azurerm_subnet" "main" {
   resource_group_name  = var.resource_group_name
   address_prefixes     = each.value
 
-  # This attribute is set to false on all subnets except app_gateway.
-  default_outbound_access_enabled = each.key == "app_gateway" ? null : false
+  default_outbound_access_enabled = false
 
   # The public and worker infra subnets need to be delegated to Container App Environments
   dynamic "delegation" {

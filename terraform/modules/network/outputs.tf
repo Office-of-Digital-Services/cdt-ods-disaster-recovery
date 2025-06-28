@@ -19,7 +19,6 @@ output "security_group_ids" {
   # This assumes the NSGs are also created with a for_each loop or are otherwise mapped.
   # The root module needs the NSG's name and resource group name to attach rules.
   value = {
-    app_gateway = azurerm_network_security_group.app_gateway
     public      = azurerm_network_security_group.public
     worker      = azurerm_network_security_group.worker
   }

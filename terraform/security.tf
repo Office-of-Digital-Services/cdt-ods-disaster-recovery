@@ -3,16 +3,6 @@ locals {
   key_vault_policy_secret_permissions = ["Get", "List"]
 }
 
-# for the App Gateway
-resource "azurerm_key_vault_access_policy" "app_gateway_cert_access" {
-  key_vault_id = module.key_vault.key_vault_id
-  tenant_id    = local.tenant_id
-  object_id    = module.app_gateway.identity_principal_id
-
-  certificate_permissions = ["Get"]
-  secret_permissions = ["Get"]
-}
-
 # for the web app
 resource "azurerm_key_vault_access_policy" "container_app_web_access" {
   key_vault_id = module.key_vault.key_vault_id
@@ -29,22 +19,6 @@ resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
   object_id    = module.application.identity_object_ids.worker
 
   secret_permissions = local.key_vault_policy_secret_permissions
-}
-
-# These rules are for the 'app_gateway' NSG created in the network module.
-# They allow outbound traffic to private IP addresses of the key vault.
-resource "azurerm_network_security_rule" "app_gateway_to_kv" {
-  name                        = "AllowOutbound-kv"
-  priority                    = 100
-  direction                   = "Outbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "443"
-  source_address_prefix       = "*"
-  resource_group_name         = local.resource_group_name
-  network_security_group_name = module.network.security_group_ids.app_gateway.name
-  destination_address_prefix  = module.key_vault.private_endpoint_ip_address
 }
 
 # These rules are for the 'public' NSG created in the network module.
