@@ -2,7 +2,6 @@ output "app_fqdns" {
   description = "A map of the stable, non-revision-specific Fully Qualified Domain Names for the container apps."
   value = {
     web   = "${azurerm_container_app.web.name}.${azurerm_container_app_environment.public.default_domain}"
-    pgweb = "${azurerm_container_app.pgweb.name}.${azurerm_container_app_environment.public.default_domain}"
   }
 }
 

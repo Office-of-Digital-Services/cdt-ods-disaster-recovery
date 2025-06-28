@@ -126,12 +126,6 @@ variable "container_tag" {
   type        = string
 }
 
-variable "pgweb_image_tag" {
-  description = "The image tag (from sosedoff/pgweb) to use for the pgweb app"
-  type        = string
-  default     = "0.16.2"
-}
-
 # Application Configuration
 variable "web_app_cpu" {
   description = "Numeric amount of CPU to assign to web app containers (e.g. 0.5, 1)"
