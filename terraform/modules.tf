@@ -1,7 +1,6 @@
 # Imports all the submodules and wires together necessary input/outputs
 locals {
   application_insights_name        = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
-  app_gateway_name                 = "AGW-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   communication_service_name       = "ACS-PUB-VIP-DDRC-${local.env_letter}-001"
   container_app_environment_prefix = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}"
   container_app_prefix             = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}")
@@ -96,24 +95,6 @@ module "email" {
   diagnostic_setting_prefix  = local.diagnostic_setting_prefix
   key_vault_id               = module.key_vault.key_vault_id
   log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
-}
-
-module "app_gateway" {
-  source                = "./modules/app_gateway"
-  resource_group_name   = local.resource_group_name
-  location              = local.location
-  is_prod               = local.is_prod
-  app_gateway_name      = local.app_gateway_name
-  app_gateway_subnet_id = module.network.subnet_ids.app_gateway
-  backend_fqdns = {
-    web   = module.application.app_fqdns.web
-    pgweb = module.application.app_fqdns.pgweb
-  }
-  diagnostic_setting_prefix  = local.diagnostic_setting_prefix
-  key_vault_id               = module.key_vault.key_vault_id
-  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
-  hostname                   = local.hostname
-  public_ip_prefix           = local.public_ip_prefix
 }
 
 module "storage" {

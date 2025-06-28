@@ -53,7 +53,7 @@ def RUNTIME_ENVIRONMENT():
 
 # https://docs.djangoproject.com/en/5.2/ref/settings/#use-x-forwarded-host
 # Use the X-Forwarded-Host header in preference to the Host header.
-# Enabled because the Azure App Gateway acts as a proxy, setting this header to its own FQDN.
+# Enabled because the Azure infra acts as a proxy, setting this header to its own FQDN.
 USE_X_FORWARDED_HOST = RUNTIME_ENVIRONMENT() != RUNTIME_ENVS.LOCAL
 
 # Configuration for requests

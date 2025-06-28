@@ -68,7 +68,6 @@ variable "subnet_addresses" {
   default = {
     # a /22 subnet provides 1024 IP addresses
     # a /27 subnet provides 32 IP addresses
-    app_gateway  = ["10.0.0.0/22"]   # 10.0.0.0 to 10.0.3.255
     public       = ["10.0.4.0/22"]   # 10.0.4.0 to 10.0.7.255
     worker       = ["10.0.8.0/22"]   # 10.0.8.0 to 10.0.11.255
     db           = ["10.0.12.0/27"]  # 10.0.12.0 to 10.0.12.31
