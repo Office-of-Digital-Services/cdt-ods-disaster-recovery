@@ -243,6 +243,18 @@ resource "azurerm_container_app" "web" {
   ]
 }
 
+resource "azurerm_container_app_custom_domain" "web" {
+  name                     = var.hostname
+  container_app_id         = azurerm_container_app.web.id
+  certificate_binding_type = "Disabled"
+}
+
+resource "azurerm_container_app_custom_domain" "web_www" {
+  name                     = "www.${var.hostname}"
+  container_app_id         = azurerm_container_app.web.id
+  certificate_binding_type = "Disabled"
+}
+
 # The pgweb appliciation
 resource "azurerm_container_app" "pgweb" {
   name                         = "${var.container_app_prefix}-pgweb"
