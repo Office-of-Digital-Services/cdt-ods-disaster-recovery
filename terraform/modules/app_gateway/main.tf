@@ -116,9 +116,7 @@ resource "azurerm_application_gateway" "main" {
     cookie_based_affinity               = "Disabled"
     # Always override the host header.
     pick_host_name_from_backend_address = false
-    # In prod, use the custom hostname.
-    # In non-prod, use the App Gateway's default FQDN.
-    host_name                           = var.is_prod ? var.hostname : azurerm_public_ip.app_gateway.fqdn
+    host_name                           = var.backend_fqdns.web
     path                                = "/"
     port                                = 80
     probe_name                          = "${local.probe_name}-web"
