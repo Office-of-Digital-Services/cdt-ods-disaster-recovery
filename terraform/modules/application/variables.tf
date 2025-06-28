@@ -26,6 +26,11 @@ variable "is_prod" {
   type        = bool
 }
 
+variable "hostname" {
+  description = "The custom hostname for the HTTP listener."
+  type        = string
+}
+
 variable "virtual_network_id" {
   description = "The ID of the main VNet, required for linking the private DNS zone."
   type        = string

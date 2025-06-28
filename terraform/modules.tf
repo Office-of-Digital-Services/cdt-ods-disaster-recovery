@@ -152,6 +152,7 @@ module "application" {
   env_letter                          = local.env_letter
   env_name                            = local.env_name
   is_prod                             = local.is_prod
+  hostname                            = local.hostname
   virtual_network_id                  = module.network.vnet_id
   container_app_environment_prefix    = local.container_app_environment_prefix
   container_app_prefix                = local.container_app_prefix
