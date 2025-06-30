@@ -3,7 +3,24 @@ locals {
   key_vault_policy_secret_permissions = ["Get", "List"]
 }
 
-# for the web app
+# Create dynamic Key Vault secrets for Django host settings.
+resource "azurerm_key_vault_secret" "django_allowed_hosts" {
+  name         = local.web_app_config_secrets.DjangoAllowedHosts
+  value        = format("%s,%s", local.hostname, module.application.app_fqdns.web)
+  key_vault_id = module.key_vault.key_vault_id
+  content_type = "text"
+}
+
+resource "azurerm_key_vault_secret" "django_trusted_origins" {
+  name = local.web_app_config_secrets.DjangoTrustedOrigins
+  # Django's CSRF_TRUSTED_ORIGINS requires the scheme (https://)
+  value        = format("https://%s", local.hostname)
+  key_vault_id = module.key_vault.key_vault_id
+  content_type = "text"
+}
+
+
+# Key Vault access policy for the web app
 resource "azurerm_key_vault_access_policy" "container_app_web_access" {
   key_vault_id = module.key_vault.key_vault_id
   tenant_id    = local.tenant_id
@@ -12,7 +29,7 @@ resource "azurerm_key_vault_access_policy" "container_app_web_access" {
   secret_permissions = local.key_vault_policy_secret_permissions
 }
 
-# for the worker app
+# Key Vault access policy for the worker app
 resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
   key_vault_id = module.key_vault.key_vault_id
   tenant_id    = local.tenant_id
