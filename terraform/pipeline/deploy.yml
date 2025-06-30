@@ -120,7 +120,7 @@ steps:
       command: plan
       # wait for lock to be released, in case being used by another pipeline run
       # https://discuss.hashicorp.com/t/terraform-plan-wait-for-lock-to-be-released/6870/2
-      commandOptions: -input=false -lock-timeout=5m -var="container_tag=$(container_tag)" -var="SLACK_NOTIFY_EMAIL=$(slack-ddrc-notify-email)" -var="KEY_VAULT_ALLOWED_IPS=[\"$(GetAgentIP.agent_ip)\"]"
+      commandOptions: -input=false -lock-timeout=5m -var="container_tag=$(container_tag)" -var="SLACK_NOTIFY_EMAIL=$(slack-ddrc-notify-email)" -var="PIPELINE_ALLOWED_IPS=[\"$(GetAgentIP.agent_ip)/32\"]"
       workingDirectory: "$(System.DefaultWorkingDirectory)/terraform"
       # service connection
       environmentServiceNameAzureRM: "${{ parameters.service_connection }}"
@@ -138,7 +138,7 @@ steps:
       provider: azurerm
       command: apply
       # (ditto the lock comment above)
-      commandOptions: -input=false -lock-timeout=5m -var="container_tag=$(container_tag)" -var="SLACK_NOTIFY_EMAIL=$(slack-ddrc-notify-email)" -var="KEY_VAULT_ALLOWED_IPS=[\"$(GetAgentIP.agent_ip)\"]"
+      commandOptions: -input=false -lock-timeout=5m -var="container_tag=$(container_tag)" -var="SLACK_NOTIFY_EMAIL=$(slack-ddrc-notify-email)" -var="PIPELINE_ALLOWED_IPS=[\"$(GetAgentIP.agent_ip)/32\"]"
       workingDirectory: "$(System.DefaultWorkingDirectory)/terraform"
       # service connection
       environmentServiceNameAzureRM: "${{ parameters.service_connection }}"
