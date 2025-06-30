@@ -5,6 +5,19 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "is_prod" {
+  description = "A boolean flag to indicate if the deployment is for the production environment."
+  type        = bool
+  default     = false
+}
+
+variable "custom_domain_name" {
+  description = "The name of the custom domain to use in the production environment."
+  type        = string
+  default     = null
+}
+
+
 variable "communication_service_name" {
   description = "The name for the Azure Communication Service and Email Communication Service resources."
   type        = string

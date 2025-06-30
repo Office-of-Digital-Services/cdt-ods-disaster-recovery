@@ -91,7 +91,9 @@ module "key_vault" {
 module "email" {
   source                     = "./modules/email"
   resource_group_name        = local.resource_group_name
+  is_prod                    = local.is_prod
   communication_service_name = local.communication_service_name
+  custom_domain_name         = "state.ca.gov"
   diagnostic_setting_prefix  = local.diagnostic_setting_prefix
   key_vault_id               = module.key_vault.key_vault_id
   log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
