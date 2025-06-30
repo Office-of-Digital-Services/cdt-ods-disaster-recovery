@@ -40,7 +40,7 @@ class StatementForm(forms.ModelForm):
     )
 
     legal_attestation = forms.CharField(
-        label="Type your full name to sign", max_length=256, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Type your full name to sign", max_length=386, widget=forms.TextInput(attrs={"class": "form-control"})
     )
 
     class Meta:

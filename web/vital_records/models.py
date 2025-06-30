@@ -177,7 +177,7 @@ class VitalRecordsRequest(models.Model):
     status = FSMField(default="initialized", choices=STATUS_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
     relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
-    legal_attestation = models.CharField(max_length=257)
+    legal_attestation = models.CharField(max_length=386)
     first_name = models.CharField(max_length=128)
     middle_name = models.CharField(max_length=128, blank=True)
     last_name = models.CharField(max_length=128)
