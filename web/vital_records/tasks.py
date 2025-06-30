@@ -5,9 +5,9 @@ from typing import Optional
 from uuid import UUID, uuid4
 
 from django.conf import settings
-from django.core.mail import EmailMessage
-from django.utils import timezone
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 from pypdf import PdfReader, PdfWriter
 
@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 
 APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "application.pdf")
 SWORNSTATEMENT_TEMPLATE = APPLICATION_TEMPLATE.replace("application.pdf", "sworn-statement.pdf")
-EMAIL_TEMPLATE = "vital_records/email.html"
+EMAIL_HTML_TEMPLATE = "vital_records/email.html"
+EMAIL_TXT_TEMPLATE = EMAIL_HTML_TEMPLATE.replace(".html", ".txt")
 
 
 @dataclass
@@ -189,14 +190,14 @@ class EmailTask(Task):
             "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
             "email_address": request.email_address,
         }
-        html_message = render_to_string(EMAIL_TEMPLATE, context)
-        email = EmailMessage(
+        text_content = render_to_string(EMAIL_TXT_TEMPLATE, context)
+        html_content = render_to_string(EMAIL_HTML_TEMPLATE, context)
+        email = EmailMultiAlternatives(
             subject="Completed: Birth Record Request",
-            body=html_message,
+            body=text_content,
             to=[settings.VITAL_RECORDS_EMAIL_TO],
-            cc=[request.email_address],
         )
-        email.content_subtype = "html"
+        email.attach_alternative(html_content, "text/html")
         email.attach_file(package, "application/pdf")
         result = email.send()
 
