@@ -1,32 +1,12 @@
 # Imports all the submodules and wires together necessary input/outputs
 locals {
-  application_insights_name        = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
-  communication_service_name       = "ACS-PUB-VIP-DDRC-${local.env_letter}-001"
-  container_app_environment_prefix = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}"
-  container_app_prefix             = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}")
-  database_server_name             = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-db")
-  diagnostic_setting_prefix        = lower("MDS-CDT-PUB-VIP-DDRC-${local.env_letter}")
-  key_vault_name                   = "KV-CDT-PUB-DDRC-${local.env_letter}-001"
-  key_vault_allowed_ips = [
-    # Central United States
-    "20.37.158.0/23",
-    # West Central United States
-    "52.150.138.0/24",
-    # East United States
-    "20.42.5.0/24",
-    # East 2 United States
-    "20.41.6.0/23",
-    # North United States
-    "40.80.187.0/24",
-    # South United States
-    "40.119.10.0/24",
-    # West United States
-    "40.82.252.0/24",
-    # West 2 United States
-    "20.42.134.0/23",
-    # West 3 United States
-    "20.125.155.0/24"
-  ]
+  application_insights_name         = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
+  communication_service_name        = "ACS-PUB-VIP-DDRC-${local.env_letter}-001"
+  container_app_environment_prefix  = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}"
+  container_app_prefix              = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}")
+  database_server_name              = lower("adb-cdt-pub-vip-ddrc-${local.env_letter}-db")
+  diagnostic_setting_prefix         = lower("MDS-CDT-PUB-VIP-DDRC-${local.env_letter}")
+  key_vault_name                    = "KV-CDT-PUB-DDRC-${local.env_letter}-001"
   key_vault_secret_uri_prefix       = "https://${local.key_vault_name}.vault.azure.net/secrets"
   location                          = data.azurerm_resource_group.main.location
   log_analytics_workspace_name      = "CDT-OET-PUB-DDRC-${local.env_letter}-001"
@@ -102,7 +82,7 @@ module "key_vault" {
   resource_group_name = local.resource_group_name
   location            = local.location
   tenant_id           = local.tenant_id
-  allowed_ip_rules    = concat(var.KEY_VAULT_ALLOWED_IPS, local.key_vault_allowed_ips)
+  allowed_ip_rules    = var.PIPELINE_ALLOWED_IPS
   base_access_policy_object_ids = {
     engineering_group = var.ENGINEERING_GROUP_OBJECT_ID
     devsecops_group   = var.DEVSECOPS_OBJECT_ID
