@@ -42,9 +42,9 @@ def RUNTIME_ENVIRONMENT():
     # usage of django.conf.settings.ALLOWED_HOSTS here (rather than the module variable directly)
     # is to ensure dynamic calculation, e.g. for unit tests and elsewhere this setting is needed
     env = RUNTIME_ENVS.LOCAL
-    if any(["cdt-pub-vip-ddrc-d" in host for host in settings.ALLOWED_HOSTS]):
+    if any(host == "dev.recovery.cdt.ca.gov" for host in settings.ALLOWED_HOSTS):
         env = RUNTIME_ENVS.DEV
-    elif any(["cdt-pub-vip-ddrc-t" in host for host in settings.ALLOWED_HOSTS]):
+    elif any(host == "test.recovery.cdt.ca.gov" for host in settings.ALLOWED_HOSTS):
         env = RUNTIME_ENVS.TEST
     elif any(host == "recovery.cdt.ca.gov" for host in settings.ALLOWED_HOSTS):
         env = RUNTIME_ENVS.PROD
