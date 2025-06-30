@@ -77,3 +77,15 @@ variable "subnet_addresses" {
     worker_infra = ["10.0.12.128/27"] # 10.0.12.128 to 10.0.12.159
   }
 }
+
+variable "app_env_subnets" {
+    description = "The subnets that will be delegated to container app environments."
+    type = list(string)
+    default = ["public_infra", "worker_infra"]
+}
+
+variable "private_link_service_policy_subnets" {
+    description = "A list of subnets that require `private_link_service_network_policies_enabled` set to `true`. This is required for subnets delegated to services that use a Private Link Service, such as an internal Azure Container App Environment."
+    type = list(string)
+    default = ["public_infra"]
+}
