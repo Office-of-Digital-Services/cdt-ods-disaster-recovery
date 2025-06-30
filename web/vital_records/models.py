@@ -108,7 +108,7 @@ class VitalRecordsRequest(models.Model):
         ("Yuba", "Yuba"),
     ]
 
-    NUMBER_CHOICES = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)]
+    NUMBER_CHOICES = [(1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5"), (6, "6"), (7, "7"), (8, "8"), (9, "9"), (10, "10")]
 
     STATE_CHOICES = [
         ("", "Select state"),
@@ -177,24 +177,23 @@ class VitalRecordsRequest(models.Model):
     status = FSMField(default="initialized", choices=STATUS_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
     relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
-    legal_attestation = models.CharField(max_length=100)
-    first_name = models.CharField(max_length=100)
-    middle_name = models.CharField(max_length=100, blank=True)
-    last_name = models.CharField(max_length=100)
+    legal_attestation = models.CharField(max_length=257)
+    first_name = models.CharField(max_length=128)
+    middle_name = models.CharField(max_length=128, blank=True)
+    last_name = models.CharField(max_length=128)
     county_of_birth = models.CharField(max_length=15, choices=COUNTY_CHOICES)
     date_of_birth = models.DateField(null=True)
-    parent_1_first_name = models.CharField(max_length=100)
-    parent_1_last_name = models.CharField(max_length=100)
-    parent_2_first_name = models.CharField(max_length=100, blank=True)
-    parent_2_last_name = models.CharField(max_length=100, blank=True)
+    parent_1_first_name = models.CharField(max_length=128)
+    parent_1_last_name = models.CharField(max_length=128)
+    parent_2_first_name = models.CharField(max_length=128, blank=True)
+    parent_2_last_name = models.CharField(max_length=128, blank=True)
     number_of_records = models.IntegerField(choices=NUMBER_CHOICES, null=True)
-    order_first_name = models.CharField(max_length=50)
-    order_last_name = models.CharField(max_length=50)
-    address = models.CharField(max_length=128)
-    address_2 = models.CharField(max_length=128, blank=True)
-    city = models.CharField(max_length=128)
+    order_first_name = models.CharField(max_length=128)
+    order_last_name = models.CharField(max_length=128)
+    address = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
     state = models.CharField(max_length=2, choices=STATE_CHOICES)
-    zip_code = models.CharField(max_length=10)
+    zip_code = models.CharField(max_length=5)
     email_address = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=10)
     started_at = models.DateTimeField(null=True, blank=True)
