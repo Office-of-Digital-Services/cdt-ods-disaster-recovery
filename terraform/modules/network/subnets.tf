@@ -7,12 +7,12 @@ resource "azurerm_subnet" "main" {
   resource_group_name  = var.resource_group_name
   address_prefixes     = each.value
 
-  # This attribute is set to false on all subnets except app_gateway.
-  default_outbound_access_enabled = each.key == "app_gateway" ? null : false
+  default_outbound_access_enabled = false
+  private_link_service_network_policies_enabled = contains(var.private_link_service_policy_subnets, each.key)
 
-  # The public and worker infra subnets need to be delegated to Container App Environments
+  # Delegate the app environment subnets to Container App Environments
   dynamic "delegation" {
-    for_each = contains(["public_infra", "worker_infra"], each.key) ? [1] : []
+    for_each = contains(var.app_env_subnets, each.key) ? [1] : []
     content {
       name = "Microsoft.App/environments"
       service_delegation {

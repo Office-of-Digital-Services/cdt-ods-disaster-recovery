@@ -68,7 +68,6 @@ variable "subnet_addresses" {
   default = {
     # a /22 subnet provides 1024 IP addresses
     # a /27 subnet provides 32 IP addresses
-    app_gateway  = ["10.0.0.0/22"]   # 10.0.0.0 to 10.0.3.255
     public       = ["10.0.4.0/22"]   # 10.0.4.0 to 10.0.7.255
     worker       = ["10.0.8.0/22"]   # 10.0.8.0 to 10.0.11.255
     db           = ["10.0.12.0/27"]  # 10.0.12.0 to 10.0.12.31
@@ -77,4 +76,16 @@ variable "subnet_addresses" {
     public_infra = ["10.0.12.96/27"]  # 10.0.12.96 to 10.0.12.127
     worker_infra = ["10.0.12.128/27"] # 10.0.12.128 to 10.0.12.159
   }
+}
+
+variable "app_env_subnets" {
+    description = "The subnets that will be delegated to container app environments."
+    type = list(string)
+    default = ["public_infra", "worker_infra"]
+}
+
+variable "private_link_service_policy_subnets" {
+    description = "A list of subnets that require `private_link_service_network_policies_enabled` set to `true`. This is required for subnets delegated to services that use a Private Link Service, such as an internal Azure Container App Environment."
+    type = list(string)
+    default = ["public_infra"]
 }

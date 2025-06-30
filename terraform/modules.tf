@@ -1,7 +1,6 @@
 # Imports all the submodules and wires together necessary input/outputs
 locals {
   application_insights_name        = "AI-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
-  app_gateway_name                 = "AGW-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   communication_service_name       = "ACS-PUB-VIP-DDRC-${local.env_letter}-001"
   container_app_environment_prefix = "CAE-CDT-PUB-VIP-DDRC-${local.env_letter}"
   container_app_prefix             = lower("aca-cdt-pub-vip-ddrc-${local.env_letter}")
@@ -41,6 +40,35 @@ locals {
   subnet_prefix                     = "SNET-CDT-PUB-VIP-DDRC-${local.env_letter}"
   tenant_id                         = data.azurerm_client_config.current.tenant_id
   vnet_name                         = "VNET-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
+  # pre-existing secrets not managed via Terraform, to reference in the web app
+  web_app_config_secrets = {
+    DjangoAllowedHosts        = "django-allowed-hosts"
+    DjangoDbName              = "django-db-name"
+    DjangoDbUser              = "django-db-user"
+    DjangoDbFixtures          = "django-db-fixtures"
+    DjangoDebug               = "django-debug"
+    DjangoLogLevel            = "django-log-level"
+    DjangoSuperuserUsername   = "django-superuser-username"
+    DjangoSuperuserEmail      = "django-superuser-email"
+    DjangoTrustedOrigins      = "django-trusted-origins"
+    GoogleSsoAllowableDomains = "google-sso-allowable-domains"
+    GoogleSsoClientId         = "google-sso-client-id"
+    GoogleSsoClientSecret     = "google-sso-client-secret"
+    GoogleSsoProjectId        = "google-sso-project-id"
+    GoogleSsoSuperuserList    = "google-sso-superuser-list"
+    PostgresDbName            = "postgres-db-name"
+    TasksDbName               = "tasks-db-name"
+    TasksDbUser               = "tasks-db-user"
+  }
+  # pre-existing secrets not managed via Terraform, to reference in the worker app
+  worker_app_config_secrets = {
+    DjangoDbName        = "django-db-name"
+    DjangoDbUser        = "django-db-user"
+    DjangoLogLevel      = "django-log-level"
+    TasksDbName         = "tasks-db-name"
+    TasksDbUser         = "tasks-db-user"
+    VitalRecordsEmailTo = "vital-records-email-to"
+  }
 }
 
 module "network" {
@@ -92,28 +120,12 @@ module "key_vault" {
 module "email" {
   source                     = "./modules/email"
   resource_group_name        = local.resource_group_name
+  is_prod                    = local.is_prod
   communication_service_name = local.communication_service_name
+  custom_domain_name         = "state.ca.gov"
   diagnostic_setting_prefix  = local.diagnostic_setting_prefix
   key_vault_id               = module.key_vault.key_vault_id
   log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
-}
-
-module "app_gateway" {
-  source                = "./modules/app_gateway"
-  resource_group_name   = local.resource_group_name
-  location              = local.location
-  is_prod               = local.is_prod
-  app_gateway_name      = local.app_gateway_name
-  app_gateway_subnet_id = module.network.subnet_ids.app_gateway
-  backend_fqdns = {
-    web   = module.application.app_fqdns.web
-    pgweb = module.application.app_fqdns.pgweb
-  }
-  diagnostic_setting_prefix  = local.diagnostic_setting_prefix
-  key_vault_id               = module.key_vault.key_vault_id
-  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
-  hostname                   = local.hostname
-  public_ip_prefix           = local.public_ip_prefix
 }
 
 module "storage" {
@@ -152,6 +164,7 @@ module "application" {
   env_letter                          = local.env_letter
   env_name                            = local.env_name
   is_prod                             = local.is_prod
+  hostname                            = local.hostname
   virtual_network_id                  = module.network.vnet_id
   container_app_environment_prefix    = local.container_app_environment_prefix
   container_app_prefix                = local.container_app_prefix
@@ -168,33 +181,6 @@ module "application" {
   storage_account_primary_access_key  = module.storage.storage_account_primary_access_key
   storage_share_names                 = module.storage.share_names
   subnet_ids                          = module.network.subnet_ids
-  # pre-existing secrets not managed via Terraform, to reference in the web app
-  web_app_config_secrets = {
-    DjangoAllowedHosts        = "django-allowed-hosts"
-    DjangoDbName              = "django-db-name"
-    DjangoDbUser              = "django-db-user"
-    DjangoDbFixtures          = "django-db-fixtures"
-    DjangoDebug               = "django-debug"
-    DjangoLogLevel            = "django-log-level"
-    DjangoSuperuserUsername   = "django-superuser-username"
-    DjangoSuperuserEmail      = "django-superuser-email"
-    DjangoTrustedOrigins      = "django-trusted-origins"
-    GoogleSsoAllowableDomains = "google-sso-allowable-domains"
-    GoogleSsoClientId         = "google-sso-client-id"
-    GoogleSsoClientSecret     = "google-sso-client-secret"
-    GoogleSsoProjectId        = "google-sso-project-id"
-    GoogleSsoSuperuserList    = "google-sso-superuser-list"
-    PostgresDbName            = "postgres-db-name"
-    TasksDbName               = "tasks-db-name"
-    TasksDbUser               = "tasks-db-user"
-  }
-  # pre-existing secrets not managed via Terraform, to reference in the worker app
-  worker_app_config_secrets = {
-    DjangoDbName        = "django-db-name"
-    DjangoDbUser        = "django-db-user"
-    DjangoLogLevel      = "django-log-level"
-    TasksDbName         = "tasks-db-name"
-    TasksDbUser         = "tasks-db-user"
-    VitalRecordsEmailTo = "vital-records-email-to"
-  }
+  web_app_config_secrets              = local.web_app_config_secrets
+  worker_app_config_secrets           = local.worker_app_config_secrets
 }

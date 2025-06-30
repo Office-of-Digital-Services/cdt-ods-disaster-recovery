@@ -243,49 +243,14 @@ resource "azurerm_container_app" "web" {
   ]
 }
 
-# The pgweb appliciation
-resource "azurerm_container_app" "pgweb" {
-  name                         = "${var.container_app_prefix}-pgweb"
-  container_app_environment_id = azurerm_container_app_environment.public.id
-  resource_group_name          = var.resource_group_name
-  revision_mode                = "Single"
-  max_inactive_revisions       = 10
-  workload_profile_name        = "Consumption"
+resource "azurerm_container_app_custom_domain" "web" {
+  name                     = var.hostname
+  container_app_id         = azurerm_container_app.web.id
+  certificate_binding_type = "Disabled"
+}
 
-  ingress {
-    external_enabled           = true
-    allow_insecure_connections = true
-    target_port                = 8081 # pgweb's port
-    transport                  = "auto"
-    traffic_weight {
-      percentage      = 100
-      latest_revision = true
-    }
-  }
-
-  template {
-    min_replicas = 1
-    max_replicas = 1
-
-    container {
-      name   = "pgweb"
-      image  = "sosedoff/pgweb:${var.pgweb_image_tag}"
-      cpu    = 0.25
-      memory = "0.5Gi"
-
-      # This argument tells pgweb to serve all assets from the /pgweb subpath,
-      # since the container app is served from the app gateway at that subpath.
-      # NOTE: the / should not be part of the prefix value
-      args = ["--prefix", "pgweb"]
-
-      env {
-        name  = "PGWEB_SESSIONS"
-        value = "1"
-      }
-    }
-  }
-
-  lifecycle {
-    ignore_changes = [tags]
-  }
+resource "azurerm_container_app_custom_domain" "web_www" {
+  name                     = "www.${var.hostname}"
+  container_app_id         = azurerm_container_app.web.id
+  certificate_binding_type = "Disabled"
 }

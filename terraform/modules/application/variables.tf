@@ -26,6 +26,11 @@ variable "is_prod" {
   type        = bool
 }
 
+variable "hostname" {
+  description = "The custom hostname for the HTTP listener."
+  type        = string
+}
+
 variable "virtual_network_id" {
   description = "The ID of the main VNet, required for linking the private DNS zone."
   type        = string
@@ -119,12 +124,6 @@ variable "container_repository" {
 variable "container_tag" {
   description = "The specific tag of the image to deploy (e.g., 'main')."
   type        = string
-}
-
-variable "pgweb_image_tag" {
-  description = "The image tag (from sosedoff/pgweb) to use for the pgweb app"
-  type        = string
-  default     = "0.16.2"
 }
 
 # Application Configuration

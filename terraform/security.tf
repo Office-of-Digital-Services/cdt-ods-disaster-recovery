@@ -3,17 +3,24 @@ locals {
   key_vault_policy_secret_permissions = ["Get", "List"]
 }
 
-# for the App Gateway
-resource "azurerm_key_vault_access_policy" "app_gateway_cert_access" {
+# Create dynamic Key Vault secrets for Django host settings.
+resource "azurerm_key_vault_secret" "django_allowed_hosts" {
+  name         = local.web_app_config_secrets.DjangoAllowedHosts
+  value        = format("%s,%s", local.hostname, module.application.app_fqdns.web)
   key_vault_id = module.key_vault.key_vault_id
-  tenant_id    = local.tenant_id
-  object_id    = module.app_gateway.identity_principal_id
-
-  certificate_permissions = ["Get"]
-  secret_permissions = ["Get"]
+  content_type = "text"
 }
 
-# for the web app
+resource "azurerm_key_vault_secret" "django_trusted_origins" {
+  name = local.web_app_config_secrets.DjangoTrustedOrigins
+  # Django's CSRF_TRUSTED_ORIGINS requires the scheme (https://)
+  value        = format("https://%s", local.hostname)
+  key_vault_id = module.key_vault.key_vault_id
+  content_type = "text"
+}
+
+
+# Key Vault access policy for the web app
 resource "azurerm_key_vault_access_policy" "container_app_web_access" {
   key_vault_id = module.key_vault.key_vault_id
   tenant_id    = local.tenant_id
@@ -22,29 +29,13 @@ resource "azurerm_key_vault_access_policy" "container_app_web_access" {
   secret_permissions = local.key_vault_policy_secret_permissions
 }
 
-# for the worker app
+# Key Vault access policy for the worker app
 resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
   key_vault_id = module.key_vault.key_vault_id
   tenant_id    = local.tenant_id
   object_id    = module.application.identity_object_ids.worker
 
   secret_permissions = local.key_vault_policy_secret_permissions
-}
-
-# These rules are for the 'app_gateway' NSG created in the network module.
-# They allow outbound traffic to private IP addresses of the key vault.
-resource "azurerm_network_security_rule" "app_gateway_to_kv" {
-  name                        = "AllowOutbound-kv"
-  priority                    = 100
-  direction                   = "Outbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "443"
-  source_address_prefix       = "*"
-  resource_group_name         = local.resource_group_name
-  network_security_group_name = module.network.security_group_ids.app_gateway.name
-  destination_address_prefix  = module.key_vault.private_endpoint_ip_address
 }
 
 # These rules are for the 'public' NSG created in the network module.
