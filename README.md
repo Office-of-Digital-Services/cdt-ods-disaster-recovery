@@ -32,13 +32,13 @@
 | web/vital\_records/models.py                     |       78 |       14 |        0 |        0 |     82% |208-209, 213, 217, 221, 225, 229, 233, 237-238, 242, 246, 250, 254 |
 | web/vital\_records/routes.py                     |       17 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/session.py                    |       26 |        0 |        6 |        0 |    100% |           |
-| web/vital\_records/tasks.py                      |      137 |       54 |        6 |        0 |     58% |56-57, 84-85, 89-98, 106, 109-164, 167-173, 181, 184-209, 214-220 |
+| web/vital\_records/tasks.py                      |      139 |       55 |        6 |        0 |     58% |57-58, 85-86, 90-99, 107, 110-165, 168-174, 182, 185-210, 215-221 |
 | web/vital\_records/templatetags/\_\_init\_\_.py  |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/templatetags/form\_helpers.py |       10 |       10 |        2 |        0 |      0% |      1-13 |
 | web/vital\_records/urls.py                       |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views.py                      |      143 |       60 |        6 |        0 |     56% |71-76, 86-91, 94-102, 112-117, 128-133, 143-148, 151-162, 172-177, 180-187, 197-206, 209-216, 219-221, 230-241 |
 | web/wsgi.py                                      |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                        **TOTAL** |  **956** |  **211** |   **94** |   **14** | **76%** |           |
+|                                        **TOTAL** |  **958** |  **212** |   **94** |   **14** | **76%** |           |
 
 
 ## Setup coverage badge
