@@ -193,7 +193,7 @@ class VitalRecordsRequest(models.Model):
     address = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=2, choices=STATE_CHOICES)
-    zip_code = models.CharField(max_length=5)
+    zip_code = models.CharField(max_length=10)
     email_address = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=10)
     started_at = models.DateTimeField(null=True, blank=True)
