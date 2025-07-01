@@ -28,7 +28,7 @@ resource "azurerm_private_endpoint" "key_vault" {
   private_service_connection {
     name                           = "${var.private_service_connection_prefix}-kv"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_key_vault.main.id
+    private_connection_resource_id = local.normalized_key_vault_id
     subresource_names              = ["vault"]
   }
 
