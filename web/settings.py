@@ -294,6 +294,8 @@ LOGGING = {
 # django-q2 configuration
 # https://django-q2.readthedocs.io/en/stable/configure.html
 Q_CLUSTER = {
+    # This will make missed schedules run only once when the cluster starts and normal scheduling resumes.
+    "catch_up": False,
     # The label used for the Django Admin page.
     "label": "Tasks",
     # Used to differentiate between projects using the same broker.
@@ -307,6 +309,8 @@ Q_CLUSTER = {
     # Only works with brokers that support delivery receipts. Defaults to 60.
     # The value must be bigger than the time it takes to complete the longest task.
     "retry": int(os.environ.get("Q_RETRY", 300)),
+    # Limits the amount of successful task results saved; 0=Unlimited, -1=No success storage
+    "save_limit": int(os.environ.get("Q_SAVE_LIMIT", -1)),
     # The number of seconds a worker is allowed to spend on a task before it’s terminated. Defaults to ... never time out.
     # Timeout must be less than retry value (default 60) and all tasks must complete in less time than the ... retry time.
     "timeout": int(os.environ.get("Q_TIMEOUT", 150)),
