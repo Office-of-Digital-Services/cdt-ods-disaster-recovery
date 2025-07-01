@@ -125,7 +125,7 @@ class PackageTask(Task):
             Parent2LastName=request.parent_2_last_name,
             RequestorFirstName=request.order_first_name,
             RequestorLastName=request.order_last_name,
-            RequestorMailingAddress=request.address,
+            RequestorMailingAddress=" ".join(_filter_empty((request.address, request.address_2))),
             RequestorCity=request.city,
             RequestorStateProvince=request.state,
             RequestorZipCode=request.zip_code,
