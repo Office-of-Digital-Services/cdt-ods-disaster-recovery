@@ -11,7 +11,7 @@ IS_TAG = SOURCE_BRANCH.startswith("refs/tags/") is True
 
 tag_type = None
 
-if REASON == "IndividualCI" and IS_TAG:
+if REASON in ["IndividualCI", "Manual"] and IS_TAG:
     if re.fullmatch(r"20\d\d.\d\d.\d+-rc\d+", SOURCE):
         tag_type = "test"
     elif re.fullmatch(r"20\d\d.\d\d.\d+", SOURCE):
