@@ -111,6 +111,7 @@ jobs:
             --id "${{ secrets.ADO_PIPELINE_ID }}" \
             --org "${{ secrets.ADO_ORG_URL }}" \
             --project "${{ secrets.ADO_PROJECT }}" \
+            --branch "${{ github.ref }}" \
             --commit-id ${{ github.sha }} \
             --query "id" -o tsv)
           echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
