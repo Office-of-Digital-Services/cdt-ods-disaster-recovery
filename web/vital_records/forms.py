@@ -40,7 +40,7 @@ class StatementForm(forms.ModelForm):
     )
 
     legal_attestation = forms.CharField(
-        label="Type your full name to sign", max_length=256, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Type your full name to sign", max_length=386, widget=forms.TextInput(attrs={"class": "form-control"})
     )
 
     class Meta:
@@ -193,8 +193,18 @@ class OrderInfoForm(forms.ModelForm):
     order_last_name = forms.CharField(
         label="Last name", required=True, max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
     )
-    address = forms.CharField(label="Street address", max_length=50, widget=forms.TextInput(attrs={"class": "form-control"}))
-    city = forms.CharField(label="City", max_length=50, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    address = forms.CharField(
+        label="Street address", required=True, max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
+    )
+    address_2 = forms.CharField(
+        label="Apartment, suite or unit",
+        max_length=128,
+        required=False,
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
+    city = forms.CharField(
+        label="City", max_length=128, required=True, widget=forms.TextInput(attrs={"class": "form-control"})
+    )
     state = forms.ChoiceField(
         choices=VitalRecordsRequest.STATE_CHOICES,
         label="State",
@@ -203,21 +213,20 @@ class OrderInfoForm(forms.ModelForm):
     )
     zip_code = forms.CharField(
         label="Zip code",
-        max_length=5,
+        max_length=10,
         required=True,
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
                 "inputmode": "numeric",
-                "minlength": "5",
-                "maxlength": "5",
+                "pattern": r"[\d]{5}(-[\d]{4})?",
             }
         ),
     )
     email_address = forms.CharField(
         label="Email address",
         required=True,
-        max_length=50,
+        max_length=128,
         widget=forms.TextInput(attrs={"class": "form-control", "type": "email"}),
     )
     phone_number = forms.CharField(
@@ -243,6 +252,7 @@ class OrderInfoForm(forms.ModelForm):
             "order_first_name",
             "order_last_name",
             "address",
+            "address_2",
             "city",
             "state",
             "zip_code",
