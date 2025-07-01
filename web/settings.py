@@ -310,7 +310,8 @@ Q_CLUSTER = {
     # The value must be bigger than the time it takes to complete the longest task.
     "retry": int(os.environ.get("Q_RETRY", 300)),
     # Limits the amount of successful task results saved; 0=Unlimited, -1=No success storage
-    "save_limit": int(os.environ.get("Q_SAVE_LIMIT", -1)),
+    # The default is 250
+    "save_limit": int(os.environ.get("Q_SAVE_LIMIT", 250)),
     # The number of seconds a worker is allowed to spend on a task before it’s terminated. Defaults to ... never time out.
     # Timeout must be less than retry value (default 60) and all tasks must complete in less time than the ... retry time.
     "timeout": int(os.environ.get("Q_TIMEOUT", 150)),
