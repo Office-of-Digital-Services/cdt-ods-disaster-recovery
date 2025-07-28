@@ -18,7 +18,7 @@ dependencies = [
     "django-q2==1.8.0",
     "gunicorn==23.0.0",
     "psycopg[binary,pool]==3.2.9",
-    "pypdf==5.7.0",
+    "pypdf==5.9.0",
     "requests==2.32.4",
 ]
 
