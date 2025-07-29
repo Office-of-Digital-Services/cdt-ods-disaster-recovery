@@ -8,6 +8,12 @@ output "application_insights_id" {
   value       = azurerm_application_insights.main.id
 }
 
+output "application_insights_connection_string" {
+  description = "The connection string for applications to connect to Application Insights."
+  value       = azurerm_application_insights.main.connection_string
+  sensitive   = true
+}
+
 output "application_insights_instrumentation_key" {
   description = "The instrumentation key for applications to send telemetry to Application Insights."
   value       = azurerm_application_insights.main.instrumentation_key
