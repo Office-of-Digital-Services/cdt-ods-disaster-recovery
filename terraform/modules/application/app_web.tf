@@ -63,6 +63,11 @@ resource "azurerm_container_app" "web" {
       cpu     = 0.25
       memory  = "0.5Gi"
 
+      # Azure
+      env {
+        name = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        value = var.application_insights_connection_string
+      }
       # Django
       env {
         name        = "DJANGO_DB_NAME"
@@ -137,6 +142,11 @@ resource "azurerm_container_app" "web" {
       cpu     = var.web_app_cpu
       memory  = var.web_app_memory
 
+      # Azure
+      env {
+        name = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        value = var.application_insights_connection_string
+      }
       # Django
       env {
         name        = "DJANGO_ALLOWED_HOSTS"

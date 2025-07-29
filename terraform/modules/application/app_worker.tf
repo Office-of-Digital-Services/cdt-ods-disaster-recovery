@@ -59,6 +59,11 @@ resource "azurerm_container_app" "worker" {
       cpu     = var.worker_app_cpu
       memory  = var.worker_app_memory
 
+      # Azure
+      env {
+        name = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        value = var.application_insights_connection_string
+      }
       # Django
       env {
         name        = "DJANGO_DB_NAME"
