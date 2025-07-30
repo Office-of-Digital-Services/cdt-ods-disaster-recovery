@@ -127,10 +127,10 @@
                 <div class="container text-right">
                     <span aria-hidden="true">©</span>
                     <span id="thisyear">
-                        <script>
-              document
-                .getElementById("thisyear")
-                .appendChild(document.createTextNode(new Date().getFullYear()));
+                        <script nonce="{{ request.csp_nonce }}">
+                            document
+                                .getElementById("thisyear")
+                                .appendChild(document.createTextNode(new Date().getFullYear()));
                         </script>
                     </span>
                     State of California
