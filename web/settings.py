@@ -305,7 +305,7 @@ Q_CLUSTER = {
 CSP_BASE_URI = ["'none'"]
 CSP_DEFAULT_SRC = ["'self'"]
 CSP_CONNECT_SRC = ["'self'"]
-CSP_FONT_SRC = ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com/"]
+CSP_FONT_SRC = ["'self'", "https://cdn.cdt.ca.gov", "https://fonts.googleapis.com", "https://fonts.gstatic.com/"]
 CSP_FRAME_ANCESTORS = ["'none'"]
 CSP_FRAME_SRC = []
 CSP_IMG_SRC = ["'self'", "data:", "https://cdn.cdt.ca.gov", "*.googleusercontent.com"]
@@ -317,6 +317,7 @@ CSP_OBJECT_SRC = ["'none'"]
 CSP_SCRIPT_SRC = [
     "'self'",
     "https://alert.cdt.ca.gov",
+    "https://cdn.cdt.ca.gov",
     "https://cdn.jsdelivr.net/",
     "https://code.jquery.com/jquery-3.6.0.min.js",
     "https://www.google-analytics.com",
@@ -327,6 +328,7 @@ CSP_STYLE_SRC = [
     "'unsafe-inline'",
     "https://cdn.cdt.ca.gov",
     "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/",
+    "https://fonts.googleapis.com",
 ]
 
 # Google SSO configuration
