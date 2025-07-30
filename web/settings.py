@@ -10,6 +10,8 @@ from pathlib import Path
 
 from django.conf import settings
 
+import web.monitoring
+
 
 def _filter_empty(ls):
     return [s for s in ls if s]
@@ -27,6 +29,10 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "secret")
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = _filter_empty(os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(","))
+
+# Logging configuration
+LOG_LEVEL = os.environ.get("DJANGO_LOG_LEVEL", "DEBUG" if DEBUG else "WARNING")
+web.monitoring.configure(LOG_LEVEL)
 
 
 class RUNTIME_ENVS:
@@ -260,36 +266,6 @@ VITAL_RECORDS_EMAIL_TO = os.environ.get("VITAL_RECORDS_EMAIL_TO", "example@examp
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Logging configuration
-LOG_LEVEL = os.environ.get("DJANGO_LOG_LEVEL", "DEBUG" if DEBUG else "WARNING")
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "default": {
-            "format": "[{asctime}] {levelname} {name}:{lineno} {message}",
-            "datefmt": "%Y-%b-%d %H:%M:%S",
-            "style": "{",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": LOG_LEVEL,
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "propagate": False,
-        },
-    },
-}
 
 # django-q2 configuration
 # https://django-q2.readthedocs.io/en/stable/configure.html

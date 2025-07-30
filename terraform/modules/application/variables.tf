@@ -62,6 +62,11 @@ variable "log_analytics_workspace_id" {
   type        = string
 }
 
+variable "application_insights_connection_string" {
+  description = "The connection string for applications to connect to Application Insights."
+  sensitive   = true
+}
+
 variable "subnet_ids" {
   description = "The ID of the public subnet from the network module."
   type        = map(string)
