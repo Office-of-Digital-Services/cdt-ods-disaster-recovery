@@ -29,6 +29,18 @@
       }
     },
     {
+      "name": "Django: disaster recovery, noreload",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["runserver", "--insecure", "--noreload", "0.0.0.0:8000"],
+      "django": true,
+      "env": {
+        "DJANGO_DEBUG": "true",
+        "PYTHONWARNINGS": "default"
+      }
+    },
+    {
       "name": "Django: QCluster once",
       "type": "debugpy",
       "request": "launch",
