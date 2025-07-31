@@ -1,13 +1,7 @@
 import pytest
 
 from web.vital_records.models import VitalRecordsRequest
-from web.vital_records.tasks.package import PackageTask
 from web.vital_records.tasks.email import EmailTask, EMAIL_HTML_TEMPLATE, EMAIL_TXT_TEMPLATE
-
-
-@pytest.fixture
-def mock_PackageTask(mocker):
-    return mocker.Mock(spec=PackageTask)
 
 
 @pytest.fixture
