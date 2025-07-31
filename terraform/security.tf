@@ -6,7 +6,7 @@ locals {
 # Create dynamic Key Vault secrets for Django host settings.
 resource "azurerm_key_vault_secret" "django_allowed_hosts" {
   name         = local.web_app_config_secrets.DjangoAllowedHosts
-  value        = format("%s,%s", local.hostname, module.application.app_fqdns.web)
+  value        = format("%s,www.%s", local.hostname, local.hostname)
   key_vault_id = module.key_vault.key_vault_id
   content_type = "text"
 }
@@ -14,7 +14,7 @@ resource "azurerm_key_vault_secret" "django_allowed_hosts" {
 resource "azurerm_key_vault_secret" "django_trusted_origins" {
   name = local.web_app_config_secrets.DjangoTrustedOrigins
   # Django's CSRF_TRUSTED_ORIGINS requires the scheme (https://)
-  value        = format("https://%s", local.hostname)
+  value        = format("https://%s,https://www.%s", local.hostname, local.hostname)
   key_vault_id = module.key_vault.key_vault_id
   content_type = "text"
 }
