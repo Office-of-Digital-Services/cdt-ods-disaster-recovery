@@ -21,7 +21,7 @@
 | web/core/urls.py                                 |        5 |        0 |        0 |        0 |    100% |           |
 | web/core/views.py                                |        9 |        0 |        2 |        0 |    100% |           |
 | web/monitoring.py                                |       10 |        0 |        4 |        0 |    100% |           |
-| web/settings.py                                  |      107 |        6 |       14 |        7 |     89% |52, 54, 56, 126->130, 138->141, 150, 254-255 |
+| web/settings.py                                  |      107 |        6 |       14 |        7 |     89% |52, 54, 56, 127->131, 139->142, 151, 255-256 |
 | web/urls.py                                      |       16 |        7 |        2 |        1 |     56% |     31-39 |
 | web/vital\_records/\_\_init\_\_.py               |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/admin.py                      |        6 |        0 |        0 |        0 |    100% |           |
