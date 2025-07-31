@@ -222,6 +222,10 @@ class VitalRecordsRequest(models.Model):
 
         return request
 
+    @staticmethod
+    def get_finished():
+        return VitalRecordsRequest.objects.filter(status="finished")
+
     # Transitions from state to state
     @transition(field=status, source="initialized", target="started")
     def complete_start(self):

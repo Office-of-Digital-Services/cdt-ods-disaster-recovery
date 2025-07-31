@@ -33,3 +33,20 @@ def test_get_with_status__wrong_status(mocker):
 
     with pytest.raises(ValueError, match=f"VitalRecordsRequest: {test_uuid} has an invalid status"):
         VitalRecordsRequest.get_with_status(test_uuid, "initialized")
+
+
+def test_get_finished(db):
+    # Create test records with different statuses
+    finished_request1 = VitalRecordsRequest.objects.create(status="finished", fire="eaton")
+    finished_request2 = VitalRecordsRequest.objects.create(status="finished", fire="hurst")
+    VitalRecordsRequest.objects.create(status="submitted", fire="lidia")
+    VitalRecordsRequest.objects.create(status="initialized", fire="palisades")
+
+    # Call the method
+    finished_requests = VitalRecordsRequest.get_finished()
+
+    # Assert results
+    assert len(finished_requests) == 2
+    assert set(finished_requests) == {finished_request1, finished_request2}
+    for request in finished_requests:
+        assert request.status == "finished"
