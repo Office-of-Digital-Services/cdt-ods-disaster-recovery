@@ -14,6 +14,7 @@ from pypdf import PdfReader, PdfWriter
 from web.core.tasks import Task
 from web.settings import _filter_empty
 from web.vital_records.models import VitalRecordsRequest, VitalRecordsRequestMetadata
+from web.vital_records.tasks.utils import get_package_filename
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +22,6 @@ APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "
 SWORNSTATEMENT_TEMPLATE = APPLICATION_TEMPLATE.replace("application.pdf", "sworn-statement.pdf")
 EMAIL_HTML_TEMPLATE = "vital_records/email.html"
 EMAIL_TXT_TEMPLATE = EMAIL_HTML_TEMPLATE.replace(".html", ".txt")
-
-
-def get_package_filename(request_id: UUID) -> str:
-    return os.path.join(settings.STORAGE_DIR, f"vital-records-{request_id}.pdf")
 
 
 def submit_request(request_id: UUID):

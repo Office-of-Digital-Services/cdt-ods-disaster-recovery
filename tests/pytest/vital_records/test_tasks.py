@@ -70,13 +70,6 @@ def test_templates(settings):
     assert tasks.SWORNSTATEMENT_TEMPLATE == tasks.APPLICATION_TEMPLATE.replace("application", "sworn-statement")
 
 
-def test_get_package_filename(settings, request_id):
-    filename = tasks.get_package_filename(request_id)
-
-    assert filename.startswith(str(settings.STORAGE_DIR))
-    assert filename.endswith(f"vital-records-{request_id}.pdf")
-
-
 def test_submit_request(mocker, request_id, mock_PackageTask):
     mock_inst = mocker.MagicMock()
     mock_PackageTask.return_value = mock_inst
