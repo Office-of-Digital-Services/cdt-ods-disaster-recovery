@@ -1,16 +1,12 @@
 import pytest
 
-from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.tasks.email import EmailTask, EMAIL_HTML_TEMPLATE, EMAIL_TXT_TEMPLATE
 
 
 @pytest.fixture
-def mock_VitalRecordsRequest(mocker):
-    mock = mocker.Mock(spec=VitalRecordsRequest)
-    mock_inst = mocker.MagicMock(email_address="email@example.com", number_of_records=3)
-    mock.get_with_status.return_value = mock_inst
-    mocker.patch("web.vital_records.tasks.email.VitalRecordsRequest", mock)
-    return mock_inst
+def mock_VitalRecordsRequest(mocker, mock_VitalRecordsRequest):
+    mocker.patch("web.vital_records.tasks.email.VitalRecordsRequest", mock_VitalRecordsRequest)
+    return mock_VitalRecordsRequest.get_with_status.return_value
 
 
 class TestEmailTask:

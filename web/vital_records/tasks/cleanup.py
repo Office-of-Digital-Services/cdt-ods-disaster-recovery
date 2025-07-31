@@ -4,23 +4,35 @@ from uuid import UUID
 
 from django.utils import timezone
 
+from web.core.tasks import Task
 from web.vital_records.models import VitalRecordsRequest, VitalRecordsRequestMetadata
 from web.vital_records.tasks.utils import get_package_filename
 
 logger = logging.getLogger(__name__)
 
 
-class CleanupScheduledTask:
+def run_cleanup_task():
+    """Submit a cleanup task to the task queue for processing."""
+    logger.debug("Creating cleanup task")
+    # create a new task instance
+    task = CleanupTask()
+    # calling task.run() submits the task to the queue for processing
+    task.run()
+    # if callers want to interrogate the status, etc.
+    return task
+
+
+class CleanupTask(Task):
     """Clean up Vital Records requests in the `finished` state.
 
     Removes the original database record and file(s) generated as part of fulfilling the request.
     Creates a metadata record of type `CompletedVitalRecordsRequest` for each cleaned up record.
-
-    This is a scheduled task created and managed via the Django Admin.
     """
 
-    @classmethod
-    def clean_file(cls, request_id: UUID) -> bool:
+    group = "vital-records"
+    name = "cleanup"
+
+    def clean_file(self, request_id: UUID) -> bool:
         """Deletes the package file for this request."""
         # delete the package file
         success = True
@@ -41,8 +53,7 @@ class CleanupScheduledTask:
 
         return success
 
-    @classmethod
-    def clean_record(cls, request: VitalRecordsRequest) -> bool:
+    def clean_record(self, request: VitalRecordsRequest) -> bool:
         """Deletes the database record for this request."""
         # save the request.id for use later, after the record is deleted
         logger.debug(f"Deleting record: {request.id}")
@@ -54,16 +65,15 @@ class CleanupScheduledTask:
 
         return count == 1
 
-    @classmethod
-    def clean_request(cls, request: VitalRecordsRequest) -> bool:
+    def clean_request(self, request: VitalRecordsRequest) -> bool:
         """Deletes the database record and package file for this request."""
         # save the request.id for use later, after the record is deleted
         request_id = request.id
         logger.debug(f"Cleaning up request: {request_id}")
 
-        success = cls.clean_record(request)
+        success = self.clean_record(request)
         if success:
-            success = cls.clean_file(request_id)
+            success = self.clean_file(request_id)
 
         if success:
             logger.debug(f"Cleaning complete for: {request_id}")
@@ -72,8 +82,7 @@ class CleanupScheduledTask:
 
         return success
 
-    @classmethod
-    def create_metadata(cls, request: VitalRecordsRequest):
+    def create_metadata(self, request: VitalRecordsRequest):
         """Creates a VitalRecordsRequestMetadata record for this request."""
         logger.debug(f"Creating metadata record for: {request.id}")
         metadata = VitalRecordsRequestMetadata.objects.create(
@@ -89,20 +98,19 @@ class CleanupScheduledTask:
         metadata.save()
         logger.debug(f"Metadata created for: {request.id}")
 
-    @classmethod
-    def handler(cls):
+    def handler(self, *args, **kwargs):
         logger.info("Running cleanup task")
 
-        batch = VitalRecordsRequest.objects.filter(status="finished")
+        batch = VitalRecordsRequest.get_finished()
         batch_count = batch.count()
         cleaned_count = 0
         logger.debug(f"Found {batch_count} records to clean")
 
         for request in batch:
             # create a metadata record for this request
-            cls.create_metadata(request)
+            self.create_metadata(request)
             # clean up the request
-            if cls.clean_request(request):
+            if self.clean_request(request):
                 cleaned_count += 1
 
         result = True
