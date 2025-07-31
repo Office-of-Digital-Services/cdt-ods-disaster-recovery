@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from django.db import models
 from django.utils import timezone
@@ -202,6 +202,25 @@ class VitalRecordsRequest(models.Model):
     enqueued_at = models.DateTimeField(null=True, blank=True)
     packaged_at = models.DateTimeField(null=True, blank=True)
     sent_at = models.DateTimeField(null=True, blank=True)
+
+    @staticmethod
+    def get_with_status(request_id: UUID, required_status: str):
+        """
+        Return a VitalRecordsRequest with a matching ID and status.
+
+        Raise a ValueError if the request is not found or does not have the required status.
+        """
+        request = VitalRecordsRequest.objects.filter(pk=request_id).first()
+
+        if request is None:
+            raise ValueError(f"Couldn't find VitalRecordsRequest: {request_id}")
+        if request.status != required_status:
+            raise ValueError(
+                f"VitalRecordsRequest: {request_id} has an invalid status. \
+                  Expected: {required_status}, Actual: {request.status}"
+            )
+
+        return request
 
     # Transitions from state to state
     @transition(field=status, source="initialized", target="started")

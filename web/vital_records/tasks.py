@@ -27,19 +27,6 @@ def get_package_filename(request_id: UUID) -> str:
     return os.path.join(settings.STORAGE_DIR, f"vital-records-{request_id}.pdf")
 
 
-def get_request_with_status(request_id: UUID, required_status: str):
-    request = VitalRecordsRequest.objects.filter(pk=request_id).first()
-
-    if request is None:
-        raise RuntimeError(f"Couldn't find VitalRecordsRequest: {request_id}")
-    if request.status != required_status:
-        raise RuntimeError(
-            f"VitalRecordsRequest: {request_id} has an invalid status. Expected: {required_status}, Actual: {request.status}"
-        )
-
-    return request
-
-
 def submit_request(request_id: UUID):
     """Submit a user request to the task queue for processing."""
     logger.debug(f"Creating package task for: {request_id}")
@@ -123,7 +110,7 @@ class PackageTask(Task):
 
     def handler(self, request_id: UUID):
         logger.debug(f"Creating request package for: {request_id}")
-        request = get_request_with_status(request_id, "enqueued")
+        request = VitalRecordsRequest.get_with_status(request_id, "enqueued")
 
         application = Application(
             package_id=request_id,
@@ -198,7 +185,7 @@ class EmailTask(Task):
 
     def handler(self, request_id: UUID, package: str):
         logger.debug(f"Sending request package for: {request_id}")
-        request = get_request_with_status(request_id, "packaged")
+        request = VitalRecordsRequest.get_with_status(request_id, "packaged")
 
         context = {
             "number_of_copies": request.number_of_records,
