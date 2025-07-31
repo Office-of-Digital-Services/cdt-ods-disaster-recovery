@@ -8,11 +8,6 @@ from web.vital_records import tasks
 
 
 @pytest.fixture
-def mock_EmailMessage(mocker):
-    return mocker.patch.object(tasks, "EmailMultiAlternatives")
-
-
-@pytest.fixture
 def mock_Path(mocker):
     return mocker.patch.object(tasks, "Path")
 
@@ -52,11 +47,6 @@ def mock_Application(mocker):
 @pytest.fixture
 def mock_SwornStatement(mocker):
     return mocker.patch.object(tasks, "SwornStatement")
-
-
-@pytest.fixture
-def mock_PackageTask(mocker):
-    return mocker.patch.object(tasks, "PackageTask")
 
 
 @pytest.fixture
@@ -203,56 +193,6 @@ class TestPackageTask:
         mock_EmailTask.assert_called_once_with(request_id, patched_task.result)
         mock_email = mock_EmailTask.return_value
         mock_email.run.assert_called_once()
-
-
-class TestEmailTask:
-    @pytest.fixture
-    def task(self, request_id, mock_PackageTask) -> tasks.EmailTask:
-        mock_package_task = mock_PackageTask.return_value
-        mock_package_task.kwargs["request_id"] = request_id
-        return tasks.EmailTask(request_id, "package")
-
-    def test_task(self, request_id, task):
-        assert task.group == "vital-records"
-        assert task.name == "email"
-        assert task.kwargs["request_id"] == request_id
-        assert task.kwargs["package"] == "package"
-        assert task.started is False
-
-    def test_handler(self, settings, mocker, request_id, mock_EmailMessage, mock_get_request_with_status, task):
-        mock_render = mocker.patch.object(tasks, "render_to_string", return_value="email body")
-
-        mock_email = mock_EmailMessage.return_value
-        mock_email.send.return_value = 0
-
-        mock_inst = mocker.MagicMock(email_address="email@example.com", number_of_records=3)
-        mock_get_request_with_status.return_value = mock_inst
-
-        result = task.handler(request_id, "package")
-
-        expected_ctx = {
-            "number_of_copies": mock_inst.number_of_records,
-            "email_address": mock_inst.email_address,
-            "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
-        }
-        mock_render.assert_any_call(tasks.EMAIL_TXT_TEMPLATE, expected_ctx)
-        mock_render.assert_any_call(tasks.EMAIL_HTML_TEMPLATE, expected_ctx)
-
-        mock_EmailMessage.assert_called_once_with(
-            subject="Completed: Birth Record Request",
-            body=mock_render.return_value,
-            to=[settings.VITAL_RECORDS_EMAIL_TO],
-        )
-
-        mock_email.attach_alternative.assert_called_once_with(mock_render.return_value, "text/html")
-        mock_email.attach_file.assert_called_once_with("package", "application/pdf")
-        mock_email.send.assert_called_once()
-
-        mock_inst.complete_send.assert_called_once()
-        mock_inst.finish.assert_called_once()
-        mock_inst.save.assert_called_once()
-
-        assert result == 0
 
 
 class TestCleanupScheduledTask:

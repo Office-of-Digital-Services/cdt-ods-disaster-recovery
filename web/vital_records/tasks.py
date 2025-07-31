@@ -6,22 +6,19 @@ from typing import Optional
 from uuid import UUID, uuid4
 
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from django.utils import timezone
 from pypdf import PdfReader, PdfWriter
 
 from web.core.tasks import Task
 from web.settings import _filter_empty
 from web.vital_records.models import VitalRecordsRequest, VitalRecordsRequestMetadata
+from web.vital_records.tasks.email import EmailTask
 from web.vital_records.tasks.utils import get_package_filename
 
 logger = logging.getLogger(__name__)
 
 APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "application.pdf")
 SWORNSTATEMENT_TEMPLATE = APPLICATION_TEMPLATE.replace("application.pdf", "sworn-statement.pdf")
-EMAIL_HTML_TEMPLATE = "vital_records/email.html"
-EMAIL_TXT_TEMPLATE = EMAIL_HTML_TEMPLATE.replace(".html", ".txt")
 
 
 def submit_request(request_id: UUID):
@@ -171,42 +168,6 @@ class PackageTask(Task):
             email_task.run()
         else:
             logger.error(f"Package creation failed for: {request_id}")
-
-
-class EmailTask(Task):
-    group = "vital-records"
-    name = "email"
-
-    def __init__(self, request_id: UUID, package: str):
-        super().__init__(request_id=request_id, package=package)
-
-    def handler(self, request_id: UUID, package: str):
-        logger.debug(f"Sending request package for: {request_id}")
-        request = VitalRecordsRequest.get_with_status(request_id, "packaged")
-
-        context = {
-            "number_of_copies": request.number_of_records,
-            "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
-            "email_address": request.email_address,
-        }
-        text_content = render_to_string(EMAIL_TXT_TEMPLATE, context)
-        html_content = render_to_string(EMAIL_HTML_TEMPLATE, context)
-        email = EmailMultiAlternatives(
-            subject="Completed: Birth Record Request",
-            body=text_content,
-            to=[settings.VITAL_RECORDS_EMAIL_TO],
-        )
-        email.attach_alternative(html_content, "text/html")
-        email.attach_file(package, "application/pdf")
-        result = email.send()
-
-        request.complete_send()
-        request.finish()
-        request.save()
-
-        logger.debug(f"Request package sent for: {request_id} with response {result}")
-
-        return result
 
 
 class CleanupScheduledTask:
