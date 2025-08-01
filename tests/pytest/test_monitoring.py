@@ -29,10 +29,13 @@ def test_configure__no_connection_string(mock_configure_azure_monitor):
 @pytest.mark.usefixtures("conn_str")
 def test_configure__with_connection_string(mocker, mock_configure_azure_monitor):
     mock_get_logger = mocker.patch("logging.getLogger")
+    mock_psycopg_instrumentor = mocker.patch("web.monitoring.PsycopgInstrumentor")
 
     configure()
 
     mock_configure_azure_monitor.assert_called_once()
+    mock_psycopg_instrumentor.assert_called_once()
+    mock_psycopg_instrumentor.return_value.instrument.assert_called_once()
     mock_get_logger.assert_has_calls([mocker.call("azure"), mocker.call().setLevel(logging.WARNING)])
     mock_get_logger.assert_has_calls([mocker.call("django"), mocker.call().setLevel(logging.INFO)])
     mock_get_logger.assert_has_calls([mocker.call("web"), mocker.call().setLevel("DEBUG")])
