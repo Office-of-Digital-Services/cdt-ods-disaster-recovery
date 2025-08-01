@@ -194,13 +194,7 @@ DATABASES = {
         "NAME": os.environ.get("DJANGO_DB_NAME", "django"),
         "USER": os.environ.get("DJANGO_DB_USER", "django"),
         "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD"),
-    },
-    "tasks": PG_CONFIG
-    | {
-        "NAME": os.environ.get("TASKS_DB_NAME", "tasks"),
-        "USER": os.environ.get("TASKS_DB_USER", "tasks"),
-        "PASSWORD": os.environ.get("TASKS_DB_PASSWORD"),
-    },
+    }
 }
 
 # Password validation
@@ -287,7 +281,7 @@ Q_CLUSTER = {
     # On most broker types this will be used as the queue name.
     "name": "disaster-recovery",
     # Use Django’s database backend as a message broker, set the `orm` keyword to the database connection.
-    "orm": "tasks",
+    "orm": "default",
     # Queue polling interval (seconds) for database brokers.
     "poll": int(os.environ.get("Q_POLL", 5)),
     # The number of seconds a broker will wait for a cluster to finish a task, before it’s presented again.

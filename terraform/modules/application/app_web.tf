@@ -114,19 +114,6 @@ resource "azurerm_container_app" "web" {
         name  = "POSTGRES_HOSTNAME"
         value = var.database_fqdn
       }
-      # Tasks
-      env {
-        name        = "TASKS_DB_NAME"
-        secret_name = var.web_app_config_secrets.TasksDbName
-      }
-      env {
-        name        = "TASKS_DB_USER"
-        secret_name = var.web_app_config_secrets.TasksDbUser
-      }
-      env {
-        name        = "TASKS_DB_PASSWORD"
-        secret_name = "tasks-db-password"
-      }
 
       volume_mounts {
         name = var.storage_share_names.config
@@ -216,19 +203,6 @@ resource "azurerm_container_app" "web" {
       env {
         name  = "REQUESTS_READ_TIMEOUT"
         value = "20"
-      }
-      # Tasks
-      env {
-        name        = "TASKS_DB_NAME"
-        secret_name = var.web_app_config_secrets.TasksDbName
-      }
-      env {
-        name        = "TASKS_DB_USER"
-        secret_name = var.web_app_config_secrets.TasksDbUser
-      }
-      env {
-        name        = "TASKS_DB_PASSWORD"
-        secret_name = "tasks-db-password"
       }
 
       volume_mounts {
