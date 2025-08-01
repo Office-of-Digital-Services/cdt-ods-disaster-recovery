@@ -2,6 +2,7 @@ import logging
 import os
 
 from azure.monitor.opentelemetry import configure_azure_monitor as _configure_azure_monitor
+from opentelemetry.instrumentation.psycopg import PsycopgInstrumentor
 
 
 def configure(log_level: str = "DEBUG"):
@@ -18,8 +19,12 @@ def configure(log_level: str = "DEBUG"):
             instrumentation_options={
                 "fastapi": {"enabled": False},
                 "flask": {"enabled": False},
+                "psycopg2": {"enabled": False},
             },
         )
+
+        # Manually instrument psycopg v3
+        PsycopgInstrumentor().instrument()
 
         # override log levels for some loggers
         logger_levels = {"azure": logging.WARNING, "django": logging.INFO, "web": log_level}
