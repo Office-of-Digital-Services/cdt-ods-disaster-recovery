@@ -186,7 +186,17 @@ PG_CONFIG = {
     "HOST": os.environ.get("POSTGRES_HOSTNAME", "postgres"),
     "PORT": os.environ.get("POSTGRES_PORT", "5432"),
     # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
-    "OPTIONS": {"sslmode": sslmode, "sslrootcert": sslrootcert},
+    "OPTIONS": {
+        "sslmode": sslmode,
+        "sslrootcert": sslrootcert,
+        # add these lines to enable TCP keepalives --
+        # tiny network packets that keep the connection active and prevent
+        # network hardware or the database server from thinking it's idle
+        "keepalives": 1,
+        "keepalives_idle": 60,
+        "keepalives_interval": 10,
+        "keepalives_count": 5,
+    },
 }
 DATABASES = {
     "default": PG_CONFIG
