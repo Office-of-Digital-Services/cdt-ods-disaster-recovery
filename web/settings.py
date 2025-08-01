@@ -167,6 +167,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "web.wsgi.application"
 
+# Cache, required for Django-Q2 using the ORM broker
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "cache",
+    }
+}
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 

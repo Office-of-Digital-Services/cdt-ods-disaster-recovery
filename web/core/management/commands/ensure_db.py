@@ -247,6 +247,12 @@ class Command(BaseCommand):
                 self.stderr.write(self.style.ERROR(f"Error running migrations for database: {db_alias}: {str(e)}"))
                 # Re-raise as CommandError to potentially stop the whole process if a migration fails
                 raise CommandError(f"Migration failed for {db_alias}.") from e
+
+        # initialize the cache table according to Django's requirements
+        # https://docs.djangoproject.com/en/5.2/topics/cache/#creating-the-cache-table
+        self.stdout.write("Configuring db-backed cache...")
+        call_command("createcachetable")
+
         self.stdout.write("All migrations processed.")
 
     def _ensure_superuser(self):

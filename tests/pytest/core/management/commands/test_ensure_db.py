@@ -578,7 +578,8 @@ def test_run_migrations_success(command, mock_call_command, settings):
 
     command._run_migrations()
 
-    mock_call_command.assert_called_once_with("migrate", database=DEFAULT_DB_ALIAS, interactive=False)
+    mock_call_command.assert_any_call("migrate", database=DEFAULT_DB_ALIAS, interactive=False)
+    mock_call_command.assert_any_call("createcachetable")
     command.stdout.write.assert_any_call(command.style.SUCCESS(f"Migrations complete for database: {DEFAULT_DB_ALIAS}"))
 
 
@@ -591,9 +592,10 @@ def test_run_migrations_multiple_dbs(command, mock_call_command, settings):
 
     command._run_migrations()
 
-    assert mock_call_command.call_count == 2
+    assert mock_call_command.call_count == 3
     mock_call_command.assert_any_call("migrate", database=DEFAULT_DB_ALIAS, interactive=False)
     mock_call_command.assert_any_call("migrate", database="tasks_db", interactive=False)
+    mock_call_command.assert_any_call("createcachetable")
     command.stdout.write.assert_any_call(
         command.style.WARNING("Skipping migrations for database: other_db. ENGINE is not PostgreSQL.")
     )
