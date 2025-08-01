@@ -55,3 +55,4 @@ def test_configure__instrumentation_options(mock_configure_azure_monitor):
     _, kwargs = mock_configure_azure_monitor.call_args
     assert kwargs["instrumentation_options"]["fastapi"]["enabled"] is False
     assert kwargs["instrumentation_options"]["flask"]["enabled"] is False
+    assert kwargs["instrumentation_options"]["psycopg2"]["enabled"] is False

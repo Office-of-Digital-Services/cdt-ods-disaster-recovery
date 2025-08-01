@@ -18,6 +18,7 @@ def configure(log_level: str = "DEBUG"):
             instrumentation_options={
                 "fastapi": {"enabled": False},
                 "flask": {"enabled": False},
+                "psycopg2": {"enabled": False},
             },
         )
 
