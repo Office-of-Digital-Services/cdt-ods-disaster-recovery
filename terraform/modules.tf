@@ -37,16 +37,12 @@ locals {
     GoogleSsoProjectId        = "google-sso-project-id"
     GoogleSsoSuperuserList    = "google-sso-superuser-list"
     PostgresDbName            = "postgres-db-name"
-    TasksDbName               = "tasks-db-name"
-    TasksDbUser               = "tasks-db-user"
   }
   # pre-existing secrets not managed via Terraform, to reference in the worker app
   worker_app_config_secrets = {
     DjangoDbName        = "django-db-name"
     DjangoDbUser        = "django-db-user"
     DjangoLogLevel      = "django-log-level"
-    TasksDbName         = "tasks-db-name"
-    TasksDbUser         = "tasks-db-user"
     VitalRecordsEmailTo = "vital-records-email-to"
   }
 }

@@ -5,7 +5,7 @@ from django.views.generic import DetailView, RedirectView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
 from web.core.views import EligibilityMixin as CoreEligibilityMixin
-from web.vital_records import tasks
+from web.vital_records.tasks.package import submit_request
 from web.vital_records.forms import (
     EligibilityForm,
     StatementForm,
@@ -235,7 +235,7 @@ class SubmittedView(EligibilityMixin, ValidateRequestIdMixin, DetailView):
             # off the queue before the state update is saved in DB!
             self.object.complete_enqueue()
             self.object.save()
-            tasks.submit_request(self.object.pk)
+            submit_request(self.object.pk)
             return response
         else:
             raise ValueError("Can't enqueue request: {} with status: {}")

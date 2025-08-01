@@ -108,18 +108,6 @@ resource "azurerm_container_app" "worker" {
         name  = "POSTGRES_HOSTNAME"
         value = var.database_fqdn
       }
-      env {
-        name        = "TASKS_DB_NAME"
-        secret_name = var.worker_app_config_secrets.TasksDbName
-      }
-      env {
-        name        = "TASKS_DB_USER"
-        secret_name = var.worker_app_config_secrets.TasksDbUser
-      }
-      env {
-        name        = "TASKS_DB_PASSWORD"
-        secret_name = "tasks-db-password"
-      }
 
       volume_mounts {
         name = var.storage_share_names.requests

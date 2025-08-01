@@ -3,7 +3,6 @@ locals {
     "django-db-password",
     "django-secret-key",
     "django-superuser-password",
-    "tasks-db-password"
   ])
 }
 
