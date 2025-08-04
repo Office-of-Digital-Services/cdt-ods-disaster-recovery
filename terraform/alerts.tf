@@ -38,4 +38,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_error" {
       subject = local.app_error_subject
     }
   }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
