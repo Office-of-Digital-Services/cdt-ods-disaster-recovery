@@ -225,10 +225,10 @@ header {
   }
 
   small.form-help {
-    color: var(--gray-600, #72717c);
     display: block;
     font-weight: 400;
-    margin-top: 4px;
+    line-height: 32px;
+    margin-top: 12px;
   }
 
   .form-group {

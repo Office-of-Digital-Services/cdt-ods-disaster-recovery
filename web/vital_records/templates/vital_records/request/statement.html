@@ -26,6 +26,9 @@
                         </p>
                         {{ form.legal_attestation|label_with_required }}
                         {{ form.legal_attestation }}
+                        <small class="form-help">
+                            It is my intent to sign this document electronically and I understand that the electronic signature will be the legal equivalent of having placed my handwritten signature on this form.
+                        </small>
                     </div>
                     {% if form.legal_attestation.errors %}<div class="error">{{ form.legal_attestation.errors }}</div>{% endif %}
                 </div>
