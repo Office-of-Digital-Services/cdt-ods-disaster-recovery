@@ -151,6 +151,11 @@ header {
   transform: none !important;
 }
 
+.vertical-tracker .dot-line-inner::before {
+  width: 14px;
+  height: 14px;
+}
+
 .vertical-tracker > li:last-child p {
   margin-bottom: 0;
 }
