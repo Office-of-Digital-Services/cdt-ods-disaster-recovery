@@ -26,6 +26,12 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
+    TYPE_CHOICES = [
+        ("", "Select type"),
+        ("birth", "Birth record"),
+        ("marriage", "Marriage record")
+    ]
+
     FIRE_CHOICES = [
         ("eaton", "Eaton fire"),
         ("hurst", "Hurst fire"),
@@ -175,6 +181,7 @@ class VitalRecordsRequest(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     status = FSMField(default="initialized", choices=STATUS_CHOICES)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
     relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
     legal_attestation = models.CharField(max_length=386)
