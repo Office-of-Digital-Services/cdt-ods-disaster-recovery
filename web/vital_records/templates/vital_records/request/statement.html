@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-lg-10">
             <p class="m-t p-b m-b-sm">
-                To get an authorized copy, you must be the person named on the record or someone legally allowed to request it — like a parent, guardian, or close relative.
+                To get an authorized copy, you must be the person named on the record or someone legally allowed to request it — like a parent, guardian, child, sibling, grandparent or spouse.
             </p>
         </div>
     </div>
@@ -26,6 +26,9 @@
                         </p>
                         {{ form.legal_attestation|label_with_required }}
                         {{ form.legal_attestation }}
+                        <small class="form-help">
+                            It is my intent to sign this document electronically and I understand that the electronic signature will be the legal equivalent of having placed my handwritten signature on this form.
+                        </small>
                     </div>
                     {% if form.legal_attestation.errors %}<div class="error">{{ form.legal_attestation.errors }}</div>{% endif %}
                 </div>
