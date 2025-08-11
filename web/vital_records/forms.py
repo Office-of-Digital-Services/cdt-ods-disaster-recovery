@@ -65,7 +65,7 @@ class NameForm(forms.ModelForm):
 
 
 class CountyForm(forms.ModelForm):
-    county_of_birth = forms.ChoiceField(
+    county_of_event = forms.ChoiceField(
         choices=VitalRecordsRequest.COUNTY_CHOICES,
         label="County of birth",
         required=True,
@@ -74,7 +74,7 @@ class CountyForm(forms.ModelForm):
 
     class Meta:
         model = VitalRecordsRequest
-        fields = ["county_of_birth"]
+        fields = ["county_of_event"]
 
 
 class DateOfBirthForm(forms.ModelForm):
@@ -117,10 +117,10 @@ class DateOfBirthForm(forms.ModelForm):
 
         # Pre-populate form fields from model instance
         instance = kwargs.get("instance")
-        if instance and instance.date_of_birth:
-            self.fields["birth_month"].initial = instance.date_of_birth.month
-            self.fields["birth_day"].initial = instance.date_of_birth.day
-            self.fields["birth_year"].initial = instance.date_of_birth.year
+        if instance and instance.date_of_event:
+            self.fields["birth_month"].initial = instance.date_of_event.month
+            self.fields["birth_day"].initial = instance.date_of_event.day
+            self.fields["birth_year"].initial = instance.date_of_event.year
 
     def clean(self):
         cleaned_data = super().clean()
@@ -130,17 +130,17 @@ class DateOfBirthForm(forms.ModelForm):
             day = int(cleaned_data.get("birth_day"))
             year = int(cleaned_data.get("birth_year"))
 
-            cleaned_data["date_of_birth"] = datetime.date(year, month, day)
+            cleaned_data["date_of_event"] = datetime.date(year, month, day)
         except (ValueError, TypeError):
             raise forms.ValidationError("Enter a valid date.")
         return cleaned_data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        date_of_birth = self.cleaned_data.get("date_of_birth")
+        date_of_event = self.cleaned_data.get("date_of_event")
 
-        if date_of_birth:
-            instance.date_of_birth = date_of_birth
+        if date_of_event:
+            instance.date_of_event = date_of_event
 
         if commit:
             instance.save()

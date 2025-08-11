@@ -207,7 +207,7 @@ class SubmitView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_display_county(self, context):
         counties = VitalRecordsRequest.COUNTY_CHOICES
-        county_of_birth_id = context["vital_records_request"].county_of_birth
+        county_of_birth_id = context["vital_records_request"].county_of_event
 
         # Make sure the ID is not blank ("") and ID is in the county options list
         if county_of_birth_id != "" and county_of_birth_id in dict(counties):

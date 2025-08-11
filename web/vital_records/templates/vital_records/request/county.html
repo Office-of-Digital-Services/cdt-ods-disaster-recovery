@@ -17,9 +17,9 @@
             <form method="post">
                 <div class="w-50 m-y-md p-y-sm">
                     {% csrf_token %}
-                    {{ form.county_of_birth|label_with_required }}
-                    {{ form.county_of_birth }}
-                    {{ form.county_of_birth.errors }}
+                    {{ form.county_of_event|label_with_required }}
+                    {{ form.county_of_event }}
+                    {{ form.county_of_event.errors }}
                 </div>
                 <button type="submit" class="btn btn-primary">Continue</button>
             </form>
