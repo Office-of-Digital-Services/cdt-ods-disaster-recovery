@@ -138,7 +138,7 @@ header {
 
 .vertical-tracker > li:has(~ .current) .dot-line-inner:before,
 .vertical-tracker > li.current .dot-line-inner:before {
-  background-color: #005ea2;
+  background-color: var(--color-p2);
 }
 
 .vertical-tracker > li p {
