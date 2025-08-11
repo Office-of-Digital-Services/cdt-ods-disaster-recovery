@@ -152,23 +152,23 @@ class DateOfBirthForm(forms.ModelForm):
 
 
 class ParentsNamesForm(forms.ModelForm):
-    parent_1_first_name = forms.CharField(
+    person_1_first_name = forms.CharField(
         label="First name",
         max_length=128,
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_1_helptext"}),
     )
-    parent_1_last_name = forms.CharField(
+    person_1_last_name = forms.CharField(
         label="Last name at birth",
         max_length=128,
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_1_helptext"}),
     )
-    parent_2_first_name = forms.CharField(
+    person_2_first_name = forms.CharField(
         label="First name",
         max_length=128,
         required=False,
         widget=forms.TextInput(attrs={"class": "form-control", "aria-describedby": "parent_2_helptext"}),
     )
-    parent_2_last_name = forms.CharField(
+    person_2_last_name = forms.CharField(
         label="Last name at birth",
         max_length=128,
         required=False,
@@ -177,7 +177,7 @@ class ParentsNamesForm(forms.ModelForm):
 
     class Meta:
         model = VitalRecordsRequest
-        fields = ["parent_1_first_name", "parent_1_last_name", "parent_2_first_name", "parent_2_last_name"]
+        fields = ["person_1_first_name", "person_1_last_name", "person_2_first_name", "person_2_last_name"]
 
 
 class OrderInfoForm(forms.ModelForm):

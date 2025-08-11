@@ -150,13 +150,13 @@ class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         form = context["form"]
-        context["parent_1_fields"] = [
-            form["parent_1_first_name"],
-            form["parent_1_last_name"],
+        context["person_1_fields"] = [
+            form["person_1_first_name"],
+            form["person_1_last_name"],
         ]
-        context["parent_2_fields"] = [
-            form["parent_2_first_name"],
-            form["parent_2_last_name"],
+        context["person_2_fields"] = [
+            form["person_2_first_name"],
+            form["person_2_last_name"],
         ]
 
         return context
