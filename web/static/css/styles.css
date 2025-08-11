@@ -136,7 +136,8 @@ header {
   margin-bottom: 40px;
 }
 
-.vertical-tracker > li[data-status="current"] .dot-line-inner:before {
+.vertical-tracker > li:has(~ .current) .dot-line-inner:before,
+.vertical-tracker > li.current .dot-line-inner:before {
   background-color: #005ea2;
 }
 
