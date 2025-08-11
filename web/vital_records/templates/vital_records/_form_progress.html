@@ -1,8 +1,62 @@
-<ol class="cagov-step-list sm d-none d-md-block d-lg-block">
-    <li data-status="{% if url_name == 'request_name' %}current{% endif %}">Name</li>
-    <li data-status="{% if url_name == 'request_county' %}current{% endif %}">County of birth</li>
-    <li data-status="{% if url_name == 'request_dob' %}current{% endif %}">Date of birth</li>
-    <li data-status="{% if url_name == 'request_parents' %}current{% endif %}">Parents’ names</li>
-    <li data-status="{% if url_name == 'request_order' %}current{% endif %}">Order info</li>
-    <li data-status="{% if url_name == 'request_submit' %}current{% endif %}">Preview & submit</li>
-</ol>
+<ul class="vertical-tracker list-unstyled sm m-t-0 d-none d-md-block d-lg-block">
+    <li class="row"
+        data-status="{% if url_name == 'request_name' %}current{% endif %}">
+        <div class="col-md-2 text-md-end p-x-md"></div>
+        <div class="col-md-10 pos-rel brd-md-left brd-gray-light p-x-md">
+            <div class="timeline-dot top-0">
+                <span class="dot-line-inner bg-white brd-gray-light"></span>
+            </div>
+            <p class="small">Name</p>
+        </div>
+    </li>
+    <li class="row"
+        data-status="{% if url_name == 'request_county' %}current{% endif %}">
+        <div class="col-md-2 text-md-end p-x-md"></div>
+        <div class="col-md-10 pos-rel brd-md-left brd-gray-light p-x-md">
+            <div class="timeline-dot top-0">
+                <span class="dot-line-inner bg-white brd-gray-light"></span>
+            </div>
+            <p class="small">County of birth</p>
+        </div>
+    </li>
+    <li class="row"
+        data-status="{% if url_name == 'request_dob' %}current{% endif %}">
+        <div class="col-md-2 text-md-end p-x-md"></div>
+        <div class="col-md-10 pos-rel brd-md-left brd-gray-light p-x-md">
+            <div class="timeline-dot top-0">
+                <span class="dot-line-inner bg-white brd-gray-light"></span>
+            </div>
+            <p class="small">Date of birth</p>
+        </div>
+    </li>
+    <li class="row"
+        data-status="{% if url_name == 'request_parents' %}current{% endif %}">
+        <div class="col-md-2 text-md-end p-x-md"></div>
+        <div class="col-md-10 pos-rel brd-md-left brd-gray-light p-x-md">
+            <div class="timeline-dot top-0">
+                <span class="dot-line-inner bg-white brd-gray-light"></span>
+            </div>
+            <p class="small">Parents’ names</p>
+        </div>
+    </li>
+    <li class="row"
+        data-status="{% if url_name == 'request_order' %}current{% endif %}">
+        <div class="col-md-2 text-md-end p-x-md"></div>
+        <div class="col-md-10 pos-rel brd-md-left brd-gray-light p-x-md">
+            <div class="timeline-dot top-0">
+                <span class="dot-line-inner bg-white brd-gray-light"></span>
+            </div>
+            <p class="small">Order info</p>
+        </div>
+    </li>
+    <li class="row"
+        data-status="{% if url_name == 'request_submit' %}current{% endif %}">
+        <div class="col-md-2 text-md-end p-x-md"></div>
+        <div class="col-md-10 pos-rel brd-md-left brd-gray-light p-x-md">
+            <div class="timeline-dot top-0">
+                <span class="dot-line-inner bg-white brd-gray-light"></span>
+            </div>
+            <p class="small">Preview & submit</p>
+        </div>
+    </li>
+</ul>
