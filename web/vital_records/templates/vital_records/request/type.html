@@ -20,3 +20,22 @@
         </div>
     </div>
 {% endblock inner-content %}
+{% block javascript %}
+    <script nonce="{{request.csp_nonce}}">
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("Here");
+            const selectElement = document.getElementById("id_type");
+            const hiddenTextElement = document.getElementById("confidential-marriage-warning");
+
+            selectElement.addEventListener("change", function() {
+                const selectedValue = this.value;
+
+                if (selectedValue === "marriage") {
+                    hiddenTextElement.classList.remove("hidden");
+                } else {
+                    hiddenTextElement.classList.add("hidden");
+                }
+            });
+        });
+    </script>
+{% endblock javascript %}
