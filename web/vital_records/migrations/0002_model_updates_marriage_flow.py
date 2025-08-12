@@ -55,7 +55,9 @@ class Migration(migrations.Migration):
             model_name="vitalrecordsrequest",
             name="type",
             field=models.CharField(
-                choices=[("birth", "Birth record"), ("marriage", "Marriage record")], default="birth", max_length=10
+                choices=[("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record")],
+                default="birth",
+                max_length=10,
             ),
             preserve_default=False,
         ),
