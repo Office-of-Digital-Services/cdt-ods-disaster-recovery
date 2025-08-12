@@ -1,5 +1,11 @@
 {% extends "vital_records/base.html" %}
 {% load i18n %}
+{% block title %}
+    Replacement {{ request_type }} record
+{% endblock title %}
+{% block headline %}
+    Replacement {{ request_type }} record
+{% endblock headline %}
 {% block inner-content %}
     <div class="row">
         <div class="col-md-3">

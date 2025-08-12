@@ -1,5 +1,11 @@
 {% extends "vital_records/base.html" %}
 {% load i18n %}
+{% block title %}
+    Replacement {{ request_type }} record
+{% endblock title %}
+{% block headline %}
+    Replacement {{ request_type }} record
+{% endblock headline %}
 {% load form_helpers %}
 {% block inner-content %}
     <h2 class="m-t-80">Confirm your eligibility for an authorized copy</h2>

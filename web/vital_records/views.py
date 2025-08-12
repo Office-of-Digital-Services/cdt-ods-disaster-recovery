@@ -84,12 +84,21 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_statement()
+        request_type = self.object.type
+        next_route = self.object.complete_statement(request_type)
         self.object.save()
 
         self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        """Add requested vital record type to context"""
+
+        context = super().get_context_data(**kwargs)
+        context["request_type"] = self.object.type
+
+        return context
 
 
 class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
@@ -114,6 +123,7 @@ class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
             form["middle_name"],
             form["last_name"],
         ]
+        context["request_type"] = self.object.type
 
         return context
 
