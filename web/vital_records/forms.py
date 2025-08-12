@@ -32,6 +32,18 @@ class EligibilityForm(forms.ModelForm):
         fields = ["fire"]
 
 
+class TypeForm(forms.ModelForm):
+    type = forms.ChoiceField(
+        choices=VitalRecordsRequest.TYPE_CHOICES,
+        label="Select record type",
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+
+    class Meta:
+        model = VitalRecordsRequest
+        fields = ["type"]
+
+
 class StatementForm(forms.ModelForm):
     relationship = forms.ChoiceField(
         choices=VitalRecordsRequest.RELATIONSHIP_CHOICES,

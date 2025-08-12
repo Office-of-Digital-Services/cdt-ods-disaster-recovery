@@ -1,0 +1,22 @@
+{% extends "vital_records/base.html" %}
+{% load i18n %}
+{% load form_helpers %}
+{% block inner-content %}
+    <h2 class="m-t-80">Which record would you like to replace?</h2>
+    <div class="row">
+        <div class="col-lg-10">
+            <form method="post">
+                <div id="type-select" class="col-lg-5 m-y-md p-y-sm">
+                    {% csrf_token %}
+                    {{ form.type|label_with_required }}
+                    {{ form.type }}
+                    {{ form.type.errors }}
+                </div>
+                <p id="confidential-marriage-warning" class="hidden">
+                    CDPH does not maintain Confidential Marriage Records. To request a Confidential Marriage Record, please contact the county vital records office that your marriage was registered in.
+                </p>
+                <button type="submit" class="btn btn-primary">Next</button>
+            </form>
+        </div>
+    </div>
+{% endblock inner-content %}

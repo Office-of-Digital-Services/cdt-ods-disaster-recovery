@@ -9,6 +9,7 @@ from web.vital_records.routes import Routes
 from web.vital_records.tasks.package import submit_request
 from web.vital_records.forms import (
     EligibilityForm,
+    TypeForm,
     StatementForm,
     NameForm,
     CountyForm,
@@ -75,8 +76,31 @@ class StartView(EligibilityMixin, CreateView):
         # store generated request id in session for verification in later steps
         Session(self.request, request_id=self.object.pk)
 
-        next_route = Routes.app_route(Routes.request_statement)
+        next_route = Routes.app_route(Routes.request_type)
         return redirect(next_route, pk=self.object.pk)
+
+
+class TypeView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+    model = VitalRecordsRequest
+    form_class = TypeForm
+    template_name = "vital_records/request/type.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Replacement records"
+        context["previous_route"] = Routes.request_start
+
+        return context
+
+    def form_valid(self, form):
+        # Move form state to next state
+        self.object.complete_type()
+        self.object.save()
+
+        next_route = Routes.app_route(Routes.request_statement)
+        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
+
+        return super().form_valid(form)
 
 
 class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):

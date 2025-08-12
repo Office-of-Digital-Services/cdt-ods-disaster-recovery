@@ -11,6 +11,7 @@ class VitalRecordsRequest(models.Model):
     STATUS_CHOICES = [
         ("initialized", "Initialized"),
         ("started", "Started"),
+        ("type_completed", "Record Type Completed"),
         ("statement_completed", "Sworn Statement Completed"),
         ("name_completed", "Name Completed"),
         ("county_completed", "County Completed"),
@@ -234,7 +235,11 @@ class VitalRecordsRequest(models.Model):
     def complete_start(self):
         self.started_at = timezone.now()
 
-    @transition(field=status, source="started", target="statement_completed")
+    @transition(field=status, target="type_completed")
+    def complete_type(self):
+        pass
+
+    @transition(field=status, target="statement_completed")
     def complete_statement(self):
         pass
 
