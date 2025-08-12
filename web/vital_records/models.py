@@ -238,7 +238,7 @@ class VitalRecordsRequest(models.Model):
         self.started_at = timezone.now()
         return Routes.app_route(Routes.request_type)
 
-    @transition(field=status, source="started", target="type_completed")
+    @transition(field=status, target="type_completed")
     def complete_type(self, selected_type):
         if selected_type == "birth":
             return Routes.app_route(Routes.request_statement)
@@ -246,7 +246,7 @@ class VitalRecordsRequest(models.Model):
             return Routes.app_route(Routes.request_name)
         return Routes.app_route(Routes.request_statement)
 
-    @transition(field=status, source="type_completed", target="statement_completed")
+    @transition(field=status, target="statement_completed")
     def complete_statement(self):
         return Routes.app_route(Routes.request_name)
 
