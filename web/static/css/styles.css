@@ -213,6 +213,7 @@ header {
   small.accent {
     color: #046b99;
     font-weight: 700;
+    display: block;
   }
 
   small.form-help {
