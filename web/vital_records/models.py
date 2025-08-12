@@ -26,6 +26,12 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
+    TYPE_CHOICES = [
+        ("", "Select type"),
+        ("birth", "Birth record"),
+        ("marriage", "Marriage record")
+    ]
+
     FIRE_CHOICES = [
         ("eaton", "Eaton fire"),
         ("hurst", "Hurst fire"),
@@ -175,18 +181,21 @@ class VitalRecordsRequest(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     status = FSMField(default="initialized", choices=STATUS_CHOICES)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
     relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
     legal_attestation = models.CharField(max_length=386)
     first_name = models.CharField(max_length=128)
     middle_name = models.CharField(max_length=128, blank=True)
     last_name = models.CharField(max_length=128)
-    county_of_birth = models.CharField(max_length=15, choices=COUNTY_CHOICES)
-    date_of_birth = models.DateField(null=True)
-    parent_1_first_name = models.CharField(max_length=128)
-    parent_1_last_name = models.CharField(max_length=128)
-    parent_2_first_name = models.CharField(max_length=128, blank=True)
-    parent_2_last_name = models.CharField(max_length=128, blank=True)
+    county_of_event = models.CharField(max_length=15, choices=COUNTY_CHOICES)
+    date_of_event = models.DateField(null=True)
+    person_1_first_name = models.CharField(max_length=128)
+    person_1_last_name = models.CharField(max_length=128)
+    person_1_birth_last_name = models.CharField(max_length=128)
+    person_2_first_name = models.CharField(max_length=128, blank=True)
+    person_2_last_name = models.CharField(max_length=128, blank=True)
+    person_2_birth_last_name = models.CharField(max_length=128, blank=True)
     number_of_records = models.IntegerField(choices=NUMBER_CHOICES, null=True)
     order_first_name = models.CharField(max_length=128)
     order_last_name = models.CharField(max_length=128)

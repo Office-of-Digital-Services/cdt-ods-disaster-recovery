@@ -150,13 +150,13 @@ class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         form = context["form"]
-        context["parent_1_fields"] = [
-            form["parent_1_first_name"],
-            form["parent_1_last_name"],
+        context["person_1_fields"] = [
+            form["person_1_first_name"],
+            form["person_1_last_name"],
         ]
-        context["parent_2_fields"] = [
-            form["parent_2_first_name"],
-            form["parent_2_last_name"],
+        context["person_2_fields"] = [
+            form["person_2_first_name"],
+            form["person_2_last_name"],
         ]
 
         return context
@@ -207,7 +207,7 @@ class SubmitView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_display_county(self, context):
         counties = VitalRecordsRequest.COUNTY_CHOICES
-        county_of_birth_id = context["vital_records_request"].county_of_birth
+        county_of_birth_id = context["vital_records_request"].county_of_event
 
         # Make sure the ID is not blank ("") and ID is in the county options list
         if county_of_birth_id != "" and county_of_birth_id in dict(counties):
