@@ -10,6 +10,7 @@ urlpatterns = [
     path("", views.IndexView.as_view(), name=Routes.index),
     path("login", views.LoginView.as_view(), name=Routes.login),
     path("request", views.StartView.as_view(), name=Routes.request_start),
+    path("request/<uuid:pk>/type", views.TypeView.as_view(), name=Routes.request_type),
     path("request/<uuid:pk>/statement", views.StatementView.as_view(), name=Routes.request_statement),
     path("request/<uuid:pk>/name", views.NameView.as_view(), name=Routes.request_name),
     path("request/<uuid:pk>/county", views.CountyView.as_view(), name=Routes.request_county),

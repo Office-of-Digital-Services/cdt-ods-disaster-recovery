@@ -5,6 +5,7 @@ class Routes:
     index = "index"
     login = "login"
     request_start = "request_start"
+    request_type = "request_type"
     request_statement = "request_statement"
     request_name = "request_name"
     request_county = "request_county"
