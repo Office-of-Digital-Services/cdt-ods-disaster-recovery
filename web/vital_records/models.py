@@ -13,6 +13,7 @@ class VitalRecordsRequest(models.Model):
     STATUS_CHOICES = [
         ("initialized", "Initialized"),
         ("started", "Started"),
+        ("type_completed", "Record Type Completed"),
         ("statement_completed", "Sworn Statement Completed"),
         ("name_completed", "Name Completed"),
         ("county_completed", "County Completed"),
@@ -26,10 +27,7 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
-    TYPE_CHOICES = [
-        ("birth", "Birth"),
-        ("marriage", "Marriage")
-    ]
+    TYPE_CHOICES = [("birth", "Birth record"), ("marriage", "Marriage record")]
 
     FIRE_CHOICES = [
         ("eaton", "Eaton fire"),
@@ -238,9 +236,17 @@ class VitalRecordsRequest(models.Model):
     @transition(field=status, source="initialized", target="started")
     def complete_start(self):
         self.started_at = timezone.now()
+        return Routes.app_route(Routes.request_type)
+
+    @transition(field=status, source="started", target="type_completed")
+    def complete_type(self, selected_type):
+        if selected_type == "birth":
+            return Routes.app_route(Routes.request_statement)
+        elif selected_type == "marriage":
+            return Routes.app_route(Routes.request_name)
         return Routes.app_route(Routes.request_statement)
 
-    @transition(field=status, source="started", target="statement_completed")
+    @transition(field=status, source="type_completed", target="statement_completed")
     def complete_statement(self):
         return Routes.app_route(Routes.request_name)
 

@@ -8,6 +8,7 @@ from web.core.views import EligibilityMixin as CoreEligibilityMixin
 from web.vital_records.tasks.package import submit_request
 from web.vital_records.forms import (
     EligibilityForm,
+    TypeForm,
     StatementForm,
     NameForm,
     CountyForm,
@@ -59,6 +60,22 @@ class StartView(EligibilityMixin, CreateView):
         Session(self.request, request_id=self.object.pk)
 
         return redirect(next_route, pk=self.object.pk)
+
+
+class TypeView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+    model = VitalRecordsRequest
+    form_class = TypeForm
+    template_name = "vital_records/request/type.html"
+
+    def form_valid(self, form):
+        self.object.save()
+        selected_type = form.cleaned_data["type"]
+
+        # Pass selected type into state transition method, to determine next route
+        next_route = self.object.complete_type(selected_type)
+        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
+
+        return super().form_valid(form)
 
 
 class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
