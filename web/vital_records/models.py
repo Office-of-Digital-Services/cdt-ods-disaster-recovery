@@ -239,11 +239,7 @@ class VitalRecordsRequest(models.Model):
         return Routes.app_route(Routes.request_type)
 
     @transition(field=status, target="type_completed")
-    def complete_type(self, selected_type):
-        if selected_type == "birth":
-            return Routes.app_route(Routes.request_statement)
-        elif selected_type == "marriage":
-            return Routes.app_route(Routes.request_name)
+    def complete_type(self):
         return Routes.app_route(Routes.request_statement)
 
     @transition(field=status, target="statement_completed")

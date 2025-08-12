@@ -68,11 +68,10 @@ class TypeView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     template_name = "vital_records/request/type.html"
 
     def form_valid(self, form):
+        # Move form state to next state
+        next_route = self.object.complete_type()
         self.object.save()
-        selected_type = form.cleaned_data["type"]
 
-        # Pass selected type into state transition method, to determine next route
-        next_route = self.object.complete_type(selected_type)
         self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
