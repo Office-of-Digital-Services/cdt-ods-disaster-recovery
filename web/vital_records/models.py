@@ -59,7 +59,41 @@ class VitalRecordsRequest(models.Model):
                 previous_route=Routes.request_order,
                 next_route=None,
             ),
-        }
+        },
+        "marriage": {
+            "statement_completed": Step(
+                label="Name",
+                ordinal=1,
+                previous_route=Routes.request_statement,
+                next_route=Routes.request_county,
+            ),
+            "name_completed": Step(
+                label="County of marriage",
+                ordinal=2,
+                previous_route=Routes.request_name,
+                next_route=Routes.request_dob,
+            ),
+            "county_completed": Step(
+                label="Date of marriage",
+                ordinal=3,
+                previous_route=Routes.request_county,
+                next_route=Routes.request_order,
+            ),
+            "dob_completed": Step(
+                label="Order info",
+                ordinal=4,
+                previous_route=Routes.request_dob,
+                next_route=Routes.request_submit,
+            ),
+            # `order_info_completed` always goes to `submitted`, so we don't need to specify `next_route` here
+            # (it won't be used).
+            "order_info_completed": Step(
+                label="Preview & submit",
+                ordinal=5,
+                previous_route=Routes.request_order,
+                next_route=None,
+            ),
+        },
     }
 
     STATUS_CHOICES = [
