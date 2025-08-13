@@ -1,5 +1,4 @@
 {% extends "vital_records/base.html" %}
-{% load i18n %}
 {% block inner-content %}
     <div class="row">
         <div class="col-md-3">
@@ -8,17 +7,18 @@
             {% endwith %}
         </div>
         <div class="col-md-9">
-            <small class="accent">Step 1 of 6</small>
+            <small class="accent">Step {{ current_step }} of {{ total_steps }}</small>
             <form method="post" class="form">
-                <fieldset role="group" aria-describedby="name-hint">
+                <fieldset role="group" aria-describedby="{{ form_hint_name }}">
                     <legend>
-                        <h2>What is the name on the birth certificate?</h2>
+                        <h2>{{ form_question }}</h2>
                     </legend>
-                    <p id="name-hint" class="mb-3">Please write the information as it appears on the birth certificate.</p>
+                    <p id="{{ form_hint_name }}" class="mb-3">{{ form_hint }}</p>
                     {% csrf_token %}
-                    {% include "vital_records/_two_column_form.html" with form=form fields=name_fields %}
+                    {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
                 </fieldset>
-                <button type="submit" class="btn btn-primary mt-4">Continue</button>
+                <button type="submit" class="btn btn-secondary mt-4">Back</button>
+                <button type="submit" class="btn btn-primary mt-4">Next</button>
             </form>
         </div>
     </div>

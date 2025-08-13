@@ -97,17 +97,22 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = NameForm
-    template_name = "vital_records/request/name.html"
+    template_name = "vital_records/request/form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["page_title"] = "Replacement birth records"
+        context["total_steps"] = 6
+
+        context["current_step"] = 1
+        context["form_question"] = "What is the name on the birth certificate?"
+        context["form_hint"] = "Please write the information as it appears on the birth certificate."
         form = context["form"]
-        context["name_fields"] = [
+        context["form_fields"] = [
             form["first_name"],
             form["middle_name"],
             form["last_name"],
         ]
-        context["page_title"] = "Replacement birth records"
 
         return context
 
