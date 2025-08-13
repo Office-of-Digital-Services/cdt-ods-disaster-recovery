@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from uuid import UUID, uuid4
 
 from django.db import models
@@ -7,8 +8,59 @@ from django_fsm import FSMField, transition
 from web.vital_records.routes import Routes
 
 
+@dataclass
+class Step:
+    label: str
+    ordinal: int
+    previous_route: str
+    next_route: str
+
+
 class VitalRecordsRequest(models.Model):
     """Represents a request to order a vital record through the Disaster Recovery app."""
+
+    steps = {
+        "birth": {
+            "statement_completed": Step(
+                label="Name",
+                ordinal=1,
+                previous_route=Routes.request_statement,
+                next_route=Routes.request_county,
+            ),
+            "name_completed": Step(
+                label="County of birth",
+                ordinal=2,
+                previous_route=Routes.request_name,
+                next_route=Routes.request_dob,
+            ),
+            "county_completed": Step(
+                label="Date of birth",
+                ordinal=3,
+                previous_route=Routes.request_county,
+                next_route=Routes.request_parents,
+            ),
+            "dob_completed": Step(
+                label="Parents’ names",
+                ordinal=4,
+                previous_route=Routes.request_dob,
+                next_route=Routes.request_order,
+            ),
+            "parents_names_completed": Step(
+                label="Order info",
+                ordinal=5,
+                previous_route=Routes.request_parents,
+                next_route=Routes.request_submit,
+            ),
+            # `order_info_completed` always goes to `submitted`, so we don't need to specify `next_route` here
+            # (it won't be used).
+            "order_info_completed": Step(
+                label="Preview & submit",
+                ordinal=6,
+                previous_route=Routes.request_order,
+                next_route=None,
+            ),
+        }
+    }
 
     STATUS_CHOICES = [
         ("initialized", "Initialized"),
@@ -26,11 +78,7 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
-    TYPE_CHOICES = [
-        ("", "Select type"),
-        ("birth", "Birth record"),
-        ("marriage", "Marriage record")
-    ]
+    TYPE_CHOICES = [("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record")]
 
     FIRE_CHOICES = [
         ("eaton", "Eaton fire"),
@@ -247,23 +295,33 @@ class VitalRecordsRequest(models.Model):
 
     @transition(field=status, target="name_completed")
     def complete_name(self):
-        return Routes.app_route(Routes.request_county)
+        steps = self.steps[self.type]
+        next_route = steps[self.status].next_route
+        return Routes.app_route(next_route)
 
     @transition(field=status, target="county_completed")
     def complete_county(self):
-        return Routes.app_route(Routes.request_dob)
+        steps = self.steps[self.type]
+        next_route = steps[self.status].next_route
+        return Routes.app_route(next_route)
 
     @transition(field=status, target="dob_completed")
     def complete_dob(self):
-        return Routes.app_route(Routes.request_parents)
+        steps = self.steps[self.type]
+        next_route = steps[self.status].next_route
+        return Routes.app_route(next_route)
 
     @transition(field=status, target="parents_names_completed")
     def complete_parents_names(self):
-        return Routes.app_route(Routes.request_order)
+        steps = self.steps[self.type]
+        next_route = steps[self.status].next_route
+        return Routes.app_route(next_route)
 
     @transition(field=status, target="order_info_completed")
     def complete_order_info(self):
-        return Routes.app_route(Routes.request_submit)
+        steps = self.steps[self.type]
+        next_route = steps[self.status].next_route
+        return Routes.app_route(next_route)
 
     @transition(field=status, source="order_info_completed", target="submitted")
     def complete_submit(self):
