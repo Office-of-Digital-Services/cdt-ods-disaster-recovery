@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-3">
             {% with request.resolver_match.url_name as url_name %}
-                {% include "vital_records/_form_progress.html" with url_name=url_name %}
+                {% include "vital_records/_vertical_tracker.html" with url_name=url_name %}
             {% endwith %}
         </div>
         <div class="col-md-9">
