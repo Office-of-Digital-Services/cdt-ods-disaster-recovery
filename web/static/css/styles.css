@@ -151,6 +151,10 @@ header {
   transform: none !important;
 }
 
+.vertical-tracker .dot-line-inner {
+  border-width: 1.5px;
+}
+
 .vertical-tracker .dot-line-inner::before {
   width: 14px;
   height: 14px;
