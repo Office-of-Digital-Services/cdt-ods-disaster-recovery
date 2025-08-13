@@ -21,6 +21,13 @@ class VitalRecordsRequest(models.Model):
 
     steps = {
         "birth": {
+            "started": Step(
+                # This is the Statement step, which does not appear on vertical tracker.
+                label=None,
+                ordinal=None,
+                previous_route=Routes.request_start,
+                next_route=Routes.request_name,
+            ),
             "statement_completed": Step(
                 label="Name",
                 ordinal=1,
@@ -61,6 +68,13 @@ class VitalRecordsRequest(models.Model):
             ),
         },
         "marriage": {
+            "started": Step(
+                # This is the Statement step, which does not appear on vertical tracker.
+                label=None,
+                ordinal=None,
+                previous_route=Routes.request_start,
+                next_route=Routes.request_name,
+            ),
             "statement_completed": Step(
                 label="Name",
                 ordinal=1,
@@ -325,7 +339,9 @@ class VitalRecordsRequest(models.Model):
 
     @transition(field=status, source="started", target="statement_completed")
     def complete_statement(self):
-        return Routes.app_route(Routes.request_name)
+        steps = self.steps[self.type]
+        next_route = steps[self.status].next_route
+        return Routes.app_route(next_route)
 
     @transition(field=status, target="name_completed")
     def complete_name(self):
