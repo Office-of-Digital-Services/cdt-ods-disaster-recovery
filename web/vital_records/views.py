@@ -129,11 +129,20 @@ class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 class CountyView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = CountyForm
-    template_name = "vital_records/request/county.html"
+    template_name = "vital_records/request/form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Replacement birth records"
+        context["total_steps"] = 6
+
+        context["current_step"] = 2
+        context["form_question"] = "What is the county of birth?"
+        context["form_hint"] = (
+            "We only have records for people born in California. If you were born in a different state, please contact the Vital Records office in the state you were born to request a new birth record."
+        )
+        form = context["form"]
+        context["form_fields"] = [form["county_of_event"]]
 
         return context
 
