@@ -15,7 +15,11 @@
                     </legend>
                     <p id="{{ form_hint_name }}" class="mb-3">{{ form_hint }}</p>
                     {% csrf_token %}
-                    {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
+                    {% if form_columns == 2 %}
+                        {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
+                    {% elif form_columns == 3 %}
+                        {% include "vital_records/_date_form.html" %}
+                    {% endif %}
                 </fieldset>
                 <button type="submit" class="btn btn-secondary mt-4">Back</button>
                 <button type="submit" class="btn btn-primary mt-4">Next</button>

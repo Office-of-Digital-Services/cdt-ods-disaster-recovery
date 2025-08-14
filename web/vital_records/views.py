@@ -107,7 +107,9 @@ class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         context["current_step"] = 1
         context["form_question"] = "What is the name on the birth certificate?"
         context["form_hint"] = "Please write the information as it appears on the birth certificate."
+        context["font_hint_name"] = "name-hint"
         form = context["form"]
+        context["form_columns"] = 2
         context["form_fields"] = [
             form["first_name"],
             form["middle_name"],
@@ -141,7 +143,9 @@ class CountyView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         context["form_hint"] = (
             "We only have records for people born in California. If you were born in a different state, please contact the Vital Records office in the state you were born to request a new birth record."
         )
+        context["font_hint_name"] = "county-hint"
         form = context["form"]
+        context["form_columns"] = 2
         context["form_fields"] = [form["county_of_event"]]
 
         return context
@@ -165,6 +169,12 @@ class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Replacement birth records"
+        context["total_steps"] = 6
+
+        context["current_step"] = 3
+        context["font_hint_name"] = "dob-hint"
+        context["form_question"] = "What is the date of birth?"
+        context["form_hint"] = "If you’re not sure, enter your approximate date of birth."
 
         return context
 
