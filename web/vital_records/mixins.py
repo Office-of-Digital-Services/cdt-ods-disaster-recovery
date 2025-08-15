@@ -50,7 +50,7 @@ class StepsContextMixin:
         context = super().get_context_data(**kwargs)
 
         type_steps = self.STEPS[self.object.type]
-        step_names = type_steps.keys()
+        step_names = list(type_steps.keys())
         current_index = step_names.index(self.step_name)
 
         context["all_steps"] = step_names
