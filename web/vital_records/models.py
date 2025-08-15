@@ -243,19 +243,19 @@ class VitalRecordsRequest(models.Model):
 
     @transition(field=status, source="started", target="statement_completed")
     def complete_statement(self):
-        return Routes.app_route(Routes.request_name)
+        return Routes.app_route(Routes.birth_request_name)
 
     @transition(field=status, target="name_completed")
     def complete_name(self):
-        return Routes.app_route(Routes.request_county)
+        return Routes.app_route(Routes.birth_request_county)
 
     @transition(field=status, target="county_completed")
     def complete_county(self):
-        return Routes.app_route(Routes.request_dob)
+        return Routes.app_route(Routes.birth_request_dob)
 
     @transition(field=status, target="dob_completed")
     def complete_dob(self):
-        return Routes.app_route(Routes.request_parents)
+        return Routes.app_route(Routes.birth_request_parents)
 
     @transition(field=status, target="parents_names_completed")
     def complete_parents_names(self):
