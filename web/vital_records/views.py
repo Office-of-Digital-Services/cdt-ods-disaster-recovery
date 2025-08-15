@@ -53,6 +53,10 @@ class StartView(EligibilityMixin, CreateView):
         self.object = form.save()
         # Move form state to next state
         next_route = self.object.complete_start()
+
+        # temporary hard-coding until we implement TypeView
+        self.object.type = "birth"
+
         self.object.save()
 
         # store generated request id in session for verification in later steps
