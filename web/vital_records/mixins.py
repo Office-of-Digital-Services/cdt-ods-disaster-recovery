@@ -16,22 +16,33 @@ class ValidateRequestIdMixin:
             return HttpResponseForbidden()
 
 
+class Steps:
+    name = "Name"
+    county_of_birth = "County of birth"
+    date_of_birth = "Date of birth"
+    parents_names = "Parents' names"
+    county_of_marriage = "County of marriage"
+    date_of_marriage = "Date of marriage"
+    order_information = "Order information"
+    preview_and_submit = "Preview & submit"
+
+
 class StepsContextMixin:
     STEPS = {
         "birth": {
-            "Name": Routes.birth_request_name,
-            "County of birth": Routes.birth_request_county,
-            "Date of birth": Routes.birth_request_dob,
-            "Parents' names": Routes.birth_request_parents,
-            "Order information": Routes.request_order,
-            "Preview & submit": Routes.request_submit,
+            Steps.name: Routes.birth_request_name,
+            Steps.county_of_birth: Routes.birth_request_county,
+            Steps.date_of_birth: Routes.birth_request_dob,
+            Steps.parents_names: Routes.birth_request_parents,
+            Steps.order_information: Routes.request_order,
+            Steps.preview_and_submit: Routes.request_submit,
         },
         "marriage": {
-            "Name": Routes.marriage_request_name,
-            "County of marriage": Routes.marriage_request_county,
-            "Date of marriage": Routes.marriage_request_date,
-            "Order information": Routes.request_order,
-            "Preview & submit": Routes.request_submit,
+            Steps.name: Routes.marriage_request_name,
+            Steps.county_of_marriage: Routes.marriage_request_county,
+            Steps.date_of_marriage: Routes.marriage_request_date,
+            Steps.order_information: Routes.request_order,
+            Steps.preview_and_submit: Routes.request_submit,
         },
     }
 
