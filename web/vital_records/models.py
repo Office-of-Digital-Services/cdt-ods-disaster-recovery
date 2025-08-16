@@ -4,8 +4,6 @@ from django.db import models
 from django.utils import timezone
 from django_fsm import FSMField, transition
 
-from web.vital_records.routes import Routes
-
 
 class VitalRecordsRequest(models.Model):
     """Represents a request to order a vital record through the Disaster Recovery app."""
@@ -26,11 +24,7 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
-    TYPE_CHOICES = [
-        ("", "Select type"),
-        ("birth", "Birth record"),
-        ("marriage", "Marriage record")
-    ]
+    TYPE_CHOICES = [("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record")]
 
     FIRE_CHOICES = [
         ("eaton", "Eaton fire"),
@@ -267,7 +261,6 @@ class VitalRecordsRequest(models.Model):
     @transition(field=status, source="order_info_completed", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
-        return Routes.app_route(Routes.request_submitted)
 
     @transition(field=status, source="submitted", target="enqueued")
     def complete_enqueue(self):
