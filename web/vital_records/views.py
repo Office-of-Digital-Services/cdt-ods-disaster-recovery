@@ -16,7 +16,7 @@ from web.vital_records.forms import (
     OrderInfoForm,
     SubmitForm,
 )
-from web.vital_records.mixins import Steps, StepsContextMixin, ValidateRequestIdMixin
+from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
 
@@ -98,7 +98,7 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return super().form_valid(form)
 
 
-class NameView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = NameForm
     template_name = "vital_records/request/form.html"
@@ -131,7 +131,7 @@ class NameView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, Upda
         return super().form_valid(form)
 
 
-class CountyView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = CountyForm
     template_name = "vital_records/request/form.html"
@@ -162,7 +162,7 @@ class CountyView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, Up
         return super().form_valid(form)
 
 
-class DateOfBirthView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class DateOfBirthView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = DateOfBirthForm
     template_name = "vital_records/request/form.html"
@@ -190,7 +190,7 @@ class DateOfBirthView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixi
         return super().form_valid(form)
 
 
-class ParentsNamesView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = ParentsNamesForm
     template_name = "vital_records/request/form.html"
@@ -230,7 +230,7 @@ class ParentsNamesView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMix
         return context
 
 
-class OrderInfoView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class OrderInfoView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = OrderInfoForm
     template_name = "vital_records/request/order.html"
@@ -258,7 +258,7 @@ class OrderInfoView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin,
         return context
 
 
-class SubmitView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = SubmitForm
     template_name = "vital_records/request/confirm.html"
