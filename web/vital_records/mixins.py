@@ -27,7 +27,7 @@ class Steps:
     preview_and_submit = "Preview & submit"
 
 
-class StepsContextMixin:
+class StepsMixin:
     STEPS = {
         "birth": {
             Steps.name: Routes.birth_request_name,
@@ -46,12 +46,21 @@ class StepsContextMixin:
         },
     }
 
+    def get_type_steps(self):
+        return self.STEPS[self.object.type]
+
+    def get_step_names(self, type_steps):
+        return list(type_steps.keys())
+
+    def get_current_index(self, step_names):
+        return step_names.index(self.step_name)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        type_steps = self.STEPS[self.object.type]
-        step_names = list(type_steps.keys())
-        current_index = step_names.index(self.step_name)
+        type_steps = self.get_type_steps()
+        step_names = self.get_step_names(type_steps)
+        current_index = self.get_current_index(step_names)
 
         context["all_steps"] = step_names
         context["step_number"] = current_index + 1
@@ -64,6 +73,13 @@ class StepsContextMixin:
 
         context["previous_route"] = Routes.app_route(previous_route_name)
 
+        return context
+
+    def get_success_url(self):
+        type_steps = self.get_type_steps()
+        step_names = self.get_step_names(type_steps)
+        current_index = self.get_current_index(step_names)
+
         if current_index == len(step_names) - 1:
             next_route_name = Routes.request_submitted
         else:
@@ -71,6 +87,5 @@ class StepsContextMixin:
             next_route_name = type_steps[next_step_name]
 
         next_route = Routes.app_route(next_route_name)
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
-        return context
+        return reverse(next_route, kwargs={"pk": self.object.pk})
