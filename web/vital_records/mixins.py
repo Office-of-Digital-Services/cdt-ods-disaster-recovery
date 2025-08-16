@@ -57,17 +57,20 @@ class StepsContextMixin:
         context["step_number"] = current_index + 1
 
         if current_index == 0:
-            context["previous_route"] = Routes.request_statement
+            previous_route_name = Routes.request_statement
         else:
             previous_step_name = step_names[current_index - 1]
-            context["previous_route"] = type_steps[previous_step_name]
+            previous_route_name = type_steps[previous_step_name]
+
+        context["previous_route"] = Routes.app_route(previous_route_name)
 
         if current_index == len(step_names) - 1:
-            next_route = Routes.request_submitted
+            next_route_name = Routes.request_submitted
         else:
             next_step_name = step_names[current_index + 1]
-            next_route = type_steps[next_step_name]
+            next_route_name = type_steps[next_step_name]
 
+        next_route = Routes.app_route(next_route_name)
         self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return context
