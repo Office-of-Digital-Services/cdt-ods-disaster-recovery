@@ -16,7 +16,7 @@ from web.vital_records.forms import (
     OrderInfoForm,
     SubmitForm,
 )
-from web.vital_records.mixins import ValidateRequestIdMixin
+from web.vital_records.mixins import Steps, StepsContextMixin, ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
 
@@ -53,6 +53,10 @@ class StartView(EligibilityMixin, CreateView):
         self.object = form.save()
         # Move form state to next state
         next_route = self.object.complete_start()
+
+        # temporary hard-coding until we implement TypeView
+        self.object.type = "birth"
+
         self.object.save()
 
         # store generated request id in session for verification in later steps
@@ -76,17 +80,16 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return super().form_valid(form)
 
 
-class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class NameView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = NameForm
     template_name = "vital_records/request/name.html"
+    step_name = Steps.name
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_name()
+        self.object.complete_name()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
@@ -102,48 +105,45 @@ class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return context
 
 
-class CountyView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class CountyView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = CountyForm
     template_name = "vital_records/request/county.html"
+    step_name = Steps.county_of_birth
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_county()
+        self.object.complete_county()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
 
-class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class DateOfBirthView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = DateOfBirthForm
     template_name = "vital_records/request/dob.html"
     context_object_name = "vital_request"
+    step_name = Steps.date_of_birth
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_dob()
+        self.object.complete_dob()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
 
-class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class ParentsNamesView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = ParentsNamesForm
     template_name = "vital_records/request/parents.html"
+    step_name = Steps.parents_names
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_parents_names()
+        self.object.complete_parents_names()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
@@ -162,17 +162,16 @@ class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return context
 
 
-class OrderInfoView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class OrderInfoView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = OrderInfoForm
     template_name = "vital_records/request/order.html"
+    step_name = Steps.order_information
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_order_info()
+        self.object.complete_order_info()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
@@ -187,18 +186,18 @@ class OrderInfoView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return context
 
 
-class SubmitView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class SubmitView(StepsContextMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = SubmitForm
     template_name = "vital_records/request/confirm.html"
     context_object_name = "vital_records_request"
+    step_name = Steps.preview_and_submit
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
 
         if self.object.status != "submitted":
-            next_route = self.object.complete_submit()
-            self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
+            self.object.complete_submit()
             self.object.save()
             return super().form_valid(form)
         else:
