@@ -63,8 +63,6 @@ class TestStartView:
         frm = mocker.Mock(spec=EligibilityForm)
         # mock the model/return value of calling form.save()
         obj = frm.save.return_value
-        # mock complete_start on the model, which returns the next URL to navigate to
-        obj.complete_start.return_value = "/test"
         # set the model's ID
         obj.pk = request_id
 
@@ -76,7 +74,7 @@ class TestStartView:
         mock_Session_cls.assert_called_once_with(app_request, request_id=request_id)
         # response is a redirect
         assert response.status_code == 302
-        assert response.url == "/test"
+        assert response.url == f"/vital-records/request/{request_id}/statement"
 
 
 class TestSubmittedView:
