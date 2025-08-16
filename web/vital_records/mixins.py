@@ -46,10 +46,12 @@ class StepsMixin:
         },
     }
 
-    def get_type_steps(self):
-        return self.STEPS[self.object.type]
+    @staticmethod
+    def get_type_steps(type):
+        return StepsMixin.STEPS[type]
 
-    def get_step_names(self, type_steps):
+    @staticmethod
+    def get_step_names(type_steps):
         return list(type_steps.keys())
 
     def get_current_index(self, step_names):
@@ -58,7 +60,7 @@ class StepsMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        type_steps = self.get_type_steps()
+        type_steps = self.get_type_steps(self.object.type)
         step_names = self.get_step_names(type_steps)
         current_index = self.get_current_index(step_names)
 
@@ -76,7 +78,7 @@ class StepsMixin:
         return context
 
     def get_success_url(self):
-        type_steps = self.get_type_steps()
+        type_steps = self.get_type_steps(self.object.type)
         step_names = self.get_step_names(type_steps)
         current_index = self.get_current_index(step_names)
 
