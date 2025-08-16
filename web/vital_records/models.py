@@ -239,7 +239,6 @@ class VitalRecordsRequest(models.Model):
     @transition(field=status, source="initialized", target="started")
     def complete_start(self):
         self.started_at = timezone.now()
-        return Routes.app_route(Routes.request_statement)
 
     @transition(field=status, source="started", target="statement_completed")
     def complete_statement(self):

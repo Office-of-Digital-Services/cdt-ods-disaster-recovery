@@ -65,7 +65,7 @@ class StartView(EligibilityMixin, CreateView):
         # set the object via form.save(), since we aren't using super().form_valid()
         self.object = form.save()
         # Move form state to next state
-        next_route = self.object.complete_start()
+        self.object.complete_start()
 
         # temporary hard-coding until we implement TypeView
         self.object.type = "birth"
@@ -75,6 +75,7 @@ class StartView(EligibilityMixin, CreateView):
         # store generated request id in session for verification in later steps
         Session(self.request, request_id=self.object.pk)
 
+        next_route = Routes.app_route(Routes.request_statement)
         return redirect(next_route, pk=self.object.pk)
 
 
