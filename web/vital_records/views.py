@@ -5,6 +5,7 @@ from django.views.generic import DetailView, RedirectView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
 from web.core.views import EligibilityMixin as CoreEligibilityMixin
+from web.vital_records.routes import Routes
 from web.vital_records.tasks.package import submit_request
 from web.vital_records.forms import (
     EligibilityForm,
@@ -85,13 +86,18 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Replacement birth records"
-
+        context["previous_route"] = Routes.app_route(Routes.request_start)
         return context
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_statement()
+        self.object.complete_statement()
         self.object.save()
+
+        type_steps = StepsMixin.get_type_steps(self.object.type)
+        first_step_name = StepsMixin.get_step_names(type_steps)[0]
+        first_step_route = type_steps[first_step_name]
+        next_route = Routes.app_route(first_step_route)
 
         self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 

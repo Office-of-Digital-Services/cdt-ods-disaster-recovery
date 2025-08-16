@@ -243,7 +243,7 @@ class VitalRecordsRequest(models.Model):
 
     @transition(field=status, source="started", target="statement_completed")
     def complete_statement(self):
-        return Routes.app_route(Routes.birth_request_name)
+        pass
 
     @transition(field=status, target="name_completed")
     def complete_name(self):
