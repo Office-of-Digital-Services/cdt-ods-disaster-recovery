@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.views import View
 
 import pytest
@@ -107,3 +108,21 @@ class TestStepsMixin:
 
         assert context["step_number"] == expected_step_number
         assert context["previous_route"] == Routes.app_route(expected_previous_route)
+
+    @pytest.mark.parametrize(
+        "step_name,expected_next_route",
+        [
+            (Steps.name, Routes.birth_request_county),
+            (Steps.county_of_birth, Routes.birth_request_dob),
+            (Steps.date_of_birth, Routes.birth_request_parents),
+            (Steps.parents_names, Routes.request_order),
+            (Steps.order_information, Routes.request_submit),
+            (Steps.preview_and_submit, Routes.request_submitted),
+        ],
+    )
+    def test_get_success_url_birth(self, birth_view, step_name, expected_next_route):
+        birth_view.step_name = step_name
+        success_url = birth_view.get_success_url()
+        next_route = Routes.app_route(expected_next_route)
+
+        assert success_url == reverse(next_route, kwargs={"pk": birth_view.object.pk})
