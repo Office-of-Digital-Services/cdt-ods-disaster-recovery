@@ -148,7 +148,8 @@ class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
 
         context["form_question"] = "What is the county of birth?"
         context["form_hint"] = (
-            "We only have records for people born in California. If you were born in a different state, please contact the Vital Records office in the state you were born to request a new birth record."
+            "We only have records for people born in California. If you were born in a different state, please contact the "
+            "Vital Records office in the state you were born to request a new birth record."
         )
         context["font_hint_name"] = "county-hint"
         form = context["form"]
