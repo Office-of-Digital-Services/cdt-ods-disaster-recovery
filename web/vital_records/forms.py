@@ -78,13 +78,13 @@ class CountyForm(forms.ModelForm):
 
 
 class DateOfBirthForm(forms.ModelForm):
-    birth_month = forms.ChoiceField(
+    month = forms.ChoiceField(
         choices=MONTH_DISPLAY_CHOICES,
         label="Month",
         required=True,
         widget=forms.Select(attrs={"class": "form-select"}),
     )
-    birth_day = forms.CharField(
+    day = forms.CharField(
         label="Day",
         widget=forms.TextInput(
             attrs={
@@ -97,7 +97,7 @@ class DateOfBirthForm(forms.ModelForm):
             },
         ),
     )
-    birth_year = forms.CharField(
+    year = forms.CharField(
         label="Year",
         widget=forms.TextInput(
             attrs={
@@ -118,17 +118,17 @@ class DateOfBirthForm(forms.ModelForm):
         # Pre-populate form fields from model instance
         instance = kwargs.get("instance")
         if instance and instance.date_of_event:
-            self.fields["birth_month"].initial = instance.date_of_event.month
-            self.fields["birth_day"].initial = instance.date_of_event.day
-            self.fields["birth_year"].initial = instance.date_of_event.year
+            self.fields["month"].initial = instance.date_of_event.month
+            self.fields["day"].initial = instance.date_of_event.day
+            self.fields["year"].initial = instance.date_of_event.year
 
     def clean(self):
         cleaned_data = super().clean()
 
         try:
-            month = int(cleaned_data.get("birth_month"))
-            day = int(cleaned_data.get("birth_day"))
-            year = int(cleaned_data.get("birth_year"))
+            month = int(cleaned_data.get("month"))
+            day = int(cleaned_data.get("day"))
+            year = int(cleaned_data.get("year"))
 
             cleaned_data["date_of_event"] = datetime.date(year, month, day)
         except (ValueError, TypeError):

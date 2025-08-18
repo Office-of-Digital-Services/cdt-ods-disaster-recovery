@@ -1,0 +1,21 @@
+{% extends "vital_records/flow_base.html" %}
+{% block flow-container %}
+    <form method="post" class="form">
+        <fieldset role="group" aria-describedby="{{ form_hint_name }}">
+            <legend>
+                <h2>{{ form_question }}</h2>
+            </legend>
+            <p id="{{ form_hint_name }}" class="mb-3">{{ form_hint }}</p>
+            {% csrf_token %}
+            {% if form_layout == "date_form" %}
+                {% include "vital_records/_date_form.html" %}
+            {% elif form_layout == "couples_names_form" %}
+                {% include "vital_records/_two_column_form.html" with form=form fields=person_1_fields label=parent_1_label label_id=parent_1_label_id %}
+                {% include "vital_records/_two_column_form.html" with form=form fields=person_2_fields label=parent_2_label label_id=parent_2_label_id %}
+            {% else %}
+                {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
+            {% endif %}
+        </fieldset>
+        <button type="submit" class="btn btn-primary mt-4">Next</button>
+    </form>
+{% endblock flow-container %}

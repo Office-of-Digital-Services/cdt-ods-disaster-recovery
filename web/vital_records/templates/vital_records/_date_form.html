@@ -1,0 +1,15 @@
+{% load form_helpers %}
+<div class="row gap-md-3">
+    <div class="col-3 col-md-3">
+        {{ form.month|label_with_required }}
+        {{ form.month }}
+    </div>
+    <div class="col-3 col-md-2">
+        {{ form.day|label_with_required }}
+        {{ form.day }}
+    </div>
+    <div class="col-4 col-md-2">
+        {{ form.year|label_with_required }}
+        {{ form.year }}
+    </div>
+</div>

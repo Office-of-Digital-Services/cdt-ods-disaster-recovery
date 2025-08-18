@@ -1,76 +1,66 @@
-{% extends "vital_records/base.html" %}
+{% extends "vital_records/flow_base.html" %}
 {% load i18n %}
-{% block inner-content %}
-    <div class="row">
-        <div class="col-3">
-            {% with request.resolver_match.url_name as url_name %}
-                {% include "vital_records/_vertical_tracker.html" with url_name=url_name %}
-            {% endwith %}
-        </div>
-        <div class="col-md-9">
-            <small class="accent">Step 6 of 6</small>
-            <h2>Confirm your order</h2>
-            <p class="m-b-sm p-b-md">
-                The following information will be used to search for your replacement record. If everything looks accurate, press “Submit your order” below to finish your request. If you need to edit your request, you can go back without losing your progress.
-            </p>
-            <hr>
-            <h3 class="md m-b-sm">Birth record details</h3>
-            <p>Your record will be searched using the information provided. Please verify it is correct.</p>
-            <dl class="m-b-40">
-                <dt>Name</dt>
-                <dd>
-                    {{ vital_records_request.first_name }} {{ vital_records_request.middle_name }} {{ vital_records_request.last_name }}
-                </dd>
-                <dt>County of birth</dt>
-                <dd>
-                    {{ county_display }}
-                </dd>
-                <dt>Date of birth</dt>
-                <dd>
-                    {{ vital_records_request.date_of_event }}
-                </dd>
-                <dt>Parents’ names</dt>
-                <dd>
-                    {{ vital_records_request.person_1_first_name }} {{ vital_records_request.person_1_last_name }}
-                    <br>
-                    {{ vital_records_request.person_2_first_name }} {{ vital_records_request.person_2_last_name }}
-                </dd>
-            </dl>
-            <hr>
-            <h3 class="md">Order information</h3>
-            <dl>
-                <dt>Number of replacements</dt>
-                <dd>
-                    {{ vital_records_request.number_of_records }}
-                </dd>
-                <dt>Mailing address</dt>
-                <dd>
-                    {{ vital_records_request.order_first_name }} {{ vital_records_request.order_last_name }}
-                    <br>
-                    {{ vital_records_request.address }}
-                    {{ vital_records_request.address_2 }}
-                    <br>
-                    {{ vital_records_request.city }}, {{ vital_records_request.state }} {{ vital_records_request.zip_code }}
-                    <br>
-                    United States
-                </dd>
-                <dt>Email address</dt>
-                <dd>
-                    {{ vital_records_request.email_address }}
-                </dd>
-                <dt>Phone number</dt>
-                <dd>
-                    {{ vital_records_request.phone_number }}
-                </dd>
-            </dl>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary m-b-sm">Submit your order</button>
-            </form>
-            <p class="m-b-40 p-b-lg">
-                or <a href="{% url 'vital_records:request_name' pk=vital_records_request.id %}">go back</a>
-            </p>
-        </div>
-    </div>
-{% endblock inner-content %}
+{% block flow-container %}
+    <h2>Confirm your order</h2>
+    <p class="m-b-sm p-b-md">
+        The following information will be used to search for your replacement record. If everything looks accurate, press “Submit your order” below to finish your request. If you need to edit your request, you can go back without losing your progress.
+    </p>
+    <hr>
+    <h3 class="md m-b-sm">Birth record details</h3>
+    <p>Your record will be searched using the information provided. Please verify it is correct.</p>
+    <dl class="m-b-40">
+        <dt>Name</dt>
+        <dd>
+            {{ vital_records_request.first_name }} {{ vital_records_request.middle_name }} {{ vital_records_request.last_name }}
+        </dd>
+        <dt>County of birth</dt>
+        <dd>
+            {{ county_display }}
+        </dd>
+        <dt>Date of birth</dt>
+        <dd>
+            {{ vital_records_request.date_of_event }}
+        </dd>
+        <dt>Parents’ names</dt>
+        <dd>
+            {{ vital_records_request.person_1_first_name }} {{ vital_records_request.person_1_last_name }}
+            <br>
+            {{ vital_records_request.person_2_first_name }} {{ vital_records_request.person_2_last_name }}
+        </dd>
+    </dl>
+    <hr>
+    <h3 class="md">Order information</h3>
+    <dl>
+        <dt>Number of replacements</dt>
+        <dd>
+            {{ vital_records_request.number_of_records }}
+        </dd>
+        <dt>Mailing address</dt>
+        <dd>
+            {{ vital_records_request.order_first_name }} {{ vital_records_request.order_last_name }}
+            <br>
+            {{ vital_records_request.address }}
+            {{ vital_records_request.address_2 }}
+            <br>
+            {{ vital_records_request.city }}, {{ vital_records_request.state }} {{ vital_records_request.zip_code }}
+            <br>
+            United States
+        </dd>
+        <dt>Email address</dt>
+        <dd>
+            {{ vital_records_request.email_address }}
+        </dd>
+        <dt>Phone number</dt>
+        <dd>
+            {{ vital_records_request.phone_number }}
+        </dd>
+    </dl>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary m-b-sm">Submit your order</button>
+    </form>
+    <p class="m-b-40 p-b-lg">
+        or <a href="{% url 'vital_records:request_name' pk=vital_records_request.id %}">go back</a>
+    </p>
+{% endblock flow-container %}
