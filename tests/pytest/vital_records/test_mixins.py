@@ -72,6 +72,7 @@ class TestStepsMixin:
         birth_view.step_name = step_name
         context = birth_view.get_context_data()
 
+        assert context["page_title"] == "Replacement birth records"
         assert context["all_steps"] == [
             Steps.name,
             Steps.county_of_birth,
@@ -80,7 +81,6 @@ class TestStepsMixin:
             Steps.order_information,
             Steps.preview_and_submit,
         ]
-
         assert context["step_number"] == expected_step_number
         assert context["previous_route"] == Routes.app_route(expected_previous_route)
 
@@ -98,6 +98,7 @@ class TestStepsMixin:
         marriage_view.step_name = step_name
         context = marriage_view.get_context_data()
 
+        assert context["page_title"] == "Replacement marriage records"
         assert context["all_steps"] == [
             Steps.name,
             Steps.county_of_marriage,
@@ -105,7 +106,6 @@ class TestStepsMixin:
             Steps.order_information,
             Steps.preview_and_submit,
         ]
-
         assert context["step_number"] == expected_step_number
         assert context["previous_route"] == Routes.app_route(expected_previous_route)
 
