@@ -56,7 +56,7 @@ class StartView(EligibilityMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement records"
+        context["page_title"] = "Replacement record"
 
         return context
 
@@ -80,7 +80,7 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
+        context["page_title"] = f"Replacement {self.object.type} record"
 
         return context
 
@@ -101,7 +101,7 @@ class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
+        context["page_title"] = "Replacement birth record"
         context["total_steps"] = 6
 
         context["current_step"] = 1
@@ -135,7 +135,7 @@ class CountyView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
+        context["page_title"] = "Replacement birth record"
         context["total_steps"] = 6
 
         context["current_step"] = 2
@@ -168,7 +168,7 @@ class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
+        context["page_title"] = "Replacement birth record"
         context["total_steps"] = 6
 
         context["current_step"] = 3
@@ -205,7 +205,7 @@ class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
+        context["page_title"] = "Replacement birth record"
         context["total_steps"] = 6
 
         context["current_step"] = 4
@@ -246,7 +246,7 @@ class OrderInfoView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
+        context["page_title"] = "Replacement birth record"
         context["total_steps"] = 6
 
         context["current_step"] = 5
@@ -289,7 +289,7 @@ class SubmitView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
+        context["page_title"] = "Replacement birth record"
         context["total_steps"] = 6
 
         context["current_step"] = 6
@@ -303,7 +303,7 @@ class SubmittedView(EligibilityMixin, ValidateRequestIdMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
+        context["page_title"] = "Replacement birth record"
         return context
 
     def get(self, request, *args, **kwargs):
