@@ -1,7 +1,7 @@
 {% extends "vital_records/flow_base.html" %}
 {% load i18n %}
 {% load form_helpers %}
-{% block form %}
+{% block flow-container %}
     <form method="post" class="form">
         <fieldset role="group" aria-describedby="orders-hint">
             <legend>
@@ -77,4 +77,4 @@
         </fieldset>
         <button type="submit" class="btn btn-primary">Preview your order</button>
     </form>
-{% endblock form %}
+{% endblock flow-container %}
