@@ -109,7 +109,7 @@ class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         context["form_hint"] = "Please write the information as it appears on the birth certificate."
         context["font_hint_name"] = "name-hint"
         form = context["form"]
-        context["form_layout"] = 2
+
         context["form_fields"] = [
             form["first_name"],
             form["middle_name"],
@@ -145,7 +145,7 @@ class CountyView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         )
         context["font_hint_name"] = "county-hint"
         form = context["form"]
-        context["form_layout"] = 2
+
         context["form_fields"] = [form["county_of_event"]]
 
         return context
@@ -172,7 +172,7 @@ class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         context["total_steps"] = 6
 
         context["current_step"] = 3
-        context["form_layout"] = 3
+        context["form_layout"] = "date_form"
         context["font_hint_name"] = "dob-hint"
         context["form_question"] = "What is the date of birth?"
         context["form_hint"] = "If you’re not sure, enter your approximate date of birth."
@@ -209,7 +209,7 @@ class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         context["total_steps"] = 6
 
         context["current_step"] = 4
-        context["form_layout"] = 4
+        context["form_layout"] = "couples_names_form"
         context["font_hint_name"] = "parents-hint"
         context["form_question"] = "What were the names of the registrant’s parents at the time of the registrant’s birth?"
         context["form_hint"] = "Please write the information as it appears on the birth certificate."
@@ -218,10 +218,14 @@ class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
             form["person_1_first_name"],
             form["person_1_last_name"],
         ]
+        context["parent_1_label"] = "Parent 1"
+        context["parent_1_labelid"] = "parent_1_helptext"
         context["person_2_fields"] = [
             form["person_2_first_name"],
             form["person_2_last_name"],
         ]
+        context["parent_2_label"] = "Parent 2"
+        context["parent_2_labelid"] = "parent_2_helptext"
 
         return context
 

@@ -7,13 +7,13 @@
             </legend>
             <p id="{{ form_hint_name }}" class="mb-3">{{ form_hint }}</p>
             {% csrf_token %}
-            {% if form_layout == 2 %}
-                {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
-            {% elif form_layout == 3 %}
+            {% if form_layout == "date_form" %}
                 {% include "vital_records/_date_form.html" %}
-            {% elif form_layout == 4 %}
-                {% include "vital_records/_two_column_form.html" with form=form fields=person_1_fields label="Parent 1" label_id="parent_1_helptext" %}
-                {% include "vital_records/_two_column_form.html" with form=form fields=person_2_fields label="Parent 2" label_id="parent_2_helptext" %}
+            {% elif form_layout == "couples_names_form" %}
+                {% include "vital_records/_two_column_form.html" with form=form fields=person_1_fields label=parent_1_label label_id=parent_1_label_id %}
+                {% include "vital_records/_two_column_form.html" with form=form fields=person_2_fields label=parent_2_label label_id=parent_2_label_id %}
+            {% else %}
+                {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
             {% endif %}
         </fieldset>
         <button type="submit" class="btn btn-primary mt-4">Next</button>
