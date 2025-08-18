@@ -1,29 +1,21 @@
-{% extends "vital_records/base.html" %}
-{% block inner-content %}
-    <div class="row">
-        <div class="col-md-3">
-            {% with request.resolver_match.url_name as url_name %}
-                {% include "vital_records/_vertical_tracker.html" with url_name=url_name %}
-            {% endwith %}
-        </div>
-        <div class="col-md-9">
-            <small class="accent">Step {{ current_step }} of {{ total_steps }}</small>
-            <form method="post" class="form">
-                <fieldset role="group" aria-describedby="{{ form_hint_name }}">
-                    <legend>
-                        <h2>{{ form_question }}</h2>
-                    </legend>
-                    <p id="{{ form_hint_name }}" class="mb-3">{{ form_hint }}</p>
-                    {% csrf_token %}
-                    {% if form_columns == 2 %}
-                        {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
-                    {% elif form_columns == 3 %}
-                        {% include "vital_records/_date_form.html" %}
-                    {% endif %}
-                </fieldset>
-                <button type="submit" class="btn btn-secondary mt-4">Back</button>
-                <button type="submit" class="btn btn-primary mt-4">Next</button>
-            </form>
-        </div>
-    </div>
-{% endblock inner-content %}
+{% extends "vital_records/flow_base.html" %}
+{% block flow-container %}
+    <form method="post" class="form">
+        <fieldset role="group" aria-describedby="{{ form_hint_name }}">
+            <legend>
+                <h2>{{ form_question }}</h2>
+            </legend>
+            <p id="{{ form_hint_name }}" class="mb-3">{{ form_hint }}</p>
+            {% csrf_token %}
+            {% if form_columns == 2 %}
+                {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
+            {% elif form_columns == 3 %}
+                {% include "vital_records/_date_form.html" %}
+            {% elif form_columns == 4 %}
+                {% include "vital_records/_two_column_form.html" with form=form fields=person_1_fields label="Parent 1" label_id="parent_1_helptext" %}
+                {% include "vital_records/_two_column_form.html" with form=form fields=person_2_fields label="Parent 2" label_id="parent_2_helptext" %}
+            {% endif %}
+        </fieldset>
+        <button type="submit" class="btn btn-primary mt-4">Next</button>
+    </form>
+{% endblock flow-container %}

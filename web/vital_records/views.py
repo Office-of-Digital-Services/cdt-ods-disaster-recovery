@@ -163,7 +163,7 @@ class CountyView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = DateOfBirthForm
-    template_name = "vital_records/request/dob.html"
+    template_name = "vital_records/request/form.html"
     context_object_name = "vital_request"
 
     def get_context_data(self, **kwargs):
@@ -172,6 +172,7 @@ class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         context["total_steps"] = 6
 
         context["current_step"] = 3
+        context["form_columns"] = 3
         context["font_hint_name"] = "dob-hint"
         context["form_question"] = "What is the date of birth?"
         context["form_hint"] = "If you’re not sure, enter your approximate date of birth."
@@ -191,7 +192,7 @@ class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = ParentsNamesForm
-    template_name = "vital_records/request/parents.html"
+    template_name = "vital_records/request/form.html"
 
     def form_valid(self, form):
         # Move form state to next state
@@ -205,6 +206,13 @@ class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Replacement birth records"
+        context["total_steps"] = 6
+
+        context["current_step"] = 4
+        context["form_columns"] = 4
+        context["font_hint_name"] = "parents-hint"
+        context["form_question"] = "What were the names of the registrant’s parents at the time of the registrant’s birth?"
+        context["form_hint"] = "Please write the information as it appears on the birth certificate."
         form = context["form"]
         context["person_1_fields"] = [
             form["person_1_first_name"],
@@ -235,6 +243,9 @@ class OrderInfoView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Replacement birth records"
+        context["total_steps"] = 6
+
+        context["current_step"] = 5
         form = context["form"]
         context["name_fields"] = [
             form["order_first_name"],
@@ -275,6 +286,9 @@ class SubmitView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Replacement birth records"
+        context["total_steps"] = 6
+
+        context["current_step"] = 6
         context["county_display"] = self.get_display_county(context)
         return context
 
