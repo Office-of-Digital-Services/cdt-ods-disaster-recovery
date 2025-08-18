@@ -126,3 +126,21 @@ class TestStepsMixin:
         next_route = Routes.app_route(expected_next_route)
 
         assert success_url == reverse(next_route, kwargs={"pk": birth_view.object.pk})
+
+    @pytest.mark.skip(reason="reverse will return an error until marriage URLs are defined")
+    @pytest.mark.parametrize(
+        "step_name,expected_next_route",
+        [
+            (Steps.name, Routes.marriage_request_county),
+            (Steps.county_of_marriage, Routes.marriage_request_date),
+            (Steps.date_of_marriage, Routes.request_order),
+            (Steps.order_information, Routes.request_submit),
+            (Steps.preview_and_submit, Routes.request_submitted),
+        ],
+    )
+    def test_get_success_url_marriage(self, marriage_view, step_name, expected_next_route):
+        marriage_view.step_name = step_name
+        success_url = marriage_view.get_success_url()
+        next_route = Routes.app_route(expected_next_route)
+
+        assert success_url == reverse(next_route, kwargs={"pk": marriage_view.object.pk})
