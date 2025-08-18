@@ -7,11 +7,11 @@
             </legend>
             <p id="{{ form_hint_name }}" class="mb-3">{{ form_hint }}</p>
             {% csrf_token %}
-            {% if form_columns == 2 %}
+            {% if form_layout == 2 %}
                 {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
-            {% elif form_columns == 3 %}
+            {% elif form_layout == 3 %}
                 {% include "vital_records/_date_form.html" %}
-            {% elif form_columns == 4 %}
+            {% elif form_layout == 4 %}
                 {% include "vital_records/_two_column_form.html" with form=form fields=person_1_fields label="Parent 1" label_id="parent_1_helptext" %}
                 {% include "vital_records/_two_column_form.html" with form=form fields=person_2_fields label="Parent 2" label_id="parent_2_helptext" %}
             {% endif %}
