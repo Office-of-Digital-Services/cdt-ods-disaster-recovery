@@ -21,6 +21,18 @@ class EmailTask(Task):
     def __init__(self, request_id: UUID, package: str):
         super().__init__(request_id=request_id, package=package)
 
+    def _format_record_type(self, record_type: str) -> str:
+        """
+        Checks the value of the record type and returns a
+        string formatted for the email template.
+        """
+        type_format = {
+            "birth": "Birth",
+            "marriage": "Marriage",
+        }
+
+        return type_format.get(record_type)
+
     def handler(self, request_id: UUID, package: str):
         logger.debug(f"Sending request package for: {request_id}")
         request = VitalRecordsRequest.get_with_status(request_id, "packaged")
@@ -29,6 +41,7 @@ class EmailTask(Task):
             "number_of_copies": request.number_of_records,
             "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
             "email_address": request.email_address,
+            "request_type": self._format_record_type(request.type),
         }
         text_content = render_to_string(EMAIL_TXT_TEMPLATE, context)
         html_content = render_to_string(EMAIL_HTML_TEMPLATE, context)

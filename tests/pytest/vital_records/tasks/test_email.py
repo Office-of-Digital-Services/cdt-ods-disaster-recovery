@@ -35,6 +35,7 @@ class TestEmailTask:
             "number_of_copies": mock_VitalRecordsRequest.number_of_records,
             "email_address": mock_VitalRecordsRequest.email_address,
             "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
+            "request_type": task._format_record_type(mock_VitalRecordsRequest.type),
         }
         mock_render.assert_any_call(EMAIL_TXT_TEMPLATE, expected_ctx)
         mock_render.assert_any_call(EMAIL_HTML_TEMPLATE, expected_ctx)
