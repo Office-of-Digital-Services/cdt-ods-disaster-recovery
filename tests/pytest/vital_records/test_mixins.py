@@ -46,7 +46,6 @@ class TestStepsMixin:
     def birth_view(self, app_request):
         v = self.SampleView()
         v.setup(app_request)
-        v.step_name = Steps.name
         v.object = models.VitalRecordsRequest(type="birth")
         return v
 
@@ -54,11 +53,22 @@ class TestStepsMixin:
     def marriage_view(self, app_request):
         v = self.SampleView()
         v.setup(app_request)
-        v.step_name = Steps.name
         v.object = models.VitalRecordsRequest(type="marriage")
         return v
 
-    def test_get_context_data_birth(self, birth_view):
+    @pytest.mark.parametrize(
+        "step_name,expected_step_number,expected_previous_route",
+        [
+            (Steps.name, 1, Routes.request_statement),
+            (Steps.county_of_birth, 2, Routes.birth_request_name),
+            (Steps.date_of_birth, 3, Routes.birth_request_county),
+            (Steps.parents_names, 4, Routes.birth_request_dob),
+            (Steps.order_information, 5, Routes.birth_request_parents),
+            (Steps.preview_and_submit, 6, Routes.request_order),
+        ],
+    )
+    def test_get_context_data_birth(self, birth_view, step_name, expected_step_number, expected_previous_route):
+        birth_view.step_name = step_name
         context = birth_view.get_context_data()
 
         assert context["all_steps"] == [
@@ -70,10 +80,21 @@ class TestStepsMixin:
             Steps.preview_and_submit,
         ]
 
-        assert context["step_number"] == 1  # since fixture's step_name is "Name"
-        assert context["previous_route"] == Routes.app_route(Routes.request_statement)
+        assert context["step_number"] == expected_step_number
+        assert context["previous_route"] == Routes.app_route(expected_previous_route)
 
-    def test_get_context_data_marriage(self, marriage_view):
+    @pytest.mark.parametrize(
+        "step_name,expected_step_number,expected_previous_route",
+        [
+            (Steps.name, 1, Routes.request_statement),
+            (Steps.county_of_marriage, 2, Routes.marriage_request_name),
+            (Steps.date_of_marriage, 3, Routes.marriage_request_county),
+            (Steps.order_information, 4, Routes.marriage_request_date),
+            (Steps.preview_and_submit, 5, Routes.request_order),
+        ],
+    )
+    def test_get_context_data_marriage(self, marriage_view, step_name, expected_step_number, expected_previous_route):
+        marriage_view.step_name = step_name
         context = marriage_view.get_context_data()
 
         assert context["all_steps"] == [
@@ -84,5 +105,5 @@ class TestStepsMixin:
             Steps.preview_and_submit,
         ]
 
-        assert context["step_number"] == 1  # since fixture's step_name is "Name"
-        assert context["previous_route"] == Routes.app_route(Routes.request_statement)
+        assert context["step_number"] == expected_step_number
+        assert context["previous_route"] == Routes.app_route(expected_previous_route)
