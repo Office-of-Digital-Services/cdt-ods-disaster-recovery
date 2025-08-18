@@ -1,5 +1,6 @@
 from django.http import HttpResponseForbidden
 from django.urls import reverse
+from django.views.generic.base import ContextMixin
 
 from web.vital_records.routes import Routes
 from web.vital_records.session import Session
@@ -27,7 +28,7 @@ class Steps:
     preview_and_submit = "Preview & submit"
 
 
-class StepsMixin:
+class StepsMixin(ContextMixin):
     STEPS = {
         "birth": {
             Steps.name: Routes.birth_request_name,
