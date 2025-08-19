@@ -1,6 +1,6 @@
 from django.urls import path
 
-from web.vital_records.views import common
+from web.vital_records.views import birth, common
 
 # the `app_name` import isn't used directly, but the symbol still needs to be defined in this module
 from web.vital_records.routes import app_name, Routes  # noqa: F401
@@ -12,7 +12,7 @@ urlpatterns = [
     path("request", common.StartView.as_view(), name=Routes.request_start),
     path("request/<uuid:pk>/type", common.TypeView.as_view(), name=Routes.request_type),
     path("request/<uuid:pk>/statement", common.StatementView.as_view(), name=Routes.request_statement),
-    path("request/birth/<uuid:pk>/name", common.NameView.as_view(), name=Routes.birth_request_name),
+    path("request/birth/<uuid:pk>/name", birth.NameView.as_view(), name=Routes.birth_request_name),
     path("request/birth/<uuid:pk>/county", common.CountyView.as_view(), name=Routes.birth_request_county),
     path("request/birth/<uuid:pk>/dob", common.DateOfBirthView.as_view(), name=Routes.birth_request_dob),
     path("request/birth/<uuid:pk>/parents", common.ParentsNamesView.as_view(), name=Routes.birth_request_parents),

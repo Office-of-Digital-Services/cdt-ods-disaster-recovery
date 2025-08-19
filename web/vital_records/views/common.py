@@ -15,7 +15,6 @@ from web.vital_records.forms.common import (
     SubmitForm,
 )
 from web.vital_records.forms.birth import (
-    NameForm,
     CountyForm,
     DateOfBirthForm,
     ParentsNamesForm,
@@ -130,24 +129,8 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
 class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
-    form_class = NameForm
     template_name = "vital_records/request/form.html"
     step_name = Steps.name
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form_question"] = "What is the name on the birth certificate?"
-        context["form_hint"] = "Please write the information as it appears on the birth certificate."
-        context["font_hint_name"] = "name-hint"
-        form = context["form"]
-
-        context["form_fields"] = [
-            form["first_name"],
-            form["middle_name"],
-            form["last_name"],
-        ]
-
-        return context
 
     def form_valid(self, form):
         # Move form state to next state
