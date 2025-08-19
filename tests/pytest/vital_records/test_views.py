@@ -74,7 +74,7 @@ class TestStartView:
         mock_Session_cls.assert_called_once_with(app_request, request_id=request_id)
         # response is a redirect
         assert response.status_code == 302
-        assert response.url == f"/vital-records/request/{request_id}/statement"
+        assert response.url == f"/vital-records/request/{request_id}/type"
 
 
 class TestSubmittedView:
