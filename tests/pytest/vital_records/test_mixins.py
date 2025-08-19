@@ -72,7 +72,7 @@ class TestStepsMixin:
         birth_view.step_name = step_name
         context = birth_view.get_context_data()
 
-        assert context["page_title"] == "Replacement birth records"
+        assert context["page_title"] == "Replacement birth record"
         assert context["all_steps"] == [
             Steps.name,
             Steps.county_of_birth,
@@ -98,7 +98,7 @@ class TestStepsMixin:
         marriage_view.step_name = step_name
         context = marriage_view.get_context_data()
 
-        assert context["page_title"] == "Replacement marriage records"
+        assert context["page_title"] == "Replacement marriage record"
         assert context["all_steps"] == [
             Steps.name,
             Steps.county_of_marriage,
