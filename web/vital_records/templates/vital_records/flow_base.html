@@ -7,7 +7,7 @@
             {% endwith %}
         </div>
         <div class="col-md-9">
-            <small class="accent">Step {{ current_step }} of {{ total_steps }}</small>
+            <small class="accent">Step {{ step_number }} of {{ all_steps | length }}</small>
             {% block flow-container %}
             {% endblock flow-container %}
         </div>

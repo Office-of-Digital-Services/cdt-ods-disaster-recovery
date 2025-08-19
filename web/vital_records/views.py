@@ -5,6 +5,7 @@ from django.views.generic import DetailView, RedirectView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
 from web.core.views import EligibilityMixin as CoreEligibilityMixin
+from web.vital_records.routes import Routes
 from web.vital_records.tasks.package import submit_request
 from web.vital_records.forms import (
     EligibilityForm,
@@ -16,7 +17,7 @@ from web.vital_records.forms import (
     OrderInfoForm,
     SubmitForm,
 )
-from web.vital_records.mixins import ValidateRequestIdMixin
+from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
 
@@ -64,12 +65,17 @@ class StartView(EligibilityMixin, CreateView):
         # set the object via form.save(), since we aren't using super().form_valid()
         self.object = form.save()
         # Move form state to next state
-        next_route = self.object.complete_start()
+        self.object.complete_start()
+
+        # temporary hard-coding until we implement TypeView
+        self.object.type = "birth"
+
         self.object.save()
 
         # store generated request id in session for verification in later steps
         Session(self.request, request_id=self.object.pk)
 
+        next_route = Routes.app_route(Routes.request_statement)
         return redirect(next_route, pk=self.object.pk)
 
 
@@ -80,31 +86,33 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
-
+        context["page_title"] = f"Replacement {self.object.type} records"
+        context["previous_route"] = Routes.app_route(Routes.request_start)
         return context
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_statement()
+        self.object.complete_statement()
         self.object.save()
+
+        type_steps = StepsMixin.get_type_steps(self.object.type)
+        first_step_name = StepsMixin.get_step_names(type_steps)[0]
+        first_step_route = type_steps[first_step_name]
+        next_route = Routes.app_route(first_step_route)
 
         self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
 
-class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = NameForm
     template_name = "vital_records/request/form.html"
+    step_name = Steps.name
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
-        context["total_steps"] = 6
-
-        context["current_step"] = 1
         context["form_question"] = "What is the name on the birth certificate?"
         context["form_hint"] = "Please write the information as it appears on the birth certificate."
         context["font_hint_name"] = "name-hint"
@@ -120,28 +128,24 @@ class NameView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_name()
+        self.object.complete_name()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
 
-class CountyView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = CountyForm
     template_name = "vital_records/request/form.html"
+    step_name = Steps.county_of_birth
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
-        context["total_steps"] = 6
-
-        context["current_step"] = 2
         context["form_question"] = "What is the county of birth?"
         context["form_hint"] = (
-            "We only have records for people born in California. If you were born in a different state, please contact the Vital Records office in the state you were born to request a new birth record."
+            "We only have records for people born in California. If you were born in a different state, please contact the "
+            "Vital Records office in the state you were born to request a new birth record."
         )
         context["font_hint_name"] = "county-hint"
         form = context["form"]
@@ -152,26 +156,21 @@ class CountyView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_county()
+        self.object.complete_county()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
 
-class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class DateOfBirthView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = DateOfBirthForm
     template_name = "vital_records/request/form.html"
     context_object_name = "vital_request"
+    step_name = Steps.date_of_birth
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
-        context["total_steps"] = 6
-
-        context["current_step"] = 3
         context["form_layout"] = "date_form"
         context["font_hint_name"] = "dob-hint"
         context["form_question"] = "What is the date of birth?"
@@ -181,34 +180,27 @@ class DateOfBirthView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_dob()
+        self.object.complete_dob()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
 
-class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = ParentsNamesForm
     template_name = "vital_records/request/form.html"
+    step_name = Steps.parents_names
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_parents_names()
+        self.object.complete_parents_names()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
-        context["total_steps"] = 6
-
-        context["current_step"] = 4
         context["form_layout"] = "couples_names_form"
         context["font_hint_name"] = "parents-hint"
         context["form_question"] = "What were the names of the registrant’s parents at the time of the registrant’s birth?"
@@ -230,26 +222,22 @@ class ParentsNamesView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return context
 
 
-class OrderInfoView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class OrderInfoView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = OrderInfoForm
     template_name = "vital_records/request/order.html"
+    step_name = Steps.order_information
 
     def form_valid(self, form):
         # Move form state to next state
-        next_route = self.object.complete_order_info()
+        self.object.complete_order_info()
         self.object.save()
-
-        self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
-        context["total_steps"] = 6
 
-        context["current_step"] = 5
         form = context["form"]
         context["name_fields"] = [
             form["order_first_name"],
@@ -259,18 +247,18 @@ class OrderInfoView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return context
 
 
-class SubmitView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = SubmitForm
     template_name = "vital_records/request/confirm.html"
     context_object_name = "vital_records_request"
+    step_name = Steps.preview_and_submit
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
 
         if self.object.status != "submitted":
-            next_route = self.object.complete_submit()
-            self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
+            self.object.complete_submit()
             self.object.save()
             return super().form_valid(form)
         else:
@@ -289,10 +277,6 @@ class SubmitView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
-        context["total_steps"] = 6
-
-        context["current_step"] = 6
         context["county_display"] = self.get_display_county(context)
         return context
 
@@ -303,7 +287,7 @@ class SubmittedView(EligibilityMixin, ValidateRequestIdMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Replacement birth records"
+        context["page_title"] = f"Replacement {self.object.type} records"
         return context
 
     def get(self, request, *args, **kwargs):

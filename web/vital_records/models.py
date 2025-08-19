@@ -4,8 +4,6 @@ from django.db import models
 from django.utils import timezone
 from django_fsm import FSMField, transition
 
-from web.vital_records.routes import Routes
-
 
 class VitalRecordsRequest(models.Model):
     """Represents a request to order a vital record through the Disaster Recovery app."""
@@ -26,11 +24,7 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
-    TYPE_CHOICES = [
-        ("", "Select type"),
-        ("birth", "Birth record"),
-        ("marriage", "Marriage record")
-    ]
+    TYPE_CHOICES = [("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record")]
 
     FIRE_CHOICES = [
         ("eaton", "Eaton fire"),
@@ -239,36 +233,34 @@ class VitalRecordsRequest(models.Model):
     @transition(field=status, source="initialized", target="started")
     def complete_start(self):
         self.started_at = timezone.now()
-        return Routes.app_route(Routes.request_statement)
 
     @transition(field=status, source="started", target="statement_completed")
     def complete_statement(self):
-        return Routes.app_route(Routes.request_name)
+        pass
 
     @transition(field=status, target="name_completed")
     def complete_name(self):
-        return Routes.app_route(Routes.request_county)
+        pass
 
     @transition(field=status, target="county_completed")
     def complete_county(self):
-        return Routes.app_route(Routes.request_dob)
+        pass
 
     @transition(field=status, target="dob_completed")
     def complete_dob(self):
-        return Routes.app_route(Routes.request_parents)
+        pass
 
     @transition(field=status, target="parents_names_completed")
     def complete_parents_names(self):
-        return Routes.app_route(Routes.request_order)
+        pass
 
     @transition(field=status, target="order_info_completed")
     def complete_order_info(self):
-        return Routes.app_route(Routes.request_submit)
+        pass
 
     @transition(field=status, source="order_info_completed", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
-        return Routes.app_route(Routes.request_submitted)
 
     @transition(field=status, source="submitted", target="enqueued")
     def complete_enqueue(self):

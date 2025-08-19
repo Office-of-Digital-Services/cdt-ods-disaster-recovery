@@ -55,12 +55,9 @@
             {{ vital_records_request.phone_number }}
         </dd>
     </dl>
-    <form method="post">
+    <form method="post" class="m-b-40 p-b-lg">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-primary m-b-sm">Submit your order</button>
     </form>
-    <p class="m-b-40 p-b-lg">
-        or <a href="{% url 'vital_records:request_name' pk=vital_records_request.id %}">go back</a>
-    </p>
 {% endblock flow-container %}
