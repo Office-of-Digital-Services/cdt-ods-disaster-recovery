@@ -11,12 +11,14 @@ from web.vital_records.forms.common import (
     EligibilityForm,
     TypeForm,
     StatementForm,
+    OrderInfoForm,
+    SubmitForm,
+)
+from web.vital_records.forms.birth import (
     NameForm,
     CountyForm,
     DateOfBirthForm,
     ParentsNamesForm,
-    OrderInfoForm,
-    SubmitForm,
 )
 from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
