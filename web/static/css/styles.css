@@ -258,9 +258,12 @@ header {
     border-color: var(--gray-200, #d4d4d7);
   }
 
-  form .btn[type="submit"] {
+  form .btn-row {
     margin-top: 40px;
     margin-bottom: 80px;
+  }
+
+  form .btn {
     font-size: 18px;
     padding: 8px 16px;
   }
