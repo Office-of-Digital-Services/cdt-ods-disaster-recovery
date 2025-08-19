@@ -2,7 +2,7 @@ from django.urls import reverse
 
 import pytest
 
-from web.vital_records import views
+from web.vital_records.views import common
 from web.vital_records.forms.common import EligibilityForm
 from web.vital_records.session import Session
 
@@ -10,14 +10,14 @@ from web.vital_records.session import Session
 @pytest.fixture
 def mock_Session_cls(mocker):
     session = mocker.Mock(spec=Session)
-    return mocker.patch("web.vital_records.views.Session", return_value=session)
+    return mocker.patch("web.vital_records.views.common.Session", return_value=session)
 
 
 @pytest.mark.django_db
 class TestIndexView:
     @pytest.fixture
     def view(self, app_request):
-        v = views.IndexView()
+        v = common.IndexView()
         v.setup(app_request)
         return v
 
@@ -34,7 +34,7 @@ class TestIndexView:
 class TestLoginView:
     @pytest.fixture
     def view(self, app_request):
-        v = views.LoginView()
+        v = common.LoginView()
         v.setup(app_request)
         return v
 
@@ -54,7 +54,7 @@ class TestLoginView:
 class TestStartView:
     @pytest.fixture
     def view(self, app_request):
-        v = views.StartView()
+        v = common.StartView()
         v.setup(app_request)
         return v
 
@@ -80,7 +80,7 @@ class TestStartView:
 class TestSubmittedView:
     @pytest.fixture
     def view(app_request):
-        v = views.SubmittedView()
+        v = common.SubmittedView()
         v.setup(app_request)
         return v
 
@@ -91,7 +91,7 @@ class TestSubmittedView:
 class TestUnverifiedView:
     @pytest.fixture
     def view(app_request):
-        v = views.UnverifiedView()
+        v = common.UnverifiedView()
         v.setup(app_request)
         return v
 
