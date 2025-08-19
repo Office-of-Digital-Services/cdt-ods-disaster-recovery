@@ -65,7 +65,7 @@ class StepsMixin(ContextMixin):
         step_names = self.get_step_names(type_steps)
         current_index = self.get_current_index(step_names)
 
-        context["page_title"] = f"Replacement {self.object.type} records"
+        context["page_title"] = f"Replacement {self.object.type} record"
         context["all_steps"] = step_names
         context["step_number"] = current_index + 1
 
