@@ -216,14 +216,14 @@ class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upd
             form["person_1_first_name"],
             form["person_1_last_name"],
         ]
-        context["parent_1_label"] = "Parent 1"
-        context["parent_1_labelid"] = "parent_1_helptext"
+        context["person_1_label"] = "Parent 1"
+        context["person_1_labelid"] = "parent_1_helptext"
         context["person_2_fields"] = [
             form["person_2_first_name"],
             form["person_2_last_name"],
         ]
-        context["parent_2_label"] = "Parent 2"
-        context["parent_2_labelid"] = "parent_2_helptext"
+        context["person_2_label"] = "Parent 2"
+        context["person_2_labelid"] = "parent_2_helptext"
 
         return context
 
