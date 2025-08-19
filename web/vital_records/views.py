@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from web.core.views import EligibilityMixin as CoreEligibilityMixin
 from web.vital_records.routes import Routes
 from web.vital_records.tasks.package import submit_request
-from web.vital_records.forms import (
+from web.vital_records.forms.common import (
     EligibilityForm,
     TypeForm,
     StatementForm,

@@ -3,7 +3,7 @@ from django.urls import reverse
 import pytest
 
 from web.vital_records import views
-from web.vital_records.forms import EligibilityForm
+from web.vital_records.forms.common import EligibilityForm
 from web.vital_records.session import Session
 
 
