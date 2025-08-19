@@ -15,13 +15,14 @@
             {% else %}
                 {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
             {% endif %}
-            <div class="btn-row list-unstyled">
-                <a href
-                   class="btn btn-outline-primary"
-                   role="button"
-                   href="{{ previous_route }}">Back</a>
-                <button type="submit" class="btn btn-primary">Next</button>
-            </div>
-        </fieldset>
-    </form>
+            <div class="btn-row">
+                <!-- djlint:off -->
+                            <a href
+                               class="btn btn-outline-primary"
+                               role="button"
+                               href="{{ previous_route }}">Back</a><button type="submit" class="btn btn-primary">Next</button>
+            <!-- djlint:on -->
+        </div>
+    </fieldset>
+</form>
 {% endblock flow-container %}
