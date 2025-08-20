@@ -7,16 +7,17 @@ from django.views.generic.edit import CreateView, UpdateView
 from web.core.views import EligibilityMixin as CoreEligibilityMixin
 from web.vital_records.routes import Routes
 from web.vital_records.tasks.package import submit_request
-from web.vital_records.forms import (
+from web.vital_records.forms.common import (
     EligibilityForm,
     TypeForm,
     StatementForm,
-    NameForm,
+    OrderInfoForm,
+    SubmitForm,
+)
+from web.vital_records.forms.birth import (
     CountyForm,
     DateOfBirthForm,
     ParentsNamesForm,
-    OrderInfoForm,
-    SubmitForm,
 )
 from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
@@ -128,24 +129,8 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
 class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
-    form_class = NameForm
     template_name = "vital_records/request/form.html"
     step_name = Steps.name
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form_question"] = "What is the name on the birth certificate?"
-        context["form_hint"] = "Please write the information as it appears on the birth certificate."
-        context["font_hint_name"] = "name-hint"
-        form = context["form"]
-
-        context["form_fields"] = [
-            form["first_name"],
-            form["middle_name"],
-            form["last_name"],
-        ]
-
-        return context
 
     def form_valid(self, form):
         # Move form state to next state
@@ -231,14 +216,14 @@ class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upd
             form["person_1_first_name"],
             form["person_1_last_name"],
         ]
-        context["parent_1_label"] = "Parent 1"
-        context["parent_1_labelid"] = "parent_1_helptext"
+        context["person_1_label"] = "Parent 1"
+        context["person_1_labelid"] = "parent_1_helptext"
         context["person_2_fields"] = [
             form["person_2_first_name"],
             form["person_2_last_name"],
         ]
-        context["parent_2_label"] = "Parent 2"
-        context["parent_2_labelid"] = "parent_2_helptext"
+        context["person_2_label"] = "Parent 2"
+        context["person_2_labelid"] = "parent_2_helptext"
 
         return context
 
