@@ -15,14 +15,7 @@
             {% else %}
                 {% include "vital_records/_two_column_form.html" with form=form fields=form_fields %}
             {% endif %}
-            <div class="btn-row">
-                <!-- djlint:off -->
-                                                <a href
-                                                    class="btn btn-outline-primary"
-                                                    role="button"
-                                            href="{% url previous_route pk=vital_records_request.id as previous_url %}">Back</a><button type="submit" class="btn btn-primary">Next</button>
-            <!-- djlint:on -->
-        </div>
-    </fieldset>
-</form>
+            {% include "vital_records/_button_row.html" with submit_label="Next" %}
+        </fieldset>
+    </form>
 {% endblock flow-container %}
