@@ -32,7 +32,7 @@
                     </div>
                     {% if form.legal_attestation.errors %}<div class="error">{{ form.legal_attestation.errors }}</div>{% endif %}
                 </div>
-                <button type="submit" class="btn btn-primary">Confirm and continue to order</button>
+                {% include "vital_records/_button_row.html" with submit_label="Confirm and continue to order" %}
             </form>
         </div>
     </div>
