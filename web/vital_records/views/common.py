@@ -8,6 +8,7 @@ from web.core.views import EligibilityMixin as CoreEligibilityMixin
 from web.vital_records.routes import Routes
 from web.vital_records.tasks.package import submit_request
 from web.vital_records.forms.common import (
+    DateOfEventForm,
     EligibilityForm,
     TypeForm,
     StatementForm,
@@ -16,7 +17,6 @@ from web.vital_records.forms.common import (
 )
 from web.vital_records.forms.birth import (
     CountyForm,
-    DateOfBirthForm,
     ParentsNamesForm,
 )
 from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
@@ -154,6 +154,7 @@ class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
 
 class DateOfEventView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
+    form_class = DateOfEventForm
     template_name = "vital_records/request/form.html"
     context_object_name = "vital_request"
     step_name = Steps.date_of_birth
