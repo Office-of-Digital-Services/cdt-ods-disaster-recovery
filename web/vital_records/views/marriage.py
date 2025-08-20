@@ -1,4 +1,5 @@
-from web.vital_records.forms.marriage import NameForm
+from web.vital_records.forms.marriage import NameForm, CountyForm
+from web.vital_records.mixins import Steps
 from web.vital_records.views import common
 
 
@@ -19,7 +20,7 @@ class NameView(common.NameView):
             form["person_1_first_name"],
             form["person_1_middle_name"],
             form["person_1_last_name"],
-            form["person_1_birth_last_name"]
+            form["person_1_birth_last_name"],
         ]
         context["person_1_label"] = "First person"
         context["person_1_labelid"] = "person_1_helptext"
@@ -27,9 +28,30 @@ class NameView(common.NameView):
             form["person_2_first_name"],
             form["person_2_middle_name"],
             form["person_2_last_name"],
-            form["person_2_birth_last_name"]
+            form["person_2_birth_last_name"],
         ]
         context["person_2_label"] = "Second person"
         context["person_2_labelid"] = "person_2_helptext"
+
+        return context
+
+
+class CountyView(common.CountyView):
+    form_class = CountyForm
+    step_name = Steps.county_of_marriage
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_question"] = "Where did the marriage occur?"
+        context["form_hint"] = (
+            "We only have records for people who were married or had marriage"
+            " licenses issued in California. If the marriage took place in a"
+            " different state, please contact the Vital Records office in the"
+            " state you were married to request a new record."
+        )
+        context["form_hint_name"] = "county-hint"
+
+        form = context["form"]
+        context["form_fields"] = [form["county_of_event"]]
 
         return context
