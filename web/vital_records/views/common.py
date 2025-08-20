@@ -256,6 +256,7 @@ class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["type"] = self.object.type.capitalize()
         context["county_display"] = self.get_display_county(context)
         return context
 
