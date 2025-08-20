@@ -1,4 +1,5 @@
-from web.vital_records.forms.marriage import NameForm, CountyForm
+from web.vital_records.forms.birth import CountyForm
+from web.vital_records.forms.marriage import NameForm
 from web.vital_records.mixins import Steps
 from web.vital_records.views import common
 
@@ -58,6 +59,7 @@ class CountyView(common.CountyView):
 
 
 class DateOfMarriageView(common.DateOfEventView):
+    step_name = Steps.date_of_marriage
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

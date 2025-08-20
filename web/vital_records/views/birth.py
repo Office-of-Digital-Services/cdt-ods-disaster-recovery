@@ -42,6 +42,7 @@ class CountyView(common.CountyView):
 
 
 class DateOfBirthView(common.DateOfEventView):
+    step_name = Steps.date_of_birth
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

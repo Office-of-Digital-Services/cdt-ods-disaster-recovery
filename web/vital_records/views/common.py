@@ -157,7 +157,6 @@ class DateOfEventView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upda
     form_class = DateOfEventForm
     template_name = "vital_records/request/form.html"
     context_object_name = "vital_request"
-    step_name = Steps.date_of_birth
 
     def form_valid(self, form):
         # Move form state to next state
