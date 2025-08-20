@@ -1,5 +1,6 @@
 from web.vital_records.forms.birth import NameForm
 from web.vital_records.views import common
+from web.vital_records.mixins import Steps
 
 
 class NameView(common.NameView):
@@ -19,3 +20,7 @@ class NameView(common.NameView):
         ]
 
         return context
+
+
+class CountyView(common.CountyView):
+    step_name = Steps.county_of_birth

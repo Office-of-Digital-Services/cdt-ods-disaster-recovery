@@ -144,7 +144,6 @@ class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
     model = VitalRecordsRequest
     form_class = CountyForm
     template_name = "vital_records/request/form.html"
-    step_name = Steps.county_of_birth
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
