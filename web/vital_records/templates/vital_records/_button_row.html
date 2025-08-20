@@ -1,7 +1,6 @@
 <div class="btn-row">
-    <!-- djlint:off -->
-      <a class="btn btn-outline-primary"
-         role="button"
-         href="{% url previous_route pk=vital_records_request.id as previous_url %}">Back</a><button type="submit" class="btn btn-primary">{{ submit_label }}</button>
-<!-- djlint:on -->
+    <a class="btn btn-outline-primary"
+       role="button"
+       href="{% url previous_route pk=vital_records_request.id as previous_url %}">Back</a>
+    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
 </div>
