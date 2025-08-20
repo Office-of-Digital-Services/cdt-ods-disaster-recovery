@@ -28,6 +28,7 @@ class VitalRecordsRequest(models.Model):
     TYPE_CHOICES = [("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record")]
 
     FIRE_CHOICES = [
+        ("", "Select fire"),
         ("eaton", "Eaton fire"),
         ("hurst", "Hurst fire"),
         ("lidia", "Lidia fire"),
@@ -36,6 +37,7 @@ class VitalRecordsRequest(models.Model):
     ]
 
     RELATIONSHIP_CHOICES = [
+        ("", "Select relationship"),
         ("self", "Self"),
         ("parent", "Parent"),
         ("legal guardian", "Legal guardian"),
