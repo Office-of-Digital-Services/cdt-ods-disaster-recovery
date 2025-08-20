@@ -2,7 +2,7 @@ Hello,
 
 You recently completed an application for the following:
 
-Vital Record Type: Birth
+Vital Record Type: {{ request_type }}
 
 Number of copies: {{ number_of_copies }}
 
