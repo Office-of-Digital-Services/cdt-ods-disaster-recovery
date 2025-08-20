@@ -58,6 +58,6 @@
     <form method="post" class="m-b-40 p-b-lg">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary m-b-sm">Submit your order</button>
+        {% include "vital_records/_button_row.html" with submit_label="Submit your order" %}
     </form>
 {% endblock flow-container %}
