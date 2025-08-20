@@ -55,3 +55,15 @@ class CountyView(common.CountyView):
         context["form_fields"] = [form["county_of_event"]]
 
         return context
+
+
+class DateOfMarriageView(common.DateOfEventView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_layout"] = "date_form"
+        context["font_hint_name"] = "marriage-date-hint"
+        context["form_question"] = "What was the date of the marriage?"
+        context["form_hint"] = "If you’re not sure, enter your approximate date of marriage."
+
+        return context
