@@ -17,10 +17,10 @@
             {% endif %}
             <div class="btn-row">
                 <!-- djlint:off -->
-                            <a href
-                               class="btn btn-outline-primary"
-                               role="button"
-                               href="{{ previous_route }}">Back</a><button type="submit" class="btn btn-primary">Next</button>
+                                                <a href
+                                                    class="btn btn-outline-primary"
+                                                    role="button"
+                                            href="{% url previous_route pk=vital_records_request.id as previous_url %}">Back</a><button type="submit" class="btn btn-primary">Next</button>
             <!-- djlint:on -->
         </div>
     </fieldset>
