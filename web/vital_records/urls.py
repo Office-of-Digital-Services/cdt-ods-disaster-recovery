@@ -16,7 +16,7 @@ urlpatterns = [
     # birth flow URLs
     path("request/birth/<uuid:pk>/name", birth.NameView.as_view(), name=Routes.birth_request_name),
     path("request/birth/<uuid:pk>/county", birth.CountyView.as_view(), name=Routes.birth_request_county),
-    path("request/birth/<uuid:pk>/dob", common.DateOfBirthView.as_view(), name=Routes.birth_request_dob),
+    path("request/birth/<uuid:pk>/dob", birth.DateOfBirthView.as_view(), name=Routes.birth_request_dob),
     path("request/birth/<uuid:pk>/parents", common.ParentsNamesView.as_view(), name=Routes.birth_request_parents),
     # marriage flow URLs
     path("request/marriage/<uuid:pk>/name", marriage.NameView.as_view(), name=Routes.marriage_request_name),
