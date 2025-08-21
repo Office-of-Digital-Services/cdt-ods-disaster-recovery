@@ -59,7 +59,7 @@ def mock_PackageTask(mocker, mock_PackageTask):
 def test_templates(settings):
     assert str(settings.BASE_DIR) in APPLICATION_TEMPLATE
     assert os.path.join("vital_records", "templates", "package") in APPLICATION_TEMPLATE
-    assert SWORNSTATEMENT_TEMPLATE == APPLICATION_TEMPLATE.replace("application", "sworn-statement")
+    assert SWORNSTATEMENT_TEMPLATE == APPLICATION_TEMPLATE.replace("application_birth", "sworn-statement")
 
 
 def test_submit_request(mocker, request_id, mock_PackageTask):
