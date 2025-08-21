@@ -134,22 +134,6 @@ class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView)
     template_name = "vital_records/request/form.html"
     step_name = Steps.name
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
-        context["form_question"] = "What is the name on the birth certificate?"
-        context["form_hint"] = "Please write the information as it appears on the birth certificate."
-        context["font_hint_name"] = "name-hint"
-        form = context["form"]
-
-        context["form_fields"] = [
-            form["first_name"],
-            form["middle_name"],
-            form["last_name"],
-        ]
-
-        return context
-
     def form_valid(self, form):
         # Move form state to next state
         self.object.complete_name()
@@ -162,21 +146,6 @@ class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
     model = VitalRecordsRequest
     template_name = "vital_records/request/form.html"
     step_name = Steps.county_of_birth
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
-        context["form_question"] = "What is the county of birth?"
-        context["form_hint"] = (
-            "We only have records for people born in California. If you were born in a different state, please contact the "
-            "Vital Records office in the state you were born to request a new birth record."
-        )
-        context["font_hint_name"] = "county-hint"
-        form = context["form"]
-
-        context["form_fields"] = [form["county_of_event"]]
-
-        return context
 
     def form_valid(self, form):
         # Move form state to next state

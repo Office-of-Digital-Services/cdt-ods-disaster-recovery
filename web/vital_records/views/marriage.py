@@ -2,6 +2,7 @@ from web.vital_records.forms.birth import CountyForm
 from web.vital_records.forms.marriage import NameForm
 from web.vital_records.mixins import Steps
 from web.vital_records.views import common
+from django.urls import reverse
 
 
 class NameView(common.NameView):
@@ -33,6 +34,7 @@ class NameView(common.NameView):
         ]
         context["person_2_label"] = "Second person"
         context["person_2_labelid"] = "person_2_helptext"
+        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
 
         return context
 
@@ -54,6 +56,7 @@ class CountyView(common.CountyView):
 
         form = context["form"]
         context["form_fields"] = [form["county_of_event"]]
+        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
 
         return context
 
