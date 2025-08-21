@@ -1,4 +1,4 @@
-from web.vital_records.forms.birth import NameForm, CountyForm
+from web.vital_records.forms.birth import CountyForm, NameForm
 from web.vital_records.views import common
 from web.vital_records.mixins import Steps
 
@@ -37,5 +37,18 @@ class CountyView(common.CountyView):
         form = context["form"]
 
         context["form_fields"] = [form["county_of_event"]]
+
+        return context
+
+
+class DateOfBirthView(common.DateOfEventView):
+    step_name = Steps.date_of_birth
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_layout"] = "date_form"
+        context["font_hint_name"] = "dob-hint"
+        context["form_question"] = "What is the date of birth?"
+        context["form_hint"] = "If you’re not sure, enter your approximate date of birth."
 
         return context

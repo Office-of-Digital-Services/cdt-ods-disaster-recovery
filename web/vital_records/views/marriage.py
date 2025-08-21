@@ -1,4 +1,5 @@
-from web.vital_records.forms.marriage import NameForm, CountyForm
+from web.vital_records.forms.birth import CountyForm
+from web.vital_records.forms.marriage import NameForm
 from web.vital_records.mixins import Steps
 from web.vital_records.views import common
 
@@ -53,5 +54,18 @@ class CountyView(common.CountyView):
 
         form = context["form"]
         context["form_fields"] = [form["county_of_event"]]
+
+        return context
+
+
+class DateOfMarriageView(common.DateOfEventView):
+    step_name = Steps.date_of_marriage
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_layout"] = "date_form"
+        context["font_hint_name"] = "marriage-date-hint"
+        context["form_question"] = "What was the date of the marriage?"
+        context["form_hint"] = "If you’re not sure, enter your approximate date of marriage."
 
         return context
