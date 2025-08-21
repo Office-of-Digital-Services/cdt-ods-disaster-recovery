@@ -86,7 +86,8 @@ class TypeView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Replacement records"
-        context["previous_route"] = Routes.request_start
+        context["previous_route"] = Routes.app_route(Routes.request_start)
+        context["previous_url"] = reverse(context["previous_route"])
 
         return context
 
@@ -109,7 +110,8 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = f"Replacement {self.object.type} record"
-        context["previous_route"] = Routes.app_route(Routes.request_start)
+        context["previous_route"] = Routes.app_route(Routes.request_type)
+        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
         return context
 
     def form_valid(self, form):
@@ -132,6 +134,22 @@ class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView)
     template_name = "vital_records/request/form.html"
     step_name = Steps.name
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
+        context["form_question"] = "What is the name on the birth certificate?"
+        context["form_hint"] = "Please write the information as it appears on the birth certificate."
+        context["font_hint_name"] = "name-hint"
+        form = context["form"]
+
+        context["form_fields"] = [
+            form["first_name"],
+            form["middle_name"],
+            form["last_name"],
+        ]
+
+        return context
+
     def form_valid(self, form):
         # Move form state to next state
         self.object.complete_name()
@@ -143,6 +161,22 @@ class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView)
 class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     template_name = "vital_records/request/form.html"
+    step_name = Steps.county_of_birth
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
+        context["form_question"] = "What is the county of birth?"
+        context["form_hint"] = (
+            "We only have records for people born in California. If you were born in a different state, please contact the "
+            "Vital Records office in the state you were born to request a new birth record."
+        )
+        context["font_hint_name"] = "county-hint"
+        form = context["form"]
+
+        context["form_fields"] = [form["county_of_event"]]
+
+        return context
 
     def form_valid(self, form):
         # Move form state to next state
@@ -181,6 +215,7 @@ class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upd
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
         context["form_layout"] = "couples_names_form"
         context["font_hint_name"] = "parents-hint"
         context["form_question"] = "What were the names of the registrant’s parents at the time of the registrant’s birth?"
@@ -218,6 +253,7 @@ class OrderInfoView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Update
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
         form = context["form"]
         context["name_fields"] = [
             form["order_first_name"],
@@ -257,6 +293,7 @@ class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
         context["county_display"] = self.get_display_county(context)
         return context
 
