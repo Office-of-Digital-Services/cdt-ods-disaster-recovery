@@ -1,5 +1,6 @@
-from web.vital_records.forms.birth import NameForm
+from web.vital_records.forms.birth import NameForm, CountyForm
 from web.vital_records.views import common
+from web.vital_records.mixins import Steps
 
 
 class NameView(common.NameView):
@@ -17,5 +18,24 @@ class NameView(common.NameView):
             form["middle_name"],
             form["last_name"],
         ]
+
+        return context
+
+
+class CountyView(common.CountyView):
+    form_class = CountyForm
+    step_name = Steps.county_of_birth
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_question"] = "What is the county of birth?"
+        context["form_hint"] = (
+            "We only have records for people born in California. If you were born in a different state, please contact the "
+            "Vital Records office in the state you were born to request a new birth record."
+        )
+        context["font_hint_name"] = "county-hint"
+        form = context["form"]
+
+        context["form_fields"] = [form["county_of_event"]]
 
         return context

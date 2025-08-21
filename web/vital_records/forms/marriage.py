@@ -41,3 +41,16 @@ class NameForm(forms.ModelForm):
             "person_2_last_name",
             "person_2_birth_last_name",
         ]
+
+
+class CountyForm(forms.ModelForm):
+    county_of_event = forms.ChoiceField(
+        choices=VitalRecordsRequest.COUNTY_CHOICES,
+        label="County marriage occurred/license issued",
+        required=True,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+
+    class Meta:
+        model = VitalRecordsRequest
+        fields = ["county_of_event"]
