@@ -82,7 +82,9 @@ class TestStepsMixin:
             Steps.preview_and_submit,
         ]
         assert context["step_number"] == expected_step_number
-        assert context["previous_route"] == Routes.app_route(expected_previous_route)
+        assert context["previous_url"] == reverse(
+            Routes.app_route(expected_previous_route), kwargs={"pk": birth_view.object.pk}
+        )
 
     @pytest.mark.parametrize(
         "step_name,expected_step_number,expected_previous_route",
@@ -107,7 +109,9 @@ class TestStepsMixin:
             Steps.preview_and_submit,
         ]
         assert context["step_number"] == expected_step_number
-        assert context["previous_route"] == Routes.app_route(expected_previous_route)
+        assert context["previous_url"] == reverse(
+            Routes.app_route(expected_previous_route), kwargs={"pk": marriage_view.object.pk}
+        )
 
     @pytest.mark.parametrize(
         "step_name,expected_next_route",

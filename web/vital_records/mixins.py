@@ -75,8 +75,8 @@ class StepsMixin(ContextMixin):
             previous_step_name = step_names[current_index - 1]
             previous_route_name = type_steps[previous_step_name]
 
-        context["previous_route"] = Routes.app_route(previous_route_name)
-        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
+        previous_route = Routes.app_route(previous_route_name)
+        context["previous_url"] = reverse(previous_route, kwargs={"pk": self.object.pk})
 
         return context
 
