@@ -41,6 +41,10 @@
     <form method="post" class="m-b-40 p-b-lg">
         {% csrf_token %}
         {{ form.as_p }}
-        {% include "vital_records/_button_row.html" with submit_label="Submit your order" %}
+        {% if not already_submitted %}
+            {% include "vital_records/_button_row.html" with submit_label="Submit your order" %}
+        {% else %}
+            <p>You’ve already submitted this order. To start a new order request another record.</p>
+        {% endif %}
     </form>
 {% endblock flow-container %}
