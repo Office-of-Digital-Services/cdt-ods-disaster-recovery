@@ -15,10 +15,7 @@ from web.vital_records.forms.common import (
     OrderInfoForm,
     SubmitForm,
 )
-from web.vital_records.forms.birth import (
-    CountyForm,
-    ParentsNamesForm,
-)
+from web.vital_records.forms.birth import ParentsNamesForm
 from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
@@ -145,7 +142,6 @@ class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView)
 class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     template_name = "vital_records/request/form.html"
-    step_name = Steps.county_of_birth
 
     def form_valid(self, form):
         # Move form state to next state
