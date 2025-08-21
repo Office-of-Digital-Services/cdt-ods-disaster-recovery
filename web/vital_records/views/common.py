@@ -144,20 +144,6 @@ class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
     model = VitalRecordsRequest
     template_name = "vital_records/request/form.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form_question"] = "What is the county of birth?"
-        context["form_hint"] = (
-            "We only have records for people born in California. If you were born in a different state, please contact the "
-            "Vital Records office in the state you were born to request a new birth record."
-        )
-        context["font_hint_name"] = "county-hint"
-        form = context["form"]
-
-        context["form_fields"] = [form["county_of_event"]]
-
-        return context
-
     def form_valid(self, form):
         # Move form state to next state
         self.object.complete_county()
