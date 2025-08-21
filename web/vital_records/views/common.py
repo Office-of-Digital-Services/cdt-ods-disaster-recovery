@@ -184,7 +184,6 @@ class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upd
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
         context["form_layout"] = "couples_names_form"
         context["font_hint_name"] = "parents-hint"
         context["form_question"] = "What were the names of the registrant’s parents at the time of the registrant’s birth?"
@@ -222,7 +221,6 @@ class OrderInfoView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Update
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
         form = context["form"]
         context["name_fields"] = [
             form["order_first_name"],
@@ -262,7 +260,6 @@ class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["previous_url"] = reverse(context["previous_route"], kwargs={"pk": self.object.pk})
         context["county_display"] = self.get_display_county(context)
         return context
 
