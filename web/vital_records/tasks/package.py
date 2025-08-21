@@ -16,8 +16,8 @@ from web.vital_records.tasks.utils import get_package_filename
 
 logger = logging.getLogger(__name__)
 
-APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "application.pdf")
-SWORNSTATEMENT_TEMPLATE = APPLICATION_TEMPLATE.replace("application.pdf", "sworn-statement.pdf")
+APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "application_birth.pdf")
+SWORNSTATEMENT_TEMPLATE = APPLICATION_TEMPLATE.replace("application_birth.pdf", "sworn-statement.pdf")
 
 
 def submit_request(request_id: UUID):
