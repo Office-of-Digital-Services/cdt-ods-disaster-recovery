@@ -142,7 +142,6 @@ class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView)
 
 class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
-    form_class = CountyForm
     template_name = "vital_records/request/form.html"
 
     def get_context_data(self, **kwargs):
