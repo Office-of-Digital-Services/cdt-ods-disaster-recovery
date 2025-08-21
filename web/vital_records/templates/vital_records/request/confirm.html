@@ -45,7 +45,7 @@
             {% include "vital_records/_button_row.html" with submit_label="Submit your order" %}
         {% else %}
             <p>
-                <span class="ca-gov-icon-check-fill pe-2" aria-hidden="true"></span>You’ve already submitted this order. To start a new order request another record.
+                <span class="ca-gov-icon-check-fill pe-2" aria-hidden="true"></span>You’ve already submitted this order. To start a new order <a href="{% url "vital_records:request_start" %}">request another record</a>.
             </p>
         {% endif %}
     </form>
