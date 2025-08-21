@@ -2,7 +2,6 @@ from web.vital_records.forms.birth import CountyForm
 from web.vital_records.forms.marriage import NameForm
 from web.vital_records.mixins import Steps
 from web.vital_records.views import common
-from django.urls import reverse
 
 
 class NameView(common.NameView):
