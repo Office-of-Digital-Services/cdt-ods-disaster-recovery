@@ -278,7 +278,7 @@ class TestPackageTask:
         mock_inst.complete_package.assert_called_once()
         mock_inst.save.assert_called_once()
 
-        assert result == get_package_filename(request_id)
+        assert result == get_package_filename(mock_inst)
 
     def test_post_handler__not_success(self, mocker, mock_EmailTask, task):
         patched_task = mocker.MagicMock(wraps=task, success=False)
