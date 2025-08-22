@@ -38,7 +38,7 @@
         <!-- BEGIN Google Tag Manager -->
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
-        <script>
+        <script nonce="{{ request.csp_nonce }}">
             //Your GA4 Measurement ID that this website should use for website analytics
             var yourGA4MeasurementId = "G-48HMY1BXY3";
 
