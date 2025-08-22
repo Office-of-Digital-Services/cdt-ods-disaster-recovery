@@ -35,6 +35,34 @@
                 crossorigin="anonymous"></script>
         <!-- Statewide Alerts Server -->
         <script defer src="https://alert.cdt.ca.gov" crossorigin="anonymous"></script>
+        <!-- BEGIN Google Tag Manager -->
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <script>
+      //*** BEGIN STATE TEMPLATE CHANGE REQUESTED
+      //Your GA4 Measurement ID that this website should use for website analytics
+      var yourGA4MeasurementId = "G-75V2BNQ3DR"; //Set to the default GA4 Measurement ID (G-75V2BNQ3D...R), please change it to the one for your organization.
+      //*** END STATE TEMPLATE CHANGE REQUESTED
+
+      //Support code to make this work, just leave this as is
+      var stateGTMAccount = "GTM-NJ6Q4MV"; //GTM-NJ6Q4MV - all ca.gov
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+        (function () {
+          dataLayer.push(arguments);
+        })("config", yourGA4MeasurementId, {
+          cookie_flags: "secure;samesite=lax;domain=",
+        });
+      })(window, document, "script", "dataLayer", stateGTMAccount);
+        </script>
+        <!-- END Google Tag Manager -->
     </head>
     <body class="primary">
         <header role="banner" id="header" class="global-header border-0">
