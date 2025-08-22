@@ -219,7 +219,7 @@ class PackageTask(Task):
         writer.append(ss_reader)
         writer.update_page_form_field_values(writer.pages[1], sworn_statement.dict(), auto_regenerate=False)
 
-        filename = get_package_filename(request_id)
+        filename = get_package_filename(request)
         with open(filename, "wb") as output_stream:
             writer.write(output_stream)
 
