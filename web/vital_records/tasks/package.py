@@ -45,6 +45,7 @@ class BaseApplication:
     RelationshipToRegistrant: Optional[str] = "/1"
     NumberOfCopies: Optional[int] = 1
     County: Optional[str] = None
+    RegDOE: Optional[str] = None
     RequestorFirstName: Optional[str] = None
     RequestorLastName: Optional[str] = None
     RequestorMailingAddress: Optional[str] = None
@@ -70,7 +71,6 @@ class BirthApplication(BaseApplication):
     RegFirstName: Optional[str] = None
     RegMiddleName: Optional[str] = None
     RegLastName: Optional[str] = None
-    RegDOE: Optional[str] = None
     Parent1FirstName: Optional[str] = None
     Parent2FirstName: Optional[str] = None
     Parent1LastName: Optional[str] = None
@@ -90,7 +90,6 @@ class MarriageApplication(BaseApplication):
     Spouse2MiddleName: Optional[str] = None
     Spouse2LastName: Optional[str] = None
     Spouse2BirthLastName: Optional[str] = None
-    RegDOB: Optional[str] = None
 
 
 @dataclass
@@ -167,7 +166,7 @@ class PackageTask(Task):
             Spouse2LastName=request.person_2_last_name,
             Spouse2BirthLastName=request.person_2_birth_last_name,
             County=request.county_of_event,
-            RegDOB=request.date_of_event.strftime("%m/%d/%Y"),
+            RegDOE=request.date_of_event.strftime("%m/%d/%Y"),
             RequestorFirstName=request.order_first_name,
             RequestorLastName=request.order_last_name,
             RequestorMailingAddress=" ".join(_filter_empty((request.address, request.address_2))),

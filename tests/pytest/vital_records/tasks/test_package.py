@@ -198,7 +198,7 @@ class TestPackageTask:
         assert application.Spouse2LastName == mock_vital_records_request.person_2_last_name
         assert application.Spouse2BirthLastName == mock_vital_records_request.person_2_birth_last_name
         assert application.County == mock_vital_records_request.county_of_event
-        assert application.RegDOB == mock_vital_records_request.date_of_event.strftime("%m/%d/%Y")
+        assert application.RegDOE == mock_vital_records_request.date_of_event.strftime("%m/%d/%Y")
         assert application.RequestorFirstName == mock_vital_records_request.order_first_name
         assert application.RequestorLastName == mock_vital_records_request.order_last_name
         assert application.RequestorMailingAddress == " ".join(
