@@ -212,7 +212,7 @@ class TestPackageTask:
         assert application.Spouse2LastName == mock_request.person_2_last_name
         assert application.Spouse2BirthLastName == mock_request.person_2_birth_last_name
         assert application.County == mock_request.county_of_event
-        assert application.RegDOB == mock_request.date_of_event.strftime("%m/%d/%Y")
+        assert application.RegDOE == mock_request.date_of_event.strftime("%m/%d/%Y")
         assert application.RequestorFirstName == mock_request.order_first_name
         assert application.RequestorLastName == mock_request.order_last_name
         assert application.RequestorMailingAddress == " ".join(_filter_empty((mock_request.address, mock_request.address_2)))
