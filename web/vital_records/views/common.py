@@ -15,10 +15,7 @@ from web.vital_records.forms.common import (
     OrderInfoForm,
     SubmitForm,
 )
-from web.vital_records.forms.birth import (
-    CountyForm,
-    ParentsNamesForm,
-)
+from web.vital_records.forms.birth import ParentsNamesForm
 from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
@@ -86,7 +83,8 @@ class TypeView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Replacement records"
-        context["previous_route"] = Routes.request_start
+        previous_route = Routes.app_route(Routes.request_start)
+        context["previous_url"] = reverse(previous_route)
 
         return context
 
@@ -109,7 +107,8 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = f"Replacement {self.object.type} record"
-        context["previous_route"] = Routes.app_route(Routes.request_start)
+        previous_route = Routes.app_route(Routes.request_type)
+        context["previous_url"] = reverse(previous_route, kwargs={"pk": self.object.pk})
         return context
 
     def form_valid(self, form):
