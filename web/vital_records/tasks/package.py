@@ -33,23 +33,18 @@ def submit_request(request_id: UUID):
 
 
 @dataclass
-class BirthApplication:
+class BaseApplication:
+    """A base class for shared application fields."""
+
+    CDPH_VR_FORMTYPE: str = None
+    EventType: str = None
+
     package_id: str = str(uuid4())
-    CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_B0A6353F1"
     WildfireName: Optional[str] = None
     CopyType: Optional[str] = "/WLDFREAUTH"
     RelationshipToRegistrant: Optional[str] = "/1"
     NumberOfCopies: Optional[int] = 1
-    EventType: Optional[str] = "Birth"
-    RegFirstName: Optional[str] = None
-    RegMiddleName: Optional[str] = None
-    RegLastName: Optional[str] = None
     County: Optional[str] = None
-    RegDOE: Optional[str] = None
-    Parent1FirstName: Optional[str] = None
-    Parent2FirstName: Optional[str] = None
-    Parent1LastName: Optional[str] = None
-    Parent2LastName: Optional[str] = None
     RequestorFirstName: Optional[str] = None
     RequestorLastName: Optional[str] = None
     RequestorMailingAddress: Optional[str] = None
@@ -68,14 +63,25 @@ class BirthApplication:
 
 
 @dataclass
-class MarriageApplication:
-    package_id: str = str(uuid4())
+class BirthApplication(BaseApplication):
+    CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_B0A6353F1"
+    EventType: Optional[str] = "Birth"
+
+    RegFirstName: Optional[str] = None
+    RegMiddleName: Optional[str] = None
+    RegLastName: Optional[str] = None
+    RegDOE: Optional[str] = None
+    Parent1FirstName: Optional[str] = None
+    Parent2FirstName: Optional[str] = None
+    Parent1LastName: Optional[str] = None
+    Parent2LastName: Optional[str] = None
+
+
+@dataclass
+class MarriageApplication(BaseApplication):
     CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_M27FFEAFF"
-    WildfireName: Optional[str] = None
-    CopyType: Optional[str] = "/WLDFREAUTH"
-    RelationshipToRegistrant: Optional[str] = "/1"
-    NumberOfCopies: Optional[int] = 1
     EventType: Optional[str] = "Marriage"
+
     Spouse1FirstName: Optional[str] = None
     Spouse1MiddleName: Optional[str] = None
     Spouse1LastName: Optional[str] = None
@@ -84,23 +90,7 @@ class MarriageApplication:
     Spouse2MiddleName: Optional[str] = None
     Spouse2LastName: Optional[str] = None
     Spouse2BirthLastName: Optional[str] = None
-    County: Optional[str] = None
     RegDOB: Optional[str] = None
-    RequestorFirstName: Optional[str] = None
-    RequestorLastName: Optional[str] = None
-    RequestorMailingAddress: Optional[str] = None
-    RequestorCity: Optional[str] = None
-    RequestorZipCode: Optional[str] = None
-    RequestorCountry: Optional[str] = None
-    RequestorTelephone: Optional[str] = None
-    RequestorEmail: Optional[str] = None
-    RequestorStateProvince: Optional[str] = None
-    Comments: Optional[str] = None
-    CDPH_VR_APP_ID: str = None
-
-    def dict(self):
-        d = asdict(self)
-        return {k: v for k, v in d.items() if v}
 
 
 @dataclass
