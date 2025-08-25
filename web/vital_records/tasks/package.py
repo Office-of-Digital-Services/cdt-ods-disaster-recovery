@@ -178,25 +178,49 @@ class PackageTask(Task):
             RequestorTelephone=request.phone_number,
         )
 
+    def _get_sworn_statement(self, request: VitalRecordsRequest, registrant_fields: dict) -> SwornStatement:
+        """A SwornStatement factory"""
+
+        # use request.started_at, which is the time just after successful auth through the gateway
+        # convert to the local timezone and format for display
+        auth_time = request.started_at.astimezone(timezone.get_default_timezone()).strftime("%Y-%m-%d %H:%M:%S")
+
+        base_fields = {
+            "applicantName": request.legal_attestation,
+            "applicantSignature1": request.legal_attestation,
+            "applicantSignature2": f"Authorized via California Identity Gateway {auth_time}",
+        }
+        all_fields = {**base_fields, **registrant_fields}
+        return SwornStatement(**all_fields)
+
+    def _get_birth_sworn_statement(self, request: VitalRecordsRequest) -> SwornStatement:
+        registrant_fields = {
+            "registrantNameRow1": " ".join(_filter_empty((request.first_name, request.middle_name, request.last_name))),
+            "applicantRelationToRegistrantRow1": request.relationship,
+        }
+        return self._get_sworn_statement(request, registrant_fields)
+
+    def _get_marriage_sworn_statement(self, request: VitalRecordsRequest) -> SwornStatement:
+        registrant_fields = {
+            "registrantNameRow1": " ".join(
+                _filter_empty((request.person_1_first_name, request.person_1_middle_name, request.person_1_last_name))
+            ),
+            "registrantNameRow2": " ".join(
+                _filter_empty((request.person_2_first_name, request.person_2_middle_name, request.person_2_last_name))
+            ),
+        }
+        return self._get_sworn_statement(request, registrant_fields)
+
     def handler(self, request_id: UUID):
         logger.debug(f"Creating request package for: {request_id}")
         request = VitalRecordsRequest.get_with_status(request_id, "enqueued")
 
         if request.type == "birth":
             application = self._get_birth_application(request)
+            sworn_statement = self._get_birth_sworn_statement(request)
         elif request.type == "marriage":
             application = self._get_marriage_application(request)
-
-        # use request.started_at, which is the time just after successful auth through the gateway
-        # convert to the local timezone and format for display
-        auth_time = request.started_at.astimezone(timezone.get_default_timezone()).strftime("%Y-%m-%d %H:%M:%S")
-        sworn_statement = SwornStatement(
-            registrantNameRow1=" ".join(_filter_empty((request.first_name, request.middle_name, request.last_name))),
-            applicantRelationToRegistrantRow1=request.relationship,
-            applicantName=request.legal_attestation,
-            applicantSignature1=request.legal_attestation,
-            applicantSignature2=f"Authorized via California Identity Gateway {auth_time}",
-        )
+            sworn_statement = self._get_marriage_sworn_statement(request)
 
         app_template = os.path.join(APPLICATION_FOLDER, f"application_{request.type}.pdf")
         app_reader = PdfReader(app_template)

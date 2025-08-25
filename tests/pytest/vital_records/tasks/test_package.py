@@ -39,11 +39,6 @@ def mock_BirthApplication(mocker):
 
 
 @pytest.fixture
-def mock_SwornStatement(mocker):
-    return mocker.patch("web.vital_records.tasks.package.SwornStatement")
-
-
-@pytest.fixture
 def mock_EmailTask(mocker):
     return mocker.patch("web.vital_records.tasks.package.EmailTask")
 
@@ -119,14 +114,18 @@ class TestPackageTask:
         mock_request = mocker.MagicMock(spec=VitalRecordsRequest)
         mock_request.fire = "palisades"
         mock_request.number_of_records = 2
+        mock_request.relationship = "Relationship"
+        mock_request.legal_attestation = "Legal Attestation"
         mock_request.first_name = "Jane"
         mock_request.middle_name = "Anne"
         mock_request.last_name = "Doe"
         mock_request.county_of_event = "Los Angeles"
         mock_request.date_of_event = datetime.datetime(2025, 8, 21, 19, 17, 58, tzinfo=datetime.UTC)
         mock_request.person_1_first_name = "First1"
+        mock_request.person_1_middle_name = "Middle1"
         mock_request.person_1_last_name = "Last1"
         mock_request.person_2_first_name = "First2"
+        mock_request.person_2_middle_name = "Middle2"
         mock_request.person_2_last_name = "Last2"
         mock_request.order_first_name = "Requester"
         mock_request.order_last_name = "Person"
@@ -211,11 +210,43 @@ class TestPackageTask:
         assert application.RequestorEmail == mock_vital_records_request.email_address
         assert application.RequestorTelephone == mock_vital_records_request.phone_number
 
+    def test__get_birth_sworn_statement(self, mock_vital_records_request, task):
+        now = datetime.datetime.now(tz=datetime.UTC)
+        mock_vital_records_request.started_at = now
+
+        sworn_statement = task._get_birth_sworn_statement(mock_vital_records_request)
+
+        assert isinstance(sworn_statement, SwornStatement)
+        assert sworn_statement.applicantName == "Legal Attestation"
+        assert sworn_statement.applicantSignature1 == "Legal Attestation"
+        assert sworn_statement.applicantSignature2 == (
+            f"Authorized via California Identity Gateway "
+            f"{now.astimezone(timezone.get_default_timezone()).strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        assert sworn_statement.registrantNameRow1 == "Jane Anne Doe"
+        assert sworn_statement.applicantRelationToRegistrantRow1 == "Relationship"
+
+    def test__get_marriage_sworn_statement(self, mock_vital_records_request, task):
+        now = datetime.datetime.now(tz=datetime.UTC)
+        mock_vital_records_request.started_at = now
+
+        sworn_statement = task._get_marriage_sworn_statement(mock_vital_records_request)
+
+        assert isinstance(sworn_statement, SwornStatement)
+        assert sworn_statement.applicantName == "Legal Attestation"
+        assert sworn_statement.applicantSignature1 == "Legal Attestation"
+        assert sworn_statement.applicantSignature2 == (
+            f"Authorized via California Identity Gateway "
+            f"{now.astimezone(timezone.get_default_timezone()).strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        assert sworn_statement.registrantNameRow1 == "First1 Middle1 Last1"
+        assert sworn_statement.registrantNameRow2 == "First2 Middle2 Last2"
+
     @pytest.mark.parametrize(
-        "request_type, mock_helper_method_name",
+        "request_type, mock_app_helper_method_name, mock_ss_helper_method_name",
         [
-            ("birth", "_get_birth_application"),
-            ("marriage", "_get_marriage_application"),
+            ("birth", "_get_birth_application", "_get_birth_sworn_statement"),
+            ("marriage", "_get_marriage_application", "_get_marriage_sworn_statement"),
         ],
     )
     def test_handler(
@@ -225,13 +256,12 @@ class TestPackageTask:
         mock_VitalRecordsRequest,
         mock_PdfReader,
         mock_PdfWriter,
-        mock_SwornStatement,
         task,
         request_type,
-        mock_helper_method_name,
+        mock_app_helper_method_name,
+        mock_ss_helper_method_name,
     ):
         now = datetime.datetime.now(tz=datetime.UTC)
-        expected_start = now.astimezone(timezone.get_default_timezone()).strftime("%Y-%m-%d %H:%M:%S")
         mock_inst = mocker.MagicMock(
             first_name="First",
             middle_name="M",
@@ -245,24 +275,18 @@ class TestPackageTask:
 
         mock_application_obj = mocker.MagicMock()
         mock_application_obj.dict.return_value = {"app_key": "app_value"}
-        mocker.patch.object(task, mock_helper_method_name, return_value=mock_application_obj)
+        mocker.patch.object(task, mock_app_helper_method_name, return_value=mock_application_obj)
 
-        mock_ss = mock_SwornStatement.return_value
-        mock_ss.dict.return_value = {}
+        mock_sworn_statement_obj = mocker.MagicMock()
+        mock_sworn_statement_obj.dict.return_value = {}
+        mocker.patch.object(task, mock_ss_helper_method_name, return_value=mock_sworn_statement_obj)
 
         result = task.handler(request_id)
 
         mock_VitalRecordsRequest.get_with_status.assert_called_once_with(request_id, "enqueued")
 
-        getattr(task, mock_helper_method_name).assert_called_once_with(mock_inst)
-
-        mock_SwornStatement.assert_called_once_with(
-            registrantNameRow1="First M Last",
-            applicantRelationToRegistrantRow1=mock_inst.relationship,
-            applicantName=mock_inst.legal_attestation,
-            applicantSignature1=mock_inst.legal_attestation,
-            applicantSignature2=f"Authorized via California Identity Gateway {expected_start}",
-        )
+        getattr(task, mock_app_helper_method_name).assert_called_once_with(mock_inst)
+        getattr(task, mock_ss_helper_method_name).assert_called_once_with(mock_inst)
 
         mock_PdfReader.assert_any_call(os.path.join(APPLICATION_FOLDER, f"application_{request_type}.pdf"))
         mock_PdfReader.assert_any_call(SWORNSTATEMENT_TEMPLATE)
