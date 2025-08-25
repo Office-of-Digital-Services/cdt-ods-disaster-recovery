@@ -257,9 +257,13 @@ class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["type"] = self.object.type.capitalize()
-        context["event"] = self.object.type
-        context["name_label"] = "Registrants’ names" if self.object.type == "marriage" else "Name"
         context["county_display"] = self.get_display_county(context)
+
+        if self.object.type == "marriage":
+            context["details_include"] = "vital_records/_confirm_marriage_details.html"
+        elif self.object.type == "birth":
+            context["details_include"] = "vital_records/_confirm_birth_details.html"
+
         return context
 
 
