@@ -56,31 +56,31 @@ class TestCleanupScheduledTask:
         assert task.name == "cleanup"
         assert task.started is False
 
-    def test_clean_file__file_doesnt_exist(self, request_id, mock_Path, task: CleanupTask):
+    def test_clean_file__file_doesnt_exist(self, mock_VitalRecordsRequest, mock_Path, task: CleanupTask):
         mock_path = mock_Path.return_value
         mock_path.exists.return_value = False
         mock_path.is_file.return_value = False
 
-        result = task.clean_file(request_id)
+        result = task.clean_file(mock_VitalRecordsRequest)
 
         assert result is True
 
-    def test_clean_file__file_not_file(self, request_id, mock_Path, task: CleanupTask):
+    def test_clean_file__file_not_file(self, mock_VitalRecordsRequest, mock_Path, task: CleanupTask):
         mock_path = mock_Path.return_value
         mock_path.exists.return_value = True
         mock_path.is_file.return_value = False
 
-        result = task.clean_file(request_id)
+        result = task.clean_file(mock_VitalRecordsRequest)
 
         assert result is False
 
-    def test_clean_file(self, request_id, mock_Path, task: CleanupTask):
+    def test_clean_file(self, mock_VitalRecordsRequest, mock_Path, task: CleanupTask):
         mock_path = mock_Path.return_value
         # the first time the file should exist, and the second time it should not
         mock_path.exists.side_effect = [True, False]
         mock_path.is_file.return_value = True
 
-        result = task.clean_file(request_id)
+        result = task.clean_file(mock_VitalRecordsRequest)
 
         assert result is True
         mock_path.unlink.assert_called_once()
@@ -111,26 +111,24 @@ class TestCleanupScheduledTask:
         mock_clean_file.assert_not_called()
         assert result is False
 
-    def test_clean_request__file_fails(
-        self, request_id, mock_VitalRecordsRequest, mock_clean_record, mock_clean_file, task: CleanupTask
-    ):
+    def test_clean_request__file_fails(self, mock_VitalRecordsRequest, mock_clean_record, mock_clean_file, task: CleanupTask):
         mock_clean_record.return_value = True
         mock_clean_file.return_value = False
 
         result = task.clean_request(mock_VitalRecordsRequest)
 
         mock_clean_record.assert_called_once_with(mock_VitalRecordsRequest)
-        mock_clean_file.assert_called_once_with(request_id)
+        mock_clean_file.assert_called_once_with(mock_VitalRecordsRequest)
         assert result is False
 
-    def test_clean_request(self, request_id, mock_VitalRecordsRequest, mock_clean_record, mock_clean_file, task: CleanupTask):
+    def test_clean_request(self, mock_VitalRecordsRequest, mock_clean_record, mock_clean_file, task: CleanupTask):
         mock_clean_record.return_value = True
         mock_clean_file.return_value = True
 
         result = task.clean_request(mock_VitalRecordsRequest)
 
         mock_clean_record.assert_called_once_with(mock_VitalRecordsRequest)
-        mock_clean_file.assert_called_once_with(request_id)
+        mock_clean_file.assert_called_once_with(mock_VitalRecordsRequest)
         assert result is True
 
     def test_create_metadata(self, mocker, mock_VitalRecordsRequest, mock_VitalRecordsRequestMetadata, task: CleanupTask):
