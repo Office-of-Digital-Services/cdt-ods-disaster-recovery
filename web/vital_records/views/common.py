@@ -1,6 +1,8 @@
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.views.generic import DetailView, RedirectView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -226,6 +228,7 @@ class OrderInfoView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Update
         return context
 
 
+@method_decorator(never_cache, name="dispatch")
 class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = SubmitForm
@@ -260,6 +263,8 @@ class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
         context["county_display"] = self.get_display_county(context)
         context["details_include"] = "vital_records/_confirm_" + self.object.type + "_details.html"
 
+        status = self.object.status
+        context["already_submitted"] = status in ["submitted", "enqueued", "packaged", "sent", "finished"]
         return context
 
 

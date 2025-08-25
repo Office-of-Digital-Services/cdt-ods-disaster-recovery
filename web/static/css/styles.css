@@ -164,6 +164,10 @@ header {
   margin-bottom: 0;
 }
 
+.ca-gov-icon-check-fill {
+  color: #336C39;
+}
+
 #vital-records {
   .main-primary {
     margin-top: 80px;
