@@ -246,17 +246,20 @@ class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
 
     def get_display_county(self, context):
         counties = VitalRecordsRequest.COUNTY_CHOICES
-        county_of_birth_id = context["vital_records_request"].county_of_event
+        county_of_event_id = context["vital_records_request"].county_of_event
 
         # Make sure the ID is not blank ("") and ID is in the county options list
-        if county_of_birth_id != "" and county_of_birth_id in dict(counties):
-            return dict(counties)[county_of_birth_id]
+        if county_of_event_id != "" and county_of_event_id in dict(counties):
+            return dict(counties)[county_of_event_id]
         else:
             return ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["type"] = self.object.type.capitalize()
         context["county_display"] = self.get_display_county(context)
+        context["details_include"] = "vital_records/_confirm_" + self.object.type + "_details.html"
+
         return context
 
 
