@@ -234,6 +234,10 @@ class VitalRecordsRequest(models.Model):
     def get_finished():
         return VitalRecordsRequest.objects.filter(status="finished")
 
+    @property
+    def already_submitted(self):
+        return self.status in ["submitted", "enqueued", "packaged", "sent", "finished"]
+
     # Transitions from state to state
     @transition(field=status, source="initialized", target="started")
     def complete_start(self):
