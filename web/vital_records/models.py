@@ -243,33 +243,33 @@ class VitalRecordsRequest(models.Model):
     def complete_start(self):
         self.started_at = timezone.now()
 
-    @transition(field=status, target="type_completed")
     def complete_type(self):
-        pass
+        if not self.already_submitted:
+            self.status = "type_completed"
 
-    @transition(field=status, target="statement_completed")
     def complete_statement(self):
-        pass
+        if not self.already_submitted:
+            self.status = "statement_completed"
 
-    @transition(field=status, target="name_completed")
     def complete_name(self):
-        pass
+        if not self.already_submitted:
+            self.status = "name_completed"
 
-    @transition(field=status, target="county_completed")
     def complete_county(self):
-        pass
+        if not self.already_submitted:
+            self.status = "county_completed"
 
-    @transition(field=status, target="dob_completed")
     def complete_dob(self):
-        pass
+        if not self.already_submitted:
+            self.status = "dob_completed"
 
-    @transition(field=status, target="parents_names_completed")
     def complete_parents_names(self):
-        pass
+        if not self.already_submitted:
+            self.status = "parents_names_completed"
 
-    @transition(field=status, target="order_info_completed")
     def complete_order_info(self):
-        pass
+        if not self.already_submitted:
+            self.status = "order_info_completed"
 
     @transition(field=status, source="order_info_completed", target="submitted")
     def complete_submit(self):
