@@ -11,13 +11,6 @@ class VitalRecordsRequest(models.Model):
     STATUS_CHOICES = [
         ("initialized", "Initialized"),
         ("started", "Started"),
-        ("type_completed", "Record Type Completed"),
-        ("statement_completed", "Sworn Statement Completed"),
-        ("name_completed", "Name Completed"),
-        ("county_completed", "County Completed"),
-        ("dob_completed", "Date of Birth Completed"),
-        ("parents_names_completed", "Parents Names Completed"),
-        ("order_info_completed", "Order Info Completed"),
         ("submitted", "Request Submitted"),
         ("enqueued", "Request Enqueued"),
         ("packaged", "Request Packaged"),
@@ -239,35 +232,7 @@ class VitalRecordsRequest(models.Model):
     def complete_start(self):
         self.started_at = timezone.now()
 
-    @transition(field=status, target="type_completed")
-    def complete_type(self):
-        pass
-
-    @transition(field=status, target="statement_completed")
-    def complete_statement(self):
-        pass
-
-    @transition(field=status, target="name_completed")
-    def complete_name(self):
-        pass
-
-    @transition(field=status, target="county_completed")
-    def complete_county(self):
-        pass
-
-    @transition(field=status, target="dob_completed")
-    def complete_dob(self):
-        pass
-
-    @transition(field=status, target="parents_names_completed")
-    def complete_parents_names(self):
-        pass
-
-    @transition(field=status, target="order_info_completed")
-    def complete_order_info(self):
-        pass
-
-    @transition(field=status, source="order_info_completed", target="submitted")
+    @transition(field=status, source="started", target="submitted")
     def complete_submit(self):
         self.submitted_at = timezone.now()
 
