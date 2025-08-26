@@ -263,6 +263,8 @@ class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
         context["county_display"] = self.get_display_county(context)
         context["details_include"] = "vital_records/_confirm_" + self.object.type + "_details.html"
 
+        context["not_already_submitted"] = self.object.not_already_submitted()
+
         return context
 
 

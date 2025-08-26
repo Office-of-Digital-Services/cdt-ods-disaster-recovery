@@ -234,42 +234,41 @@ class VitalRecordsRequest(models.Model):
     def get_finished():
         return VitalRecordsRequest.objects.filter(status="finished")
 
-    @property
-    def already_submitted(self):
-        return self.status in ["submitted", "enqueued", "packaged", "sent", "finished"]
+    def not_already_submitted(self):
+        return self.status not in ["submitted", "enqueued", "packaged", "sent", "finished"]
 
     # Transitions from state to state
     @transition(field=status, source="initialized", target="started")
     def complete_start(self):
         self.started_at = timezone.now()
 
+    @transition(field=status, target="type_completed", conditions=[not_already_submitted])
     def complete_type(self):
-        if not self.already_submitted:
-            self.status = "type_completed"
+        pass
 
+    @transition(field=status, target="statement_completed", conditions=[not_already_submitted])
     def complete_statement(self):
-        if not self.already_submitted:
-            self.status = "statement_completed"
+        pass
 
+    @transition(field=status, target="name_completed", conditions=[not_already_submitted])
     def complete_name(self):
-        if not self.already_submitted:
-            self.status = "name_completed"
+        pass
 
+    @transition(field=status, target="county_completed", conditions=[not_already_submitted])
     def complete_county(self):
-        if not self.already_submitted:
-            self.status = "county_completed"
+        pass
 
+    @transition(field=status, target="dob_completed", conditions=[not_already_submitted])
     def complete_dob(self):
-        if not self.already_submitted:
-            self.status = "dob_completed"
+        pass
 
+    @transition(field=status, target="parents_names_completed", conditions=[not_already_submitted])
     def complete_parents_names(self):
-        if not self.already_submitted:
-            self.status = "parents_names_completed"
+        pass
 
+    @transition(field=status, target="order_info_completed", conditions=[not_already_submitted])
     def complete_order_info(self):
-        if not self.already_submitted:
-            self.status = "order_info_completed"
+        pass
 
     @transition(field=status, source="order_info_completed", target="submitted")
     def complete_submit(self):
