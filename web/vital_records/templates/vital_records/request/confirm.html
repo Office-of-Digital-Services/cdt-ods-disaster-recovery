@@ -41,7 +41,7 @@
     <form method="post" class="m-b-40 p-b-lg">
         {% csrf_token %}
         {{ form.as_p }}
-        {% if not already_submitted %}
+        {% if not vital_records_request.already_submitted %}
             {% include "vital_records/_button_row.html" with submit_label="Submit your order" %}
         {% else %}
             <p>
