@@ -1,8 +1,12 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+
 from web.vital_records.forms.birth import CountyForm, NameForm
 from web.vital_records.views import common
 from web.vital_records.mixins import Steps
 
 
+@method_decorator(never_cache, name="dispatch")
 class NameView(common.NameView):
     form_class = NameForm
 
@@ -22,6 +26,7 @@ class NameView(common.NameView):
         return context
 
 
+@method_decorator(never_cache, name="dispatch")
 class CountyView(common.CountyView):
     form_class = CountyForm
     step_name = Steps.county_of_birth
@@ -41,6 +46,7 @@ class CountyView(common.CountyView):
         return context
 
 
+@method_decorator(never_cache, name="dispatch")
 class DateOfBirthView(common.DateOfEventView):
     step_name = Steps.date_of_birth
 

@@ -77,6 +77,7 @@ class StartView(EligibilityMixin, CreateView):
         return redirect(next_route, pk=self.object.pk)
 
 
+@method_decorator(never_cache, name="dispatch")
 class TypeView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = TypeForm
@@ -97,6 +98,7 @@ class TypeView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return super().form_valid(form)
 
 
+@method_decorator(never_cache, name="dispatch")
 class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = StatementForm
@@ -120,17 +122,20 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return super().form_valid(form)
 
 
+@method_decorator(never_cache, name="dispatch")
 class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     template_name = "vital_records/request/form.html"
     step_name = Steps.name
 
 
+@method_decorator(never_cache, name="dispatch")
 class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     template_name = "vital_records/request/form.html"
 
 
+@method_decorator(never_cache, name="dispatch")
 class DateOfEventView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = DateOfEventForm
@@ -138,6 +143,7 @@ class DateOfEventView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upda
     context_object_name = "vital_request"
 
 
+@method_decorator(never_cache, name="dispatch")
 class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = ParentsNamesForm
@@ -167,6 +173,7 @@ class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upd
         return context
 
 
+@method_decorator(never_cache, name="dispatch")
 class OrderInfoView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = OrderInfoForm
