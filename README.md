@@ -43,9 +43,9 @@
 | web/vital\_records/routes.py                                                          |       21 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/session.py                                                         |       26 |        0 |        6 |        0 |    100% |           |
 | web/vital\_records/tasks/\_\_init\_\_.py                                              |        0 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/tasks/cleanup.py                                                   |       69 |        0 |       18 |        0 |    100% |           |
+| web/vital\_records/tasks/cleanup.py                                                   |       68 |        0 |       18 |        0 |    100% |           |
 | web/vital\_records/tasks/email.py                                                     |       33 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/tasks/package.py                                                   |      110 |        0 |        2 |        0 |    100% |           |
+| web/vital\_records/tasks/package.py                                                   |      147 |        0 |        6 |        1 |     99% |  219->223 |
 | web/vital\_records/tasks/utils.py                                                     |        7 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/templatetags/\_\_init\_\_.py                                       |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/templatetags/form\_helpers.py                                      |       10 |       10 |        2 |        0 |      0% |      1-13 |
@@ -55,7 +55,7 @@
 | web/vital\_records/views/common.py                                                    |      171 |       66 |        6 |        0 |     59% |60-63, 87-92, 95-98, 108-112, 115-122, 154-173, 184-192, 204-212, 215-222, 225-230, 238-240, 244-255 |
 | web/vital\_records/views/marriage.py                                                  |       45 |       26 |        0 |        0 |     42% |15-41, 50-63, 71-77 |
 | web/wsgi.py                                                                           |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                             **TOTAL** | **1305** |  **211** |  **126** |   **15** | **83%** |           |
+|                                                                             **TOTAL** | **1341** |  **211** |  **130** |   **16** | **83%** |           |
 
 
 ## Setup coverage badge
