@@ -16,8 +16,9 @@ from web.vital_records.tasks.utils import get_package_filename
 
 logger = logging.getLogger(__name__)
 
-APPLICATION_TEMPLATE = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package", "application.pdf")
-SWORNSTATEMENT_TEMPLATE = APPLICATION_TEMPLATE.replace("application.pdf", "sworn-statement.pdf")
+
+APPLICATION_FOLDER = os.path.join(settings.BASE_DIR, "web", "vital_records", "templates", "package")
+SWORNSTATEMENT_TEMPLATE = os.path.join(APPLICATION_FOLDER, "sworn-statement.pdf")
 
 
 def submit_request(request_id: UUID):
@@ -32,23 +33,19 @@ def submit_request(request_id: UUID):
 
 
 @dataclass
-class Application:
+class BaseApplication:
+    """A base class for shared application fields."""
+
+    CDPH_VR_FORMTYPE: str = None
+    EventType: str = None
+
     package_id: str = str(uuid4())
-    CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_B0A6353F1"
     WildfireName: Optional[str] = None
     CopyType: Optional[str] = "/WLDFREAUTH"
     RelationshipToRegistrant: Optional[str] = "/1"
     NumberOfCopies: Optional[int] = 1
-    EventType: Optional[str] = "Birth"
-    RegFirstName: Optional[str] = None
-    RegMiddleName: Optional[str] = None
-    RegLastName: Optional[str] = None
     County: Optional[str] = None
     RegDOE: Optional[str] = None
-    Parent1FirstName: Optional[str] = None
-    Parent2FirstName: Optional[str] = None
-    Parent1LastName: Optional[str] = None
-    Parent2LastName: Optional[str] = None
     RequestorFirstName: Optional[str] = None
     RequestorLastName: Optional[str] = None
     RequestorMailingAddress: Optional[str] = None
@@ -64,6 +61,35 @@ class Application:
     def dict(self):
         d = asdict(self)
         return {k: v for k, v in d.items() if v}
+
+
+@dataclass
+class BirthApplication(BaseApplication):
+    CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_B0A6353F1"
+    EventType: Optional[str] = "Birth"
+
+    RegFirstName: Optional[str] = None
+    RegMiddleName: Optional[str] = None
+    RegLastName: Optional[str] = None
+    Parent1FirstName: Optional[str] = None
+    Parent2FirstName: Optional[str] = None
+    Parent1LastName: Optional[str] = None
+    Parent2LastName: Optional[str] = None
+
+
+@dataclass
+class MarriageApplication(BaseApplication):
+    CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_M27FFEAFF"
+    EventType: Optional[str] = "Marriage"
+
+    Spouse1FirstName: Optional[str] = None
+    Spouse1MiddleName: Optional[str] = None
+    Spouse1LastName: Optional[str] = None
+    Spouse1BirthLastName: Optional[str] = None
+    Spouse2FirstName: Optional[str] = None
+    Spouse2MiddleName: Optional[str] = None
+    Spouse2LastName: Optional[str] = None
+    Spouse2BirthLastName: Optional[str] = None
 
 
 @dataclass
@@ -101,12 +127,9 @@ class PackageTask(Task):
     def __init__(self, request_id: UUID):
         super().__init__(request_id=request_id)
 
-    def handler(self, request_id: UUID):
-        logger.debug(f"Creating request package for: {request_id}")
-        request = VitalRecordsRequest.get_with_status(request_id, "enqueued")
-
-        application = Application(
-            package_id=request_id,
+    def _get_birth_application(self, request: VitalRecordsRequest) -> BirthApplication:
+        return BirthApplication(
+            package_id=request.id,
             WildfireName=request.fire.capitalize(),
             NumberOfCopies=request.number_of_records,
             RegFirstName=request.first_name,
@@ -129,18 +152,76 @@ class PackageTask(Task):
             RequestorTelephone=request.phone_number,
         )
 
+    def _get_marriage_application(self, request: VitalRecordsRequest) -> MarriageApplication:
+        return MarriageApplication(
+            package_id=request.id,
+            WildfireName=request.fire.capitalize(),
+            NumberOfCopies=request.number_of_records,
+            Spouse1FirstName=request.person_1_first_name,
+            Spouse1MiddleName=request.person_1_middle_name,
+            Spouse1LastName=request.person_1_last_name,
+            Spouse1BirthLastName=request.person_1_birth_last_name,
+            Spouse2FirstName=request.person_2_first_name,
+            Spouse2MiddleName=request.person_2_middle_name,
+            Spouse2LastName=request.person_2_last_name,
+            Spouse2BirthLastName=request.person_2_birth_last_name,
+            County=request.county_of_event,
+            RegDOE=request.date_of_event.strftime("%m/%d/%Y"),
+            RequestorFirstName=request.order_first_name,
+            RequestorLastName=request.order_last_name,
+            RequestorMailingAddress=" ".join(_filter_empty((request.address, request.address_2))),
+            RequestorCity=request.city,
+            RequestorStateProvince=request.state,
+            RequestorZipCode=request.zip_code,
+            RequestorCountry="United States",
+            RequestorEmail=request.email_address,
+            RequestorTelephone=request.phone_number,
+        )
+
+    def _get_sworn_statement(self, request: VitalRecordsRequest, registrant_fields: dict) -> SwornStatement:
+        """A SwornStatement factory"""
+
         # use request.started_at, which is the time just after successful auth through the gateway
         # convert to the local timezone and format for display
         auth_time = request.started_at.astimezone(timezone.get_default_timezone()).strftime("%Y-%m-%d %H:%M:%S")
-        sworn_statement = SwornStatement(
-            registrantNameRow1=" ".join(_filter_empty((request.first_name, request.middle_name, request.last_name))),
-            applicantRelationToRegistrantRow1=request.relationship,
-            applicantName=request.legal_attestation,
-            applicantSignature1=request.legal_attestation,
-            applicantSignature2=f"Authorized via California Identity Gateway {auth_time}",
-        )
 
-        app_reader = PdfReader(APPLICATION_TEMPLATE)
+        base_fields = {
+            "applicantName": request.legal_attestation,
+            "applicantSignature1": request.legal_attestation,
+            "applicantSignature2": f"Authorized via California Identity Gateway {auth_time}",
+        }
+        all_fields = {**base_fields, **registrant_fields}
+        return SwornStatement(**all_fields)
+
+    def _get_birth_sworn_statement(self, request: VitalRecordsRequest) -> SwornStatement:
+        registrant_fields = {
+            "registrantNameRow1": " ".join(_filter_empty((request.first_name, request.middle_name, request.last_name))),
+            "applicantRelationToRegistrantRow1": request.relationship,
+        }
+        return self._get_sworn_statement(request, registrant_fields)
+
+    def _get_marriage_sworn_statement(self, request: VitalRecordsRequest) -> SwornStatement:
+        registrant_1 = " ".join((f"{request.person_1_first_name[0]}.", request.person_1_last_name))
+        registrant_2 = " ".join((f"{request.person_2_first_name[0]}.", request.person_2_last_name))
+        registrant_fields = {
+            "registrantNameRow1": f"{registrant_1} / {registrant_2}",
+            "applicantRelationToRegistrantRow1": request.relationship,
+        }
+        return self._get_sworn_statement(request, registrant_fields)
+
+    def handler(self, request_id: UUID):
+        logger.debug(f"Creating request package for: {request_id}")
+        request = VitalRecordsRequest.get_with_status(request_id, "enqueued")
+
+        if request.type == "birth":
+            application = self._get_birth_application(request)
+            sworn_statement = self._get_birth_sworn_statement(request)
+        elif request.type == "marriage":
+            application = self._get_marriage_application(request)
+            sworn_statement = self._get_marriage_sworn_statement(request)
+
+        app_template = os.path.join(APPLICATION_FOLDER, f"application_{request.type}.pdf")
+        app_reader = PdfReader(app_template)
         writer = PdfWriter()
         writer.append(app_reader)
         writer.update_page_form_field_values(writer.pages[0], application.dict(), auto_regenerate=False)
@@ -149,7 +230,7 @@ class PackageTask(Task):
         writer.append(ss_reader)
         writer.update_page_form_field_values(writer.pages[1], sworn_statement.dict(), auto_regenerate=False)
 
-        filename = get_package_filename(request_id)
+        filename = get_package_filename(request)
         with open(filename, "wb") as output_stream:
             writer.write(output_stream)
 

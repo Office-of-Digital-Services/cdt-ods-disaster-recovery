@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-from uuid import UUID
 
 from django.utils import timezone
 
@@ -32,11 +31,11 @@ class CleanupTask(Task):
     group = "vital-records"
     name = "cleanup"
 
-    def clean_file(self, request_id: UUID) -> bool:
+    def clean_file(self, request: VitalRecordsRequest) -> bool:
         """Deletes the package file for this request."""
         # delete the package file
         success = True
-        filename = get_package_filename(request_id)
+        filename = get_package_filename(request)
         logger.debug(f"Deleting package file: {filename}")
         request_file = Path(filename)
 
@@ -73,7 +72,7 @@ class CleanupTask(Task):
 
         success = self.clean_record(request)
         if success:
-            success = self.clean_file(request_id)
+            success = self.clean_file(request)
 
         if success:
             logger.debug(f"Cleaning complete for: {request_id}")
