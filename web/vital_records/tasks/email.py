@@ -46,7 +46,7 @@ class EmailTask(Task):
         text_content = render_to_string(EMAIL_TXT_TEMPLATE, context)
         html_content = render_to_string(EMAIL_HTML_TEMPLATE, context)
         email = EmailMultiAlternatives(
-            subject="Completed: Birth Record Request",
+            subject=f"Completed: {self._format_record_type(request.type)} Record Request",
             body=text_content,
             to=[settings.VITAL_RECORDS_EMAIL_TO],
         )
