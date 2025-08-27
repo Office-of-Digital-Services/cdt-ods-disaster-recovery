@@ -1,6 +1,8 @@
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.views.generic import DetailView, RedirectView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -75,6 +77,7 @@ class StartView(EligibilityMixin, CreateView):
         return redirect(next_route, pk=self.object.pk)
 
 
+@method_decorator(never_cache, name="dispatch")
 class TypeView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = TypeForm
@@ -89,16 +92,13 @@ class TypeView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        # Move form state to next state
-        self.object.complete_type()
-        self.object.save()
-
         next_route = Routes.app_route(Routes.request_statement)
         self.success_url = reverse(next_route, kwargs={"pk": self.object.pk})
 
         return super().form_valid(form)
 
 
+@method_decorator(never_cache, name="dispatch")
 class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = StatementForm
@@ -112,10 +112,6 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        # Move form state to next state
-        self.object.complete_statement()
-        self.object.save()
-
         type_steps = StepsMixin.get_type_steps(self.object.type)
         first_step_name = StepsMixin.get_step_names(type_steps)[0]
         first_step_route = type_steps[first_step_name]
@@ -126,57 +122,33 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
         return super().form_valid(form)
 
 
+@method_decorator(never_cache, name="dispatch")
 class NameView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     template_name = "vital_records/request/form.html"
     step_name = Steps.name
 
-    def form_valid(self, form):
-        # Move form state to next state
-        self.object.complete_name()
-        self.object.save()
 
-        return super().form_valid(form)
-
-
+@method_decorator(never_cache, name="dispatch")
 class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     template_name = "vital_records/request/form.html"
 
-    def form_valid(self, form):
-        # Move form state to next state
-        self.object.complete_county()
-        self.object.save()
 
-        return super().form_valid(form)
-
-
+@method_decorator(never_cache, name="dispatch")
 class DateOfEventView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = DateOfEventForm
     template_name = "vital_records/request/form.html"
     context_object_name = "vital_request"
 
-    def form_valid(self, form):
-        # Move form state to next state
-        self.object.complete_dob()
-        self.object.save()
 
-        return super().form_valid(form)
-
-
+@method_decorator(never_cache, name="dispatch")
 class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = ParentsNamesForm
     template_name = "vital_records/request/form.html"
     step_name = Steps.parents_names
-
-    def form_valid(self, form):
-        # Move form state to next state
-        self.object.complete_parents_names()
-        self.object.save()
-
-        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -201,18 +173,12 @@ class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upd
         return context
 
 
+@method_decorator(never_cache, name="dispatch")
 class OrderInfoView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = OrderInfoForm
     template_name = "vital_records/request/order.html"
     step_name = Steps.order_information
-
-    def form_valid(self, form):
-        # Move form state to next state
-        self.object.complete_order_info()
-        self.object.save()
-
-        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -226,6 +192,7 @@ class OrderInfoView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Update
         return context
 
 
+@method_decorator(never_cache, name="dispatch")
 class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = SubmitForm
