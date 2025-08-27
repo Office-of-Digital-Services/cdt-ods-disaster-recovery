@@ -6,6 +6,14 @@ from web.vital_records.routes import Routes
 from web.vital_records.session import Session
 
 
+class DisableFieldsMixin:
+    def __init__(self, *args, **kwargs):
+        super(DisableFieldsMixin, self).__init__(*args, **kwargs)
+        if hasattr(self, "instance") and self.instance is not None and self.instance.already_submitted:
+            for field_name, field in self.fields.items():
+                field.disabled = True
+
+
 class ValidateRequestIdMixin:
     def dispatch(self, request, *args, **kwargs):
         session = Session(request)

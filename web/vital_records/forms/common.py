@@ -1,6 +1,7 @@
 import datetime
 from django import forms
 
+from web.vital_records.mixins import DisableFieldsMixin
 from web.vital_records.models import VitalRecordsRequest
 
 MONTH_DISPLAY_CHOICES = [
@@ -32,7 +33,7 @@ class EligibilityForm(forms.ModelForm):
         fields = ["fire"]
 
 
-class TypeForm(forms.ModelForm):
+class TypeForm(DisableFieldsMixin, forms.ModelForm):
     type = forms.ChoiceField(
         choices=VitalRecordsRequest.TYPE_CHOICES,
         label="Select record type",
@@ -44,7 +45,7 @@ class TypeForm(forms.ModelForm):
         fields = ["type"]
 
 
-class StatementForm(forms.ModelForm):
+class StatementForm(DisableFieldsMixin, forms.ModelForm):
     relationship = forms.ChoiceField(
         choices=VitalRecordsRequest.RELATIONSHIP_CHOICES,
         label="Select your relationship",
@@ -60,7 +61,7 @@ class StatementForm(forms.ModelForm):
         fields = ["relationship", "legal_attestation"]
 
 
-class DateOfEventForm(forms.ModelForm):
+class DateOfEventForm(DisableFieldsMixin, forms.ModelForm):
     month = forms.ChoiceField(
         choices=MONTH_DISPLAY_CHOICES,
         label="Month",
@@ -134,7 +135,7 @@ class DateOfEventForm(forms.ModelForm):
         fields = []
 
 
-class OrderInfoForm(forms.ModelForm):
+class OrderInfoForm(DisableFieldsMixin, forms.ModelForm):
     number_of_records = forms.ChoiceField(
         choices=VitalRecordsRequest.NUMBER_CHOICES,
         label="Number of records",
