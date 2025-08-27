@@ -51,11 +51,11 @@
 | web/vital\_records/templatetags/form\_helpers.py                                      |       10 |       10 |        2 |        0 |      0% |      1-13 |
 | web/vital\_records/urls.py                                                            |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views/\_\_init\_\_.py                                              |        0 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/views/birth.py                                                     |       38 |       20 |        0 |        0 |     47% |14-26, 35-46, 54-60 |
+| web/vital\_records/views/birth.py                                                     |       33 |       20 |        0 |        0 |     39% |10-22, 30-41, 48-54 |
 | web/vital\_records/views/common.py                                                    |      171 |       66 |        6 |        0 |     59% |60-63, 87-92, 95-98, 108-112, 115-122, 154-173, 184-192, 204-212, 215-222, 225-230, 238-240, 244-255 |
-| web/vital\_records/views/marriage.py                                                  |       45 |       26 |        0 |        0 |     42% |15-41, 50-63, 71-77 |
+| web/vital\_records/views/marriage.py                                                  |       40 |       26 |        0 |        0 |     35% |11-37, 45-58, 65-71 |
 | web/wsgi.py                                                                           |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                             **TOTAL** | **1341** |  **213** |  **130** |   **16** | **83%** |           |
+|                                                                             **TOTAL** | **1331** |  **213** |  **130** |   **16** | **83%** |           |
 
 
 ## Setup coverage badge
