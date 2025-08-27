@@ -10,7 +10,7 @@ class DisableFieldsMixin:
     def __init__(self, *args, **kwargs):
         super(DisableFieldsMixin, self).__init__(*args, **kwargs)
         if hasattr(self, "instance") and self.instance is not None and self.instance.already_submitted:
-            for field_name, field in self.fields.items():
+            for field in self.fields.values():
                 field.disabled = True
 
 
