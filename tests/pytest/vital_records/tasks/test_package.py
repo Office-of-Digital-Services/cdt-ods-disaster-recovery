@@ -239,8 +239,8 @@ class TestPackageTask:
             f"Authorized via California Identity Gateway "
             f"{now.astimezone(timezone.get_default_timezone()).strftime('%Y-%m-%d %H:%M:%S')}"
         )
-        assert sworn_statement.registrantNameRow1 == "First1 Middle1 Last1"
-        assert sworn_statement.registrantNameRow2 == "First2 Middle2 Last2"
+        assert sworn_statement.registrantNameRow1 == "F. Last1 / F. Last2"
+        assert sworn_statement.applicantRelationToRegistrantRow1 == "Relationship"
 
     @pytest.mark.parametrize(
         "request_type, mock_app_helper_method_name, mock_ss_helper_method_name",

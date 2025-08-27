@@ -201,13 +201,11 @@ class PackageTask(Task):
         return self._get_sworn_statement(request, registrant_fields)
 
     def _get_marriage_sworn_statement(self, request: VitalRecordsRequest) -> SwornStatement:
+        registrant_1 = " ".join((f"{request.person_1_first_name[0]}.", request.person_1_last_name))
+        registrant_2 = " ".join((f"{request.person_2_first_name[0]}.", request.person_2_last_name))
         registrant_fields = {
-            "registrantNameRow1": " ".join(
-                _filter_empty((request.person_1_first_name, request.person_1_middle_name, request.person_1_last_name))
-            ),
-            "registrantNameRow2": " ".join(
-                _filter_empty((request.person_2_first_name, request.person_2_middle_name, request.person_2_last_name))
-            ),
+            "registrantNameRow1": f"{registrant_1} / {registrant_2}",
+            "applicantRelationToRegistrantRow1": request.relationship,
         }
         return self._get_sworn_statement(request, registrant_fields)
 
