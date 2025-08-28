@@ -76,6 +76,32 @@ class BirthApplication(BaseApplication):
     Parent1LastName: Optional[str] = None
     Parent2LastName: Optional[str] = None
 
+    @staticmethod
+    def create(request: VitalRecordsRequest) -> "BirthApplication":
+        return BirthApplication(
+            package_id=request.id,
+            WildfireName=request.fire.capitalize(),
+            NumberOfCopies=request.number_of_records,
+            RegFirstName=request.first_name,
+            RegMiddleName=request.middle_name,
+            RegLastName=request.last_name,
+            County=request.county_of_event,
+            RegDOE=request.date_of_event.strftime("%m/%d/%Y"),
+            Parent1FirstName=request.person_1_first_name,
+            Parent1LastName=request.person_1_last_name,
+            Parent2FirstName=request.person_2_first_name,
+            Parent2LastName=request.person_2_last_name,
+            RequestorFirstName=request.order_first_name,
+            RequestorLastName=request.order_last_name,
+            RequestorMailingAddress=" ".join(_filter_empty((request.address, request.address_2))),
+            RequestorCity=request.city,
+            RequestorStateProvince=request.state,
+            RequestorZipCode=request.zip_code,
+            RequestorCountry="United States",
+            RequestorEmail=request.email_address,
+            RequestorTelephone=request.phone_number,
+        )
+
 
 @dataclass
 class MarriageApplication(BaseApplication):
@@ -90,6 +116,33 @@ class MarriageApplication(BaseApplication):
     Spouse2MiddleName: Optional[str] = None
     Spouse2LastName: Optional[str] = None
     Spouse2BirthLastName: Optional[str] = None
+
+    @staticmethod
+    def create(request: VitalRecordsRequest) -> "MarriageApplication":
+        return MarriageApplication(
+            package_id=request.id,
+            WildfireName=request.fire.capitalize(),
+            NumberOfCopies=request.number_of_records,
+            Spouse1FirstName=request.person_1_first_name,
+            Spouse1MiddleName=request.person_1_middle_name,
+            Spouse1LastName=request.person_1_last_name,
+            Spouse1BirthLastName=request.person_1_birth_last_name,
+            Spouse2FirstName=request.person_2_first_name,
+            Spouse2MiddleName=request.person_2_middle_name,
+            Spouse2LastName=request.person_2_last_name,
+            Spouse2BirthLastName=request.person_2_birth_last_name,
+            County=request.county_of_event,
+            RegDOE=request.date_of_event.strftime("%m/%d/%Y"),
+            RequestorFirstName=request.order_first_name,
+            RequestorLastName=request.order_last_name,
+            RequestorMailingAddress=" ".join(_filter_empty((request.address, request.address_2))),
+            RequestorCity=request.city,
+            RequestorStateProvince=request.state,
+            RequestorZipCode=request.zip_code,
+            RequestorCountry="United States",
+            RequestorEmail=request.email_address,
+            RequestorTelephone=request.phone_number,
+        )
 
 
 @dataclass
@@ -119,66 +172,8 @@ class SwornStatement:
         d = asdict(self)
         return {k: v for k, v in d.items() if v}
 
-
-class PackageTask(Task):
-    group = "vital-records"
-    name = "package"
-
-    def __init__(self, request_id: UUID):
-        super().__init__(request_id=request_id)
-
-    def _get_birth_application(self, request: VitalRecordsRequest) -> BirthApplication:
-        return BirthApplication(
-            package_id=request.id,
-            WildfireName=request.fire.capitalize(),
-            NumberOfCopies=request.number_of_records,
-            RegFirstName=request.first_name,
-            RegMiddleName=request.middle_name,
-            RegLastName=request.last_name,
-            County=request.county_of_event,
-            RegDOE=request.date_of_event.strftime("%m/%d/%Y"),
-            Parent1FirstName=request.person_1_first_name,
-            Parent1LastName=request.person_1_last_name,
-            Parent2FirstName=request.person_2_first_name,
-            Parent2LastName=request.person_2_last_name,
-            RequestorFirstName=request.order_first_name,
-            RequestorLastName=request.order_last_name,
-            RequestorMailingAddress=" ".join(_filter_empty((request.address, request.address_2))),
-            RequestorCity=request.city,
-            RequestorStateProvince=request.state,
-            RequestorZipCode=request.zip_code,
-            RequestorCountry="United States",
-            RequestorEmail=request.email_address,
-            RequestorTelephone=request.phone_number,
-        )
-
-    def _get_marriage_application(self, request: VitalRecordsRequest) -> MarriageApplication:
-        return MarriageApplication(
-            package_id=request.id,
-            WildfireName=request.fire.capitalize(),
-            NumberOfCopies=request.number_of_records,
-            Spouse1FirstName=request.person_1_first_name,
-            Spouse1MiddleName=request.person_1_middle_name,
-            Spouse1LastName=request.person_1_last_name,
-            Spouse1BirthLastName=request.person_1_birth_last_name,
-            Spouse2FirstName=request.person_2_first_name,
-            Spouse2MiddleName=request.person_2_middle_name,
-            Spouse2LastName=request.person_2_last_name,
-            Spouse2BirthLastName=request.person_2_birth_last_name,
-            County=request.county_of_event,
-            RegDOE=request.date_of_event.strftime("%m/%d/%Y"),
-            RequestorFirstName=request.order_first_name,
-            RequestorLastName=request.order_last_name,
-            RequestorMailingAddress=" ".join(_filter_empty((request.address, request.address_2))),
-            RequestorCity=request.city,
-            RequestorStateProvince=request.state,
-            RequestorZipCode=request.zip_code,
-            RequestorCountry="United States",
-            RequestorEmail=request.email_address,
-            RequestorTelephone=request.phone_number,
-        )
-
-    def _get_sworn_statement(self, request: VitalRecordsRequest, registrant_fields: dict) -> SwornStatement:
+    @staticmethod
+    def create_sworn_statement(request: VitalRecordsRequest, registrant_fields: dict) -> "SwornStatement":
         """A SwornStatement factory"""
 
         # use request.started_at, which is the time just after successful auth through the gateway
@@ -193,32 +188,42 @@ class PackageTask(Task):
         all_fields = {**base_fields, **registrant_fields}
         return SwornStatement(**all_fields)
 
-    def _get_birth_sworn_statement(self, request: VitalRecordsRequest) -> SwornStatement:
+    @staticmethod
+    def create_birth_sworn_statement(request: VitalRecordsRequest) -> "SwornStatement":
         registrant_fields = {
             "registrantNameRow1": " ".join(_filter_empty((request.first_name, request.middle_name, request.last_name))),
             "applicantRelationToRegistrantRow1": request.relationship,
         }
-        return self._get_sworn_statement(request, registrant_fields)
+        return SwornStatement.create_sworn_statement(request, registrant_fields)
 
-    def _get_marriage_sworn_statement(self, request: VitalRecordsRequest) -> SwornStatement:
+    @staticmethod
+    def create_marriage_sworn_statement(request: VitalRecordsRequest) -> "SwornStatement":
         registrant_1 = " ".join((f"{request.person_1_first_name[0]}.", request.person_1_last_name))
         registrant_2 = " ".join((f"{request.person_2_first_name[0]}.", request.person_2_last_name))
         registrant_fields = {
             "registrantNameRow1": f"{registrant_1} / {registrant_2}",
             "applicantRelationToRegistrantRow1": request.relationship,
         }
-        return self._get_sworn_statement(request, registrant_fields)
+        return SwornStatement.create_sworn_statement(request, registrant_fields)
+
+
+class PackageTask(Task):
+    group = "vital-records"
+    name = "package"
+
+    def __init__(self, request_id: UUID):
+        super().__init__(request_id=request_id)
 
     def handler(self, request_id: UUID):
         logger.debug(f"Creating request package for: {request_id}")
         request = VitalRecordsRequest.get_with_status(request_id, "enqueued")
 
         if request.type == "birth":
-            application = self._get_birth_application(request)
-            sworn_statement = self._get_birth_sworn_statement(request)
+            application = BirthApplication.create(request)
+            sworn_statement = SwornStatement.create_birth_sworn_statement(request)
         elif request.type == "marriage":
-            application = self._get_marriage_application(request)
-            sworn_statement = self._get_marriage_sworn_statement(request)
+            application = MarriageApplication.create(request)
+            sworn_statement = SwornStatement.create_marriage_sworn_statement(request)
 
         app_template = os.path.join(APPLICATION_FOLDER, f"application_{request.type}.pdf")
         app_reader = PdfReader(app_template)
