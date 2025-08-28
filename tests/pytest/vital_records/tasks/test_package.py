@@ -19,11 +19,6 @@ from web.vital_records.tasks.utils import get_package_filename
 
 
 @pytest.fixture
-def mock_Path(mocker):
-    return mocker.patch("web.vital_records.tasks.package.Path")
-
-
-@pytest.fixture
 def mock_PdfReader(mocker):
     return mocker.patch("web.vital_records.tasks.package.PdfReader")
 
@@ -31,11 +26,6 @@ def mock_PdfReader(mocker):
 @pytest.fixture
 def mock_PdfWriter(mocker):
     return mocker.patch("web.vital_records.tasks.package.PdfWriter")
-
-
-@pytest.fixture
-def mock_BirthApplication(mocker):
-    return mocker.patch("web.vital_records.tasks.package.BirthApplication")
 
 
 @pytest.fixture
