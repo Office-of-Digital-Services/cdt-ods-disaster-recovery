@@ -54,6 +54,37 @@ def mock_PackageTask(mocker, mock_PackageTask):
     return mocker.patch("web.vital_records.tasks.package.PackageTask", return_value=mock_PackageTask)
 
 
+@pytest.fixture
+def mock_vital_records_request(mocker):
+    mock_request = mocker.MagicMock(spec=VitalRecordsRequest)
+    mock_request.fire = "palisades"
+    mock_request.number_of_records = 2
+    mock_request.relationship = "Relationship"
+    mock_request.legal_attestation = "Legal Attestation"
+    mock_request.first_name = "Jane"
+    mock_request.middle_name = "Anne"
+    mock_request.last_name = "Doe"
+    mock_request.county_of_event = "Los Angeles"
+    mock_request.date_of_event = datetime.datetime(2025, 8, 21, 19, 17, 58, tzinfo=datetime.UTC)
+    mock_request.person_1_first_name = "First1"
+    mock_request.person_1_middle_name = "Middle1"
+    mock_request.person_1_last_name = "Last1"
+    mock_request.person_2_first_name = "First2"
+    mock_request.person_2_middle_name = "Middle2"
+    mock_request.person_2_last_name = "Last2"
+    mock_request.order_first_name = "Requester"
+    mock_request.order_last_name = "Person"
+    mock_request.address = "123 Main St"
+    mock_request.address_2 = "Apt 4A"
+    mock_request.city = "Los Angeles"
+    mock_request.state = "CA"
+    mock_request.zip_code = "90012"
+    mock_request.email_address = "test@example.com"
+    mock_request.phone_number = "3231234567"
+
+    return mock_request
+
+
 def test_templates(settings):
     assert str(settings.BASE_DIR) in APPLICATION_FOLDER
     assert os.path.join("vital_records", "templates", "package") in APPLICATION_FOLDER
@@ -84,75 +115,10 @@ class TestBirthApplication:
         assert d["NumberOfCopies"] == app.NumberOfCopies
         assert d["EventType"] == app.EventType
 
+    def test_create(self, mock_vital_records_request, request_id):
+        mock_vital_records_request.id = request_id
 
-class TestMarriageApplication:
-    def test_asdict(self):
-        app = MarriageApplication()
-
-        d = app.dict()
-
-        assert d["package_id"] == app.package_id
-        assert d["CDPH_VR_FORMTYPE"] == app.CDPH_VR_FORMTYPE
-        assert d["CopyType"] == app.CopyType
-        assert d["RelationshipToRegistrant"] == app.RelationshipToRegistrant
-        assert d["NumberOfCopies"] == app.NumberOfCopies
-        assert d["EventType"] == app.EventType
-
-
-class TestSwornStatement:
-    def test_asdict(self):
-        ss = SwornStatement(registrantName="name")
-
-        d = ss.dict()
-
-        assert d["registrantName"] == "name"
-
-
-class TestPackageTask:
-    @pytest.fixture
-    def mock_vital_records_request(self, mocker):
-        mock_request = mocker.MagicMock(spec=VitalRecordsRequest)
-        mock_request.fire = "palisades"
-        mock_request.number_of_records = 2
-        mock_request.relationship = "Relationship"
-        mock_request.legal_attestation = "Legal Attestation"
-        mock_request.first_name = "Jane"
-        mock_request.middle_name = "Anne"
-        mock_request.last_name = "Doe"
-        mock_request.county_of_event = "Los Angeles"
-        mock_request.date_of_event = datetime.datetime(2025, 8, 21, 19, 17, 58, tzinfo=datetime.UTC)
-        mock_request.person_1_first_name = "First1"
-        mock_request.person_1_middle_name = "Middle1"
-        mock_request.person_1_last_name = "Last1"
-        mock_request.person_2_first_name = "First2"
-        mock_request.person_2_middle_name = "Middle2"
-        mock_request.person_2_last_name = "Last2"
-        mock_request.order_first_name = "Requester"
-        mock_request.order_last_name = "Person"
-        mock_request.address = "123 Main St"
-        mock_request.address_2 = "Apt 4A"
-        mock_request.city = "Los Angeles"
-        mock_request.state = "CA"
-        mock_request.zip_code = "90012"
-        mock_request.email_address = "test@example.com"
-        mock_request.phone_number = "3231234567"
-
-        return mock_request
-
-    @pytest.fixture
-    def task(self, request_id) -> PackageTask:
-        return PackageTask(request_id)
-
-    def test_task(self, request_id, task):
-        assert task.group == "vital-records"
-        assert task.name == "package"
-        assert task.kwargs["request_id"] == request_id
-        assert task.started is False
-
-    def test__get_birth_application(self, mock_vital_records_request, task):
-        mock_vital_records_request.id = task.kwargs["request_id"]
-
-        application = task._get_birth_application(mock_vital_records_request)
+        application = BirthApplication.create(mock_vital_records_request)
 
         assert isinstance(application, BirthApplication)
         assert application.package_id == mock_vital_records_request.id
@@ -179,10 +145,24 @@ class TestPackageTask:
         assert application.RequestorEmail == mock_vital_records_request.email_address
         assert application.RequestorTelephone == mock_vital_records_request.phone_number
 
-    def test__get_marriage_application(self, mock_vital_records_request, task):
-        mock_vital_records_request.id = task.kwargs["request_id"]
 
-        application = task._get_marriage_application(mock_vital_records_request)
+class TestMarriageApplication:
+    def test_asdict(self):
+        app = MarriageApplication()
+
+        d = app.dict()
+
+        assert d["package_id"] == app.package_id
+        assert d["CDPH_VR_FORMTYPE"] == app.CDPH_VR_FORMTYPE
+        assert d["CopyType"] == app.CopyType
+        assert d["RelationshipToRegistrant"] == app.RelationshipToRegistrant
+        assert d["NumberOfCopies"] == app.NumberOfCopies
+        assert d["EventType"] == app.EventType
+
+    def test_create(self, mock_vital_records_request, request_id):
+        mock_vital_records_request.id = request_id
+
+        application = MarriageApplication.create(mock_vital_records_request)
 
         assert isinstance(application, MarriageApplication)
         assert application.package_id == mock_vital_records_request.id
@@ -209,6 +189,28 @@ class TestPackageTask:
         assert application.RequestorCountry == "United States"
         assert application.RequestorEmail == mock_vital_records_request.email_address
         assert application.RequestorTelephone == mock_vital_records_request.phone_number
+
+
+class TestSwornStatement:
+    def test_asdict(self):
+        ss = SwornStatement(registrantName="name")
+
+        d = ss.dict()
+
+        assert d["registrantName"] == "name"
+
+
+class TestPackageTask:
+
+    @pytest.fixture
+    def task(self, request_id) -> PackageTask:
+        return PackageTask(request_id)
+
+    def test_task(self, request_id, task):
+        assert task.group == "vital-records"
+        assert task.name == "package"
+        assert task.kwargs["request_id"] == request_id
+        assert task.started is False
 
     def test__get_birth_sworn_statement(self, mock_vital_records_request, task):
         now = datetime.datetime.now(tz=datetime.UTC)
@@ -243,10 +245,10 @@ class TestPackageTask:
         assert sworn_statement.applicantRelationToRegistrantRow1 == "Relationship"
 
     @pytest.mark.parametrize(
-        "request_type, mock_app_helper_method_name, mock_ss_helper_method_name",
+        "request_type, mock_app_class, mock_ss_helper_method_name",
         [
-            ("birth", "_get_birth_application", "_get_birth_sworn_statement"),
-            ("marriage", "_get_marriage_application", "_get_marriage_sworn_statement"),
+            ("birth", BirthApplication, "_get_birth_sworn_statement"),
+            ("marriage", MarriageApplication, "_get_marriage_sworn_statement"),
         ],
     )
     def test_handler(
@@ -258,7 +260,7 @@ class TestPackageTask:
         mock_PdfWriter,
         task,
         request_type,
-        mock_app_helper_method_name,
+        mock_app_class,
         mock_ss_helper_method_name,
     ):
         now = datetime.datetime.now(tz=datetime.UTC)
@@ -275,7 +277,7 @@ class TestPackageTask:
 
         mock_application_obj = mocker.MagicMock()
         mock_application_obj.dict.return_value = {"app_key": "app_value"}
-        mocker.patch.object(task, mock_app_helper_method_name, return_value=mock_application_obj)
+        mocker.patch.object(mock_app_class, "create", return_value=mock_application_obj)
 
         mock_sworn_statement_obj = mocker.MagicMock()
         mock_sworn_statement_obj.dict.return_value = {}
@@ -285,7 +287,7 @@ class TestPackageTask:
 
         mock_VitalRecordsRequest.get_with_status.assert_called_once_with(request_id, "enqueued")
 
-        getattr(task, mock_app_helper_method_name).assert_called_once_with(mock_inst)
+        getattr(mock_app_class, "create").assert_called_once_with(mock_inst)
         getattr(task, mock_ss_helper_method_name).assert_called_once_with(mock_inst)
 
         mock_PdfReader.assert_any_call(os.path.join(APPLICATION_FOLDER, f"application_{request_type}.pdf"))
