@@ -172,15 +172,8 @@ class SwornStatement:
         d = asdict(self)
         return {k: v for k, v in d.items() if v}
 
-
-class PackageTask(Task):
-    group = "vital-records"
-    name = "package"
-
-    def __init__(self, request_id: UUID):
-        super().__init__(request_id=request_id)
-
-    def _get_sworn_statement(self, request: VitalRecordsRequest, registrant_fields: dict) -> SwornStatement:
+    @staticmethod
+    def create_sworn_statement(request: VitalRecordsRequest, registrant_fields: dict) -> "SwornStatement":
         """A SwornStatement factory"""
 
         # use request.started_at, which is the time just after successful auth through the gateway
@@ -195,21 +188,31 @@ class PackageTask(Task):
         all_fields = {**base_fields, **registrant_fields}
         return SwornStatement(**all_fields)
 
-    def _get_birth_sworn_statement(self, request: VitalRecordsRequest) -> SwornStatement:
+    @staticmethod
+    def create_birth_sworn_statement(request: VitalRecordsRequest) -> "SwornStatement":
         registrant_fields = {
             "registrantNameRow1": " ".join(_filter_empty((request.first_name, request.middle_name, request.last_name))),
             "applicantRelationToRegistrantRow1": request.relationship,
         }
-        return self._get_sworn_statement(request, registrant_fields)
+        return SwornStatement.create_sworn_statement(request, registrant_fields)
 
-    def _get_marriage_sworn_statement(self, request: VitalRecordsRequest) -> SwornStatement:
+    @staticmethod
+    def create_marriage_sworn_statement(request: VitalRecordsRequest) -> "SwornStatement":
         registrant_1 = " ".join((f"{request.person_1_first_name[0]}.", request.person_1_last_name))
         registrant_2 = " ".join((f"{request.person_2_first_name[0]}.", request.person_2_last_name))
         registrant_fields = {
             "registrantNameRow1": f"{registrant_1} / {registrant_2}",
             "applicantRelationToRegistrantRow1": request.relationship,
         }
-        return self._get_sworn_statement(request, registrant_fields)
+        return SwornStatement.create_sworn_statement(request, registrant_fields)
+
+
+class PackageTask(Task):
+    group = "vital-records"
+    name = "package"
+
+    def __init__(self, request_id: UUID):
+        super().__init__(request_id=request_id)
 
     def handler(self, request_id: UUID):
         logger.debug(f"Creating request package for: {request_id}")
@@ -217,10 +220,10 @@ class PackageTask(Task):
 
         if request.type == "birth":
             application = BirthApplication.create(request)
-            sworn_statement = self._get_birth_sworn_statement(request)
+            sworn_statement = SwornStatement.create_birth_sworn_statement(request)
         elif request.type == "marriage":
             application = MarriageApplication.create(request)
-            sworn_statement = self._get_marriage_sworn_statement(request)
+            sworn_statement = SwornStatement.create_marriage_sworn_statement(request)
 
         app_template = os.path.join(APPLICATION_FOLDER, f"application_{request.type}.pdf")
         app_reader = PdfReader(app_template)
