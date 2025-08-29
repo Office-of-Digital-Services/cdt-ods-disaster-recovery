@@ -24,3 +24,6 @@ RUN --mount=type=cache,id=pipcache,target=${PIP_CACHE_DIR},uid=${USER_UID},gid=$
      pip install -e .[dev,test]
 
 COPY . .
+
+# install docs requirements
+RUN pip install --no-cache-dir -r docs/requirements.txt

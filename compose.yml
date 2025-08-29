@@ -60,6 +60,15 @@ services:
       - postgres
     env_file: .env
 
+  docs:
+    image: cdt/disaster-recovery:dev
+    entrypoint: mkdocs
+    command: serve --dev-addr "0.0.0.0:8000"
+    ports:
+      - "8000"
+    volumes:
+      - ./:/cdt/app
+
 volumes:
   pgdata:
     driver: local
