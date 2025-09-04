@@ -14,6 +14,18 @@ class DisableFieldsMixin:
                 field.disabled = True
 
 
+class ValidateTypeMixin:
+    def dispatch(self, request, *args, **kwargs):
+        path = self.request.path
+        # assumes URL is in the form of '/vital-records/request/<record_type>'
+        record_type = path.split("/")[3]
+
+        if self.type and self.type == record_type:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
+
 class ValidateRequestIdMixin:
     def dispatch(self, request, *args, **kwargs):
         session = Session(request)

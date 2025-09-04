@@ -18,7 +18,7 @@ from web.vital_records.forms.common import (
     SubmitForm,
 )
 from web.vital_records.forms.birth import ParentsNamesForm
-from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
+from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin, ValidateTypeMixin
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
 
@@ -144,7 +144,7 @@ class DateOfEventView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upda
 
 
 @method_decorator(never_cache, name="dispatch")
-class ParentsNamesView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+class ParentsNamesView(ValidateTypeMixin, StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = ParentsNamesForm
     template_name = "vital_records/request/form.html"

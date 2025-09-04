@@ -1,9 +1,9 @@
 from web.vital_records.forms.marriage import CountyForm, NameForm
-from web.vital_records.mixins import Steps
+from web.vital_records.mixins import Steps, ValidateTypeMixin
 from web.vital_records.views import common
 
 
-class NameView(common.NameView):
+class NameView(ValidateTypeMixin, common.NameView):
     form_class = NameForm
 
     def get_context_data(self, **kwargs):
@@ -36,7 +36,7 @@ class NameView(common.NameView):
         return context
 
 
-class CountyView(common.CountyView):
+class CountyView(ValidateTypeMixin, common.CountyView):
     form_class = CountyForm
     step_name = Steps.county_of_marriage
 
@@ -57,7 +57,7 @@ class CountyView(common.CountyView):
         return context
 
 
-class DateOfMarriageView(common.DateOfEventView):
+class DateOfMarriageView(ValidateTypeMixin, common.DateOfEventView):
     step_name = Steps.date_of_marriage
 
     def get_context_data(self, **kwargs):
