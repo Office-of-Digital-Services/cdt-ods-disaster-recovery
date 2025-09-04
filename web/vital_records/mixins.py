@@ -20,7 +20,8 @@ class ValidateTypeMixin:
         # assumes URL is in the form of '/vital-records/request/<record_type>'
         record_type = path.split("/")[3]
 
-        if self.type and self.type == record_type:
+        record_request = self.get_object()
+        if record_request.type and record_request.type == record_type:
             return super().dispatch(request, *args, **kwargs)
         else:
             return HttpResponseForbidden()
