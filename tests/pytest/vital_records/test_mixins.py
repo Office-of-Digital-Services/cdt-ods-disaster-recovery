@@ -4,9 +4,41 @@ from django.views import View
 import pytest
 
 from web.vital_records import models
-from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
+from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin, ValidateTypeMixin
 from web.vital_records.routes import Routes
 from web.vital_records.session import Session
+
+
+@pytest.mark.django_db
+class TestValidateTypeMixin:
+    class SampleView(ValidateTypeMixin, View):
+        def get(self, request, *args, **kwargs):
+            return "Success"
+
+        def get_object(self):
+            return self.object
+
+    @pytest.fixture
+    def view(self, app_request):
+        v = self.SampleView()
+        v.setup(app_request)
+        v.object = models.VitalRecordsRequest(type="birth")
+        return v
+
+    def test_dispatch_type_matches(self, view, app_request):
+        app_request.path = f"/vital-records/request/birth/{view.object.pk}"
+
+        response = view.dispatch(app_request)
+
+        assert response == "Success"
+
+    def test_dispatch_type_does_not_match(self, view, app_request):
+        app_request.path = f"/vital-records/request/marriage/{view.object.pk}"
+
+        response = view.dispatch(app_request)
+
+        assert response.status_code == 403
+
 
 
 @pytest.mark.django_db
