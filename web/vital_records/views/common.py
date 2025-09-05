@@ -17,8 +17,7 @@ from web.vital_records.forms.common import (
     OrderInfoForm,
     SubmitForm,
 )
-from web.vital_records.forms.birth import ParentsNamesForm
-from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin, ValidateTypeMixin
+from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.session import Session
 
@@ -141,36 +140,6 @@ class DateOfEventView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, Upda
     form_class = DateOfEventForm
     template_name = "vital_records/request/form.html"
     context_object_name = "vital_request"
-
-
-@method_decorator(never_cache, name="dispatch")
-class ParentsNamesView(ValidateTypeMixin, StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
-    model = VitalRecordsRequest
-    form_class = ParentsNamesForm
-    template_name = "vital_records/request/form.html"
-    step_name = Steps.parents_names
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form_layout"] = "couples_names_form"
-        context["font_hint_name"] = "parents-hint"
-        context["form_question"] = "What were the names of the registrant’s parents at the time of the registrant’s birth?"
-        context["form_hint"] = "Please write the information as it appears on the birth certificate."
-        form = context["form"]
-        context["person_1_fields"] = [
-            form["person_1_first_name"],
-            form["person_1_last_name"],
-        ]
-        context["person_1_label"] = "Parent 1"
-        context["person_1_labelid"] = "parent_1_helptext"
-        context["person_2_fields"] = [
-            form["person_2_first_name"],
-            form["person_2_last_name"],
-        ]
-        context["person_2_label"] = "Parent 2"
-        context["person_2_labelid"] = "parent_2_helptext"
-
-        return context
 
 
 @method_decorator(never_cache, name="dispatch")
