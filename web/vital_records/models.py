@@ -188,7 +188,7 @@ class VitalRecordsRequest(models.Model):
     person_2_middle_name = models.CharField(max_length=128, blank=True)
     person_2_last_name = models.CharField(max_length=128, blank=True)
     person_2_birth_last_name = models.CharField(max_length=128, blank=True)
-    number_of_records = models.IntegerField(choices=NUMBER_CHOICES, null=True)
+    number_of_records = models.IntegerField(choices=NUMBER_CHOICES, null=True, default=1)
     order_first_name = models.CharField(max_length=128)
     order_last_name = models.CharField(max_length=128)
     address = models.CharField(max_length=128)

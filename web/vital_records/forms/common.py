@@ -136,12 +136,6 @@ class DateOfEventForm(DisableFieldsMixin, forms.ModelForm):
 
 
 class OrderInfoForm(DisableFieldsMixin, forms.ModelForm):
-    number_of_records = forms.ChoiceField(
-        choices=VitalRecordsRequest.NUMBER_CHOICES,
-        label="Number of records",
-        required=True,
-        widget=forms.Select(attrs={"class": "form-select"}),
-    )
     order_first_name = forms.CharField(
         label="First name", required=True, max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
     )
@@ -203,7 +197,6 @@ class OrderInfoForm(DisableFieldsMixin, forms.ModelForm):
     class Meta:
         model = VitalRecordsRequest
         fields = [
-            "number_of_records",
             "order_first_name",
             "order_last_name",
             "address",
