@@ -20,7 +20,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_error" {
 
   criteria {
     query     = <<-QUERY
-      union exceptions, (traces | where severityLevel >= 3)
+      union (exceptions | where exceptionType !has "ServiceResponseError"), (traces | where severityLevel >= 3)
     QUERY
     operator  = "GreaterThan"
     threshold = 0
