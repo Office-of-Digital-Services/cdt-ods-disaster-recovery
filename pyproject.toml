@@ -19,7 +19,7 @@ dependencies = [
     "gunicorn==23.0.0",
     "opentelemetry-instrumentation-psycopg==0.57b0",
     "psycopg[binary,pool]==3.2.9",
-    "pypdf==5.9.0",
+    "pypdf==6.0.0",
     "requests==2.32.4",
 ]
 
