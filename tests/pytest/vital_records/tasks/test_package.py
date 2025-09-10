@@ -48,7 +48,7 @@ def mock_PackageTask(mocker, mock_PackageTask):
 def mock_vital_records_request(mocker):
     mock_request = mocker.MagicMock(spec=VitalRecordsRequest)
     mock_request.fire = "palisades"
-    mock_request.number_of_records = 2
+    mock_request.number_of_records = 1
     mock_request.relationship = "Relationship"
     mock_request.legal_attestation = "Legal Attestation"
     mock_request.first_name = "Jane"

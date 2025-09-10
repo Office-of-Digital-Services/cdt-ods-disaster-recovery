@@ -34,7 +34,7 @@ class TestEmailTask:
         request_type_formatted,
         task,
     ):
-        mock_inst = mocker.MagicMock(email_address="email@example.com", number_of_records=3, type=request_type)
+        mock_inst = mocker.MagicMock(email_address="email@example.com", number_of_records=1, type=request_type)
         mock_VitalRecordsRequest.get_with_status.return_value = mock_inst
         mock_render = mocker.patch("web.vital_records.tasks.email.render_to_string", return_value="email body")
         mock_EmailMultiAlternatives = mocker.patch("web.vital_records.tasks.email.EmailMultiAlternatives")
