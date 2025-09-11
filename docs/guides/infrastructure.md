@@ -1,5 +1,7 @@
 # Making infrastructure changes via Terraform
 
+Since the DDRC app is deployed into a Microsoft Azure account provided by the California Department of Technology (CDT)'s Office of Enterprise Technology (OET) team, as a first step, you'll need to request access from them to the `CDT Digital CA` directory so you can get into the [Azure portal](https://portal.azure.com), and to the `CalEnterprise` directory so you can access [Azure DevOps](https://calenterprise.visualstudio.com/CDT.ODS.DDRC). You can refer to Azure's documentation for [switching directories](https://learn.microsoft.com/en-us/azure/devtest/offer/how-to-change-directory-tenants-visual-studio-azure).
+
 ## Setup for local development
 
 1. [Get access to the Azure account through the DevSecOps team.](../../reference/infrastructure/#getting-started)
@@ -54,7 +56,7 @@ When configuration changes to infrastructure resources are needed, they should b
 1. [Submit the changes via pull request.](../commits-branches-merging)
 
 !!! info "Azure tags"
-   For Azure resources, you need to [ignore changes](https://www.terraform.io/language/meta-arguments/lifecycle#ignore_changes) to tags, since they are [automatically created by an Azure Policy managed by CDT](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-policies).
+    For Azure resources, you need to [ignore changes](https://www.terraform.io/language/meta-arguments/lifecycle#ignore_changes) to tags, since they are [automatically created by an Azure Policy managed by CDT](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-policies).
 
     ```hcl
     lifecycle {

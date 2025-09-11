@@ -1,10 +1,6 @@
 # Infrastructure
 
-The infrastructure is configured as code via [Terraform](https://www.terraform.io/), for [various reasons](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-benefits-of-infrastructure-as-code/ba-p/2069350).
-
-## Getting started
-
-Since the DDRC app is deployed into a Microsoft Azure account provided by the California Department of Technology (CDT)'s Office of Enterprise Technology (OET) team, you'll need to request access from them to the `CDT Digital CA` directory so you can get into the [Azure portal](https://portal.azure.com), and to the `CalEnterprise` directory so you can access [Azure DevOps](https://calenterprise.visualstudio.com/CDT.ODS.DDRC). You can refer to Azure's documentation for [switching directories](https://learn.microsoft.com/en-us/azure/devtest/offer/how-to-change-directory-tenants-visual-studio-azure).
+The infrastructure is configured as code via [Terraform](https://www.terraform.io/), for [various reasons](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-benefits-of-infrastructure-as-code/ba-p/2069350), and is deployed into a Microsoft Azure account provided by the California Department of Technology (CDT)'s Office of Enterprise Technology (OET) team.
 
 The Azure portal is where you can view the infrastructure resources for DDRC. Azure DevOps is where our [infrastructure pipeline](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/terraform/azure-pipelines.yml) is run to build and deploy those infrastructure resources.
 
@@ -28,7 +24,7 @@ All resources in these Resource Groups should be reflected in Terraform in this 
 
 ### Ownership
 
-The following things in Azure are managed by the California Department of Technology (CDT)'s DevSecOps (OET) team:
+The following things in Azure are managed by CDT's OET DevSecOps team:
 
 - Subcriptions
 - Resource Groups
