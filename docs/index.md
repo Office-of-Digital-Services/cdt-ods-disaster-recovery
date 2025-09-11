@@ -3,7 +3,7 @@
 This website provides technical documentation for the [DDRC][ddrc-repo] application from the
 [California Department of Technology (CDT)][cdt].
 
-[DDRC](https://recovery.cdt.ca.gov/vital-records/) is a web application that enables [vital records requests for survivors of the 2025 Los Angeles County fires](https://www.ca.gov/lafires/help-for-you/replace-personal-documents/birth-death-marriage-certificates/).
+[DDRC](https://recovery.cdt.ca.gov/vital-records/) is a web application that enables [free vital records replacement](https://www.ca.gov/lafires/help-for-you/replace-personal-documents/birth-death-marriage-certificates/) for survivors of the 2025 Los Angeles County fires and other recent natural disasters in California.
 It is open-source software that is designed, developed, and maintained by <a href="https://compiler.la/" target="_blank">Compiler LLC</a> on behalf of [CDT][cdt].
 
 ## Supported vital records requests
@@ -22,11 +22,11 @@ DDRC is a [Django 5][django] web application. The application uses [Login.gov’
 
 Running the application locally is possible with [Docker and Docker Compose][docker].
 
-The application communicates with the [California Identity Gateway](https://dev.auth.cdt.ca.gov) via redirects, over the public internet. See [all the system interconnections][interconnections].
+The application communicates with the California Identity Gateway via redirects, over the public internet. See [all the system interconnections][interconnections].
 
 ### Infrastructure
 
-The Benefits application is deployed to Microsoft Azure. Traffic is encrypted between the user and the application, as well as between the application and external systems.
+The DDRC application is deployed to Microsoft Azure. Traffic is encrypted between the user and the application, as well as between the application and external systems.
 
 The network is managed by [CDT](https://cdt.ca.gov/), who provide a firewall and [distributed denial-of-service (DDoS)](https://www.cloudflare.com/learning/ddos/what-is-a-ddos-attack/) protection.
 
@@ -38,18 +38,15 @@ The DDRC application minimizes the information exchanged between systems. The fo
 
 - The user's attestation and information required to submit a vital records request
 
-The following information is temporarily stored in an encrypted session in the user’s browser:
-
-- Credentials for interacting with the eligibility verification service
-
 Sensitive user information exists in the following places:
 
-- To submit a vital records request, users need to [provide personal information to Login.gov](https://recovery.cdt.ca.gov/vital-records/)
+- To qualify for free vital records replacement, users need to [provide personal information to Login.gov](https://login.gov/create-an-account/)
 - Users need to provide their attestation and vital record information to submit a vital records request
 
-Learn more about the security/privacy practices of some of our third-party integrations:
+Learn more about the security/privacy practices of our integration partners:
 
 - [Login.gov](https://www.login.gov/policy/)
+- [CDT privacy policy](https://cdt.ca.gov/privacy-policy/)
 
 DDRC collects analytics on usage, without any identifying information. You can find more details on [our analytics page](reference/analytics/).
 

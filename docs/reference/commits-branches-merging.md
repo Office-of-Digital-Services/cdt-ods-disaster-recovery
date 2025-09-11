@@ -39,8 +39,8 @@ In addition to `main`, the repository has a few other long-lived branches:
 
 - `gh-pages` hosts the compiled documentation, and is always forced-pushed by the
   docs build process
-- `python-coverage-comment-action-data`acts as a persistent data store for the [Python Coverage Comment GitHhub Action](https://github.com/py-cov-action/python-coverage-comment-action)
-  and is created and managed it
+- `python-coverage-comment-action-data` acts as a persistent data store for the [Python Coverage Comment GitHub Action](https://github.com/py-cov-action/python-coverage-comment-action)
+  and is created and managed by it
 
 ### Protection rules
 
