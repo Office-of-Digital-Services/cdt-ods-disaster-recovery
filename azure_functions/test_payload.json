@@ -1,0 +1,11 @@
+{
+  "data": {
+    "essentials": {
+      "alertId": "aa11bb22-cc33-dd44-ee55-ff6677889900",
+      "alertRule": "High CPU Utilization Detected",
+      "severity": "Sev3",
+      "firedDateTime": "2025-09-11T20:02:00.12345Z",
+      "investigationLink": "https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/AlertDetailsBlade/alertId/%2Fsubscriptions%2F..."
+    }
+  }
+}
