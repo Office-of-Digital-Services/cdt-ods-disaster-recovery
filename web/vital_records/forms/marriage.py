@@ -1,5 +1,6 @@
 from django import forms
 
+from .common import COUNTY_CHOICES
 from web.vital_records.mixins import DisableFieldsMixin
 from web.vital_records.models import VitalRecordsRequest
 
@@ -46,7 +47,7 @@ class NameForm(DisableFieldsMixin, forms.ModelForm):
 
 class CountyForm(DisableFieldsMixin, forms.ModelForm):
     county_of_event = forms.ChoiceField(
-        choices=VitalRecordsRequest.COUNTY_CHOICES,
+        choices=COUNTY_CHOICES,
         label="County marriage occurred/license issued",
         required=True,
         widget=forms.Select(attrs={"class": "form-select"}),

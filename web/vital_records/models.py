@@ -18,68 +18,6 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
-    COUNTY_CHOICES = [
-        ("", "Select county"),
-        ("Alameda", "Alameda"),
-        ("Alpine", "Alpine"),
-        ("Amador", "Amador"),
-        ("Butte", "Butte"),
-        ("Calaveras", "Calaveras"),
-        ("Colusa", "Colusa"),
-        ("Contra Costa", "Contra Costa"),
-        ("Del Norte", "Del Norte"),
-        ("El Dorado", "El Dorado"),
-        ("Fresno", "Fresno"),
-        ("Glenn", "Glenn"),
-        ("Humboldt", "Humboldt"),
-        ("Imperial", "Imperial"),
-        ("Inyo", "Inyo"),
-        ("Kern", "Kern"),
-        ("Kings", "Kings"),
-        ("Lake", "Lake"),
-        ("Lassen", "Lassen"),
-        ("Los Angeles", "Los Angeles"),
-        ("Madera", "Madera"),
-        ("Marin", "Marin"),
-        ("Mariposa", "Mariposa"),
-        ("Mendocino", "Mendocino"),
-        ("Merced", "Merced"),
-        ("Modoc", "Modoc"),
-        ("Mono", "Mono"),
-        ("Monterey", "Monterey"),
-        ("Napa", "Napa"),
-        ("Nevada", "Nevada"),
-        ("Orange", "Orange"),
-        ("Placer", "Placer"),
-        ("Plumas", "Plumas"),
-        ("Riverside", "Riverside"),
-        ("Sacramento", "Sacramento"),
-        ("San Benito", "San Benito"),
-        ("San Bernardino", "San Bernardino"),
-        ("San Diego", "San Diego"),
-        ("San Francisco", "San Francisco"),
-        ("San Joaquin", "San Joaquin"),
-        ("San Luis Obispo", "San Luis Obispo"),
-        ("San Mateo", "San Mateo"),
-        ("Santa Barbara", "Santa Barbara"),
-        ("Santa Clara", "Santa Clara"),
-        ("Santa Cruz", "Santa Cruz"),
-        ("Shasta", "Shasta"),
-        ("Sierra", "Sierra"),
-        ("Siskiyou", "Siskiyou"),
-        ("Solano", "Solano"),
-        ("Sonoma", "Sonoma"),
-        ("Stanislaus", "Stanislaus"),
-        ("Sutter", "Sutter"),
-        ("Tehama", "Tehama"),
-        ("Trinity", "Trinity"),
-        ("Tulare", "Tulare"),
-        ("Tuolumne", "Tuolumne"),
-        ("Ventura", "Ventura"),
-        ("Yolo", "Yolo"),
-        ("Yuba", "Yuba"),
-    ]
-
     NUMBER_CHOICES = [(1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5"), (6, "6"), (7, "7"), (8, "8"), (9, "9"), (10, "10")]
 
     STATE_CHOICES = [
@@ -154,7 +92,7 @@ class VitalRecordsRequest(models.Model):
     first_name = models.CharField(max_length=128)
     middle_name = models.CharField(max_length=128, blank=True)
     last_name = models.CharField(max_length=128)
-    county_of_event = models.CharField(max_length=15, choices=COUNTY_CHOICES)
+    county_of_event = models.CharField(max_length=15)
     date_of_event = models.DateField(null=True)
     person_1_first_name = models.CharField(max_length=128)
     person_1_middle_name = models.CharField(max_length=128)

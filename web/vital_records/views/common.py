@@ -16,6 +16,7 @@ from web.vital_records.forms.common import (
     StatementForm,
     OrderInfoForm,
     SubmitForm,
+    COUNTY_CHOICES,
 )
 from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin
 from web.vital_records.models import VitalRecordsRequest
@@ -181,7 +182,7 @@ class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
             return self.form_invalid(form)
 
     def get_display_county(self, context):
-        counties = VitalRecordsRequest.COUNTY_CHOICES
+        counties = COUNTY_CHOICES
         county_of_event_id = context["vital_records_request"].county_of_event
 
         # Make sure the ID is not blank ("") and ID is in the county options list
