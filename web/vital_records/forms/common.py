@@ -4,6 +4,15 @@ from django import forms
 from web.vital_records.mixins import DisableFieldsMixin
 from web.vital_records.models import VitalRecordsRequest
 
+FIRE_CHOICES = [
+    ("", "Select fire"),
+    ("eaton", "Eaton fire"),
+    ("hurst", "Hurst fire"),
+    ("lidia", "Lidia fire"),
+    ("palisades", "Palisades fire"),
+    ("woodley", "Woodley fire"),
+]
+
 MONTH_DISPLAY_CHOICES = [
     ("", "Select"),
     (1, "01 - January"),
@@ -20,10 +29,12 @@ MONTH_DISPLAY_CHOICES = [
     (12, "12 - December"),
 ]
 
+TYPE_CHOICES = [("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record")]
+
 
 class EligibilityForm(forms.ModelForm):
     fire = forms.ChoiceField(
-        choices=VitalRecordsRequest.FIRE_CHOICES,
+        choices=FIRE_CHOICES,
         label="Please confirm the fire you were impacted by",
         widget=forms.Select(attrs={"class": "form-select"}),
     )
@@ -35,7 +46,7 @@ class EligibilityForm(forms.ModelForm):
 
 class TypeForm(DisableFieldsMixin, forms.ModelForm):
     type = forms.ChoiceField(
-        choices=VitalRecordsRequest.TYPE_CHOICES,
+        choices=TYPE_CHOICES,
         label="Select record type",
         widget=forms.Select(attrs={"class": "form-select"}),
     )

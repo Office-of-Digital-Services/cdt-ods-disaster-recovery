@@ -18,17 +18,6 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
-    TYPE_CHOICES = [("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record")]
-
-    FIRE_CHOICES = [
-        ("", "Select fire"),
-        ("eaton", "Eaton fire"),
-        ("hurst", "Hurst fire"),
-        ("lidia", "Lidia fire"),
-        ("palisades", "Palisades fire"),
-        ("woodley", "Woodley fire"),
-    ]
-
     RELATIONSHIP_CHOICES = [
         ("", "Select relationship"),
         ("self", "Self"),
@@ -171,8 +160,8 @@ class VitalRecordsRequest(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     status = FSMField(default="initialized", choices=STATUS_CHOICES)
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
-    fire = models.CharField(max_length=50, choices=FIRE_CHOICES)
+    type = models.CharField(max_length=10)
+    fire = models.CharField(max_length=50)
     relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
     legal_attestation = models.CharField(max_length=386)
     first_name = models.CharField(max_length=128)
@@ -260,7 +249,7 @@ class VitalRecordsRequest(models.Model):
 class VitalRecordsRequestMetadata(models.Model):
     id = models.BigAutoField(primary_key=True)
     request_id = models.UUIDField(editable=False)
-    fire = models.CharField(max_length=50, choices=VitalRecordsRequest.FIRE_CHOICES, editable=False)
+    fire = models.CharField(max_length=50, editable=False)
     number_of_records = models.IntegerField(choices=VitalRecordsRequest.NUMBER_CHOICES, editable=False)
     submitted_at = models.DateTimeField(editable=False)
     enqueued_at = models.DateTimeField(editable=False)
