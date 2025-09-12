@@ -39,13 +39,13 @@ class ValidateRequestIdMixin:
 
 
 class Steps:
-    name = "Name"
     county_of_birth = "County of birth"
-    date_of_birth = "Date of birth"
-    parents_names = "Parents' names"
     county_of_marriage = "County of marriage"
+    date_of_birth = "Date of birth"
     date_of_marriage = "Date of marriage"
+    name = "Name"
     order_information = "Order information"
+    parents_names = "Parents' names"
     preview_and_submit = "Preview & submit"
 
 
