@@ -39,14 +39,18 @@ class ValidateRequestIdMixin:
 
 
 class Steps:
-    name = "Name"
     county_of_birth = "County of birth"
-    date_of_birth = "Date of birth"
-    parents_names = "Parents' names"
+    county_of_death = "County of death"
     county_of_marriage = "County of marriage"
+    date_of_birth = "Date of birth"
+    date_of_death = "Date of death"
     date_of_marriage = "Date of marriage"
+    name = "Name"
     order_information = "Order information"
+    parent_name = "Parent's name"
+    parents_names = "Parents' names"
     preview_and_submit = "Preview & submit"
+    spouse_name = "Spouse's name"
 
 
 class StepsMixin(ContextMixin):
@@ -66,6 +70,16 @@ class StepsMixin(ContextMixin):
             Steps.order_information: Routes.request_order,
             Steps.preview_and_submit: Routes.request_submit,
         },
+        "death": {
+            Steps.name: Routes.death_request_name,
+            Steps.county_of_death: Routes.death_request_county,
+            Steps.date_of_death: Routes.death_request_date,
+            Steps.date_of_birth: Routes.death_request_dob,
+            Steps.parent_name: Routes.death_request_parent,
+            Steps.spouse_name: Routes.death_request_spouse,
+            Steps.order_information: Routes.request_order,
+            Steps.preview_and_submit: Routes.request_submit,
+        }
     }
 
     @staticmethod

@@ -40,7 +40,6 @@ class TestValidateTypeMixin:
         assert response.status_code == 403
 
 
-
 @pytest.mark.django_db
 class TestValidateRequestIdMixin:
     class SampleView(ValidateRequestIdMixin, View):
@@ -87,6 +86,13 @@ class TestStepsMixin:
         v = self.SampleView()
         v.setup(app_request)
         v.object = models.VitalRecordsRequest(type="marriage")
+        return v
+
+    @pytest.fixture
+    def death_view(self, app_request):
+        v = self.SampleView()
+        v.setup(app_request)
+        v.object = models.VitalRecordsRequest(type="death")
         return v
 
     @pytest.mark.parametrize(
@@ -146,6 +152,39 @@ class TestStepsMixin:
         )
 
     @pytest.mark.parametrize(
+        "step_name,expected_step_number,expected_previous_route",
+        [
+            (Steps.name, 1, Routes.request_statement),
+            (Steps.county_of_death, 2, Routes.death_request_name),
+            (Steps.date_of_death, 3, Routes.death_request_county),
+            (Steps.date_of_birth, 4, Routes.death_request_date),
+            (Steps.parent_name, 5, Routes.death_request_dob),
+            (Steps.spouse_name, 6, Routes.death_request_parent),
+            (Steps.order_information, 7, Routes.death_request_spouse),
+            (Steps.preview_and_submit, 8, Routes.request_order),
+        ],
+    )
+    def test_get_context_data_death(self, death_view, step_name, expected_step_number, expected_previous_route):
+        death_view.step_name = step_name
+        context = death_view.get_context_data()
+
+        assert context["page_title"] == "Replacement death record"
+        assert context["all_steps"] == [
+            Steps.name,
+            Steps.county_of_death,
+            Steps.date_of_death,
+            Steps.date_of_birth,
+            Steps.parent_name,
+            Steps.spouse_name,
+            Steps.order_information,
+            Steps.preview_and_submit,
+        ]
+        assert context["step_number"] == expected_step_number
+        assert context["previous_url"] == reverse(
+            Routes.app_route(expected_previous_route), kwargs={"pk": death_view.object.pk}
+        )
+
+    @pytest.mark.parametrize(
         "step_name,expected_next_route",
         [
             (Steps.name, Routes.birth_request_county),
@@ -163,7 +202,6 @@ class TestStepsMixin:
 
         assert success_url == reverse(next_route, kwargs={"pk": birth_view.object.pk})
 
-    @pytest.mark.skip(reason="reverse will return an error until marriage URLs are defined")
     @pytest.mark.parametrize(
         "step_name,expected_next_route",
         [
@@ -180,3 +218,23 @@ class TestStepsMixin:
         next_route = Routes.app_route(expected_next_route)
 
         assert success_url == reverse(next_route, kwargs={"pk": marriage_view.object.pk})
+
+    @pytest.mark.parametrize(
+        "step_name,expected_next_route",
+        [
+            (Steps.name, Routes.death_request_county),
+            (Steps.county_of_death, Routes.death_request_date),
+            (Steps.date_of_death, Routes.death_request_dob),
+            (Steps.date_of_birth, Routes.death_request_parent),
+            (Steps.parent_name, Routes.death_request_spouse),
+            (Steps.spouse_name, Routes.request_order),
+            (Steps.order_information, Routes.request_submit),
+            (Steps.preview_and_submit, Routes.request_submitted),
+        ],
+    )
+    def test_get_success_url_death(self, death_view, step_name, expected_next_route):
+        death_view.step_name = step_name
+        success_url = death_view.get_success_url()
+        next_route = Routes.app_route(expected_next_route)
+
+        assert success_url == reverse(next_route, kwargs={"pk": death_view.object.pk})
