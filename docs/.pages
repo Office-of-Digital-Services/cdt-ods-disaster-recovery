@@ -1,3 +1,5 @@
 nav:
-  - Home: README.md
-  - development
+  - Home: index.md
+  - concepts
+  - guides
+  - reference
