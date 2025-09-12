@@ -18,19 +18,6 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
-    RELATIONSHIP_CHOICES = [
-        ("", "Select relationship"),
-        ("self", "Self"),
-        ("parent", "Parent"),
-        ("legal guardian", "Legal guardian"),
-        ("child", "Child"),
-        ("grandparent", "Grandparent"),
-        ("grandchild", "Grandchild"),
-        ("sibling", "Sibling"),
-        ("spouse", "Spouse"),
-        ("domestic_partner", "Domestic partner"),
-    ]
-
     COUNTY_CHOICES = [
         ("", "Select county"),
         ("Alameda", "Alameda"),
@@ -162,7 +149,7 @@ class VitalRecordsRequest(models.Model):
     status = FSMField(default="initialized", choices=STATUS_CHOICES)
     type = models.CharField(max_length=10)
     fire = models.CharField(max_length=50)
-    relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES)
+    relationship = models.CharField(max_length=50)
     legal_attestation = models.CharField(max_length=386)
     first_name = models.CharField(max_length=128)
     middle_name = models.CharField(max_length=128, blank=True)

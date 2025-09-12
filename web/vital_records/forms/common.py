@@ -29,6 +29,19 @@ MONTH_DISPLAY_CHOICES = [
     (12, "12 - December"),
 ]
 
+RELATIONSHIP_CHOICES = [
+    ("", "Select relationship"),
+    ("self", "Self"),
+    ("parent", "Parent"),
+    ("legal guardian", "Legal guardian"),
+    ("child", "Child"),
+    ("grandparent", "Grandparent"),
+    ("grandchild", "Grandchild"),
+    ("sibling", "Sibling"),
+    ("spouse", "Spouse"),
+    ("domestic_partner", "Domestic partner"),
+]
+
 TYPE_CHOICES = [("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record")]
 
 
@@ -58,7 +71,7 @@ class TypeForm(DisableFieldsMixin, forms.ModelForm):
 
 class StatementForm(DisableFieldsMixin, forms.ModelForm):
     relationship = forms.ChoiceField(
-        choices=VitalRecordsRequest.RELATIONSHIP_CHOICES,
+        choices=RELATIONSHIP_CHOICES,
         label="Select your relationship",
         widget=forms.Select(attrs={"class": "form-select"}),
     )
