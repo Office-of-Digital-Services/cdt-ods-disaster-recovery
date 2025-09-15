@@ -40,8 +40,8 @@
 | web/vital\_records/migrations/0007\_alter\_vitalrecordsrequest\_number\_of\_records.py |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/0008\_alter\_vitalrecordsrequest\_choices.py             |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/\_\_init\_\_.py                                          |        0 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/mixins.py                                                           |       74 |        4 |       12 |        0 |     91% |     11-14 |
-| web/vital\_records/models.py                                                           |       86 |        7 |        4 |        0 |     92% |83, 88, 92, 96, 100, 104, 108 |
+| web/vital\_records/mixins.py                                                           |       74 |        2 |       12 |        1 |     94% |     13-14 |
+| web/vital\_records/models.py                                                           |       86 |        6 |        4 |        0 |     93% |88, 92, 96, 100, 104, 108 |
 | web/vital\_records/routes.py                                                           |       27 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/session.py                                                          |       26 |        0 |        6 |        0 |    100% |           |
 | web/vital\_records/tasks/\_\_init\_\_.py                                               |        0 |        0 |        0 |        0 |    100% |           |
@@ -58,7 +58,7 @@
 | web/vital\_records/views/death.py                                                      |       14 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views/marriage.py                                                   |       39 |       26 |        0 |        0 |     33% |10-36, 44-57, 64-70 |
 | web/wsgi.py                                                                            |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                              **TOTAL** | **1380** |  **213** |  **132** |   **16** | **84%** |           |
+|                                                                              **TOTAL** | **1380** |  **210** |  **132** |   **17** | **84%** |           |
 
 
 ## Setup coverage badge
