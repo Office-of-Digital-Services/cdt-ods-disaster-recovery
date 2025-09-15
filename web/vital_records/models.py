@@ -18,8 +18,6 @@ class VitalRecordsRequest(models.Model):
         ("finished", "Finished"),
     ]
 
-    NUMBER_CHOICES = [(1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5"), (6, "6"), (7, "7"), (8, "8"), (9, "9"), (10, "10")]
-
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     status = FSMField(default="initialized", choices=STATUS_CHOICES)
     type = models.CharField(max_length=10)
@@ -39,7 +37,7 @@ class VitalRecordsRequest(models.Model):
     person_2_middle_name = models.CharField(max_length=128, blank=True)
     person_2_last_name = models.CharField(max_length=128, blank=True)
     person_2_birth_last_name = models.CharField(max_length=128, blank=True)
-    number_of_records = models.IntegerField(choices=NUMBER_CHOICES, null=True, default=1)
+    number_of_records = models.IntegerField(null=True, default=1)
     order_first_name = models.CharField(max_length=128)
     order_last_name = models.CharField(max_length=128)
     address = models.CharField(max_length=128)
@@ -112,7 +110,7 @@ class VitalRecordsRequestMetadata(models.Model):
     id = models.BigAutoField(primary_key=True)
     request_id = models.UUIDField(editable=False)
     fire = models.CharField(max_length=50, editable=False)
-    number_of_records = models.IntegerField(choices=VitalRecordsRequest.NUMBER_CHOICES, editable=False)
+    number_of_records = models.IntegerField(editable=False)
     submitted_at = models.DateTimeField(editable=False)
     enqueued_at = models.DateTimeField(editable=False)
     packaged_at = models.DateTimeField(editable=False)
