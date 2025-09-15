@@ -200,6 +200,7 @@ The DDRC application generates a PDF of the vital records request and emails it 
 !!! example "Async tasks"
 
     [`cdt-ods-disaster-recovery/web/vital_records/tasks/package.py`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/web/vital_records/tasks/package.py)
+
     [`cdt-ods-disaster-recovery/web/vital_records/tasks/email.py`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/web/vital_records/tasks/email.py)
 
 ```mermaid
