@@ -4,7 +4,7 @@
 
 This project enforces the [Conventional Commits][conventional-commits] style for commit message formatting:
 
-```<!-- markdownlint-disable-line MD040 -->
+```
 <type>[(optional-scope)]: <description>
 
 [optional body]
