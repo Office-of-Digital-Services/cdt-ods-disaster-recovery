@@ -6,8 +6,6 @@ This list outlines the manual steps needed to make a rollback of the
 If a change is deployed to the app that makes it fail to start, making a rollback
 will deploy the app to a known working state again.
 
-[Start a new Release on Github](https://github.com/cal-itp/benefits/issues/new?labels=release&template=release.yml&title=Make+a+Release){ .md-button }
-
 ## 0. Create a release tag on the commit associated with the last known good release tag
 
 ```bash
