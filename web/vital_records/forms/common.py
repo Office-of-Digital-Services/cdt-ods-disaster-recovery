@@ -167,7 +167,7 @@ STATE_CHOICES = [
     ("WY", "Wyoming"),
 ]
 
-TYPE_CHOICES = [("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record")]
+TYPE_CHOICES = [("", "Select type"), ("birth", "Birth record"), ("marriage", "Marriage record"), ("death", "Death record")]
 
 
 class EligibilityForm(forms.ModelForm):
