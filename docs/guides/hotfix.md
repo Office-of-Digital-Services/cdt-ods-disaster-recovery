@@ -7,8 +7,6 @@ If `main` contains in-progress work that is not yet ready for a release but a si
 is needed in production, a separate process to test the changes before deploying to production must be undertaken.
 This is called a hotfix release. Typically, a hotfix release involves a simple code change that can be quickly implemented, in contrast to a [rollback release](./rollback.md), which generally requires more complex code changes which take more time to implement.
 
-[Start a new Release on Github](https://github.com/cal-itp/benefits/issues/new?labels=release&template=release.yml&title=Make+a+Release){ .md-button }
-
 ## 0. Create a temporary hotfix branch from the latest release tag
 
 ```bash
