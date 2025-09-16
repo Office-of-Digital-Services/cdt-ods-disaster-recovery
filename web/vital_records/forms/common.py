@@ -91,19 +91,6 @@ MONTH_DISPLAY_CHOICES = [
     (12, "12 - December"),
 ]
 
-RELATIONSHIP_CHOICES = [
-    ("", "Select relationship"),
-    ("self", "Self"),
-    ("parent", "Parent"),
-    ("legal guardian", "Legal guardian"),
-    ("child", "Child"),
-    ("grandparent", "Grandparent"),
-    ("grandchild", "Grandchild"),
-    ("sibling", "Sibling"),
-    ("spouse", "Spouse"),
-    ("domestic_partner", "Domestic partner"),
-]
-
 STATE_CHOICES = [
     ("", "Select state"),
     ("AK", "Alaska"),
@@ -196,10 +183,40 @@ class TypeForm(DisableFieldsMixin, forms.ModelForm):
 
 class StatementForm(DisableFieldsMixin, forms.ModelForm):
     relationship = forms.ChoiceField(
-        choices=RELATIONSHIP_CHOICES,
         label="Select your relationship",
         widget=forms.Select(attrs={"class": "form-select"}),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        instance = kwargs.get("instance")
+        if instance:
+            record_type = instance.type
+
+            choices = []
+            choices.append(("", "Select relationship"))
+
+            if record_type != "death":
+                choices.append(("self", "Self"))
+
+            choices.extend(
+                [
+                    ("parent", "Parent"),
+                    ("legal guardian", "Legal guardian"),
+                    ("child", "Child"),
+                    ("grandparent", "Grandparent"),
+                    ("grandchild", "Grandchild"),
+                    ("sibling", "Sibling"),
+                    ("spouse", "Spouse"),
+                    ("domestic_partner", "Domestic partner"),
+                ]
+            )
+
+            if record_type == "death":
+                choices.append(("surviving_next_of_kin", "Surviving next of kin (As specified in HSC § 7100)"))
+
+            self.fields["relationship"].choices = choices
 
     legal_attestation = forms.CharField(
         label="Type your full name to sign", max_length=386, widget=forms.TextInput(attrs={"class": "form-control"})
