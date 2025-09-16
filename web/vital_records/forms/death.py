@@ -1,5 +1,6 @@
 from django import forms
 
+from web.vital_records.forms.common import COUNTY_CHOICES
 from web.vital_records.mixins import DisableFieldsMixin
 from web.vital_records.models import VitalRecordsRequest
 
@@ -16,3 +17,16 @@ class NameForm(DisableFieldsMixin, forms.ModelForm):
     class Meta:
         model = VitalRecordsRequest
         fields = ["first_name", "middle_name", "last_name"]
+
+
+class CountyForm(DisableFieldsMixin, forms.ModelForm):
+    county_of_event = forms.ChoiceField(
+        choices=COUNTY_CHOICES,
+        label="County of death",
+        required=True,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+
+    class Meta:
+        model = VitalRecordsRequest
+        fields = ["county_of_event"]
