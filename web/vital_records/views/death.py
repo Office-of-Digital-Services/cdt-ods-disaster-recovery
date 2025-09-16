@@ -44,8 +44,17 @@ class CountyView(ValidateTypeMixin, common.CountyView):
         return context
 
 
-class DateOfDeathView(common.DateOfEventView):
-    pass
+class DateOfDeathView(ValidateTypeMixin, common.DateOfEventView):
+    step_name = Steps.date_of_death
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_layout"] = "date_form"
+        context["form_hint_name"] = "death-date-hint"
+        context["form_question"] = "What was the date of death?"
+        context["form_hint"] = "If you’re not sure, enter their approximate date of death."
+
+        return context
 
 
 class DateOfBirthView(ValidateTypeMixin, common.DateOfBirthView):
