@@ -86,7 +86,7 @@ class BirthApplication(BaseApplication):
             RegMiddleName=request.middle_name,
             RegLastName=request.last_name,
             County=request.county_of_event,
-            RegDOE=request.date_of_event.strftime("%m/%d/%Y"),
+            RegDOE=request.date_of_birth.strftime("%m/%d/%Y"),
             Parent1FirstName=request.person_1_first_name,
             Parent1LastName=request.person_1_last_name,
             Parent2FirstName=request.person_2_first_name,

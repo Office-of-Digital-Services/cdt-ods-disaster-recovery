@@ -55,6 +55,7 @@ def mock_vital_records_request(mocker):
     mock_request.middle_name = "Anne"
     mock_request.last_name = "Doe"
     mock_request.county_of_event = "Los Angeles"
+    mock_request.date_of_birth = datetime.datetime(1990, 9, 22, 19, 17, 58, tzinfo=datetime.UTC)
     mock_request.date_of_event = datetime.datetime(2025, 8, 21, 19, 17, 58, tzinfo=datetime.UTC)
     mock_request.person_1_first_name = "First1"
     mock_request.person_1_middle_name = "Middle1"
@@ -118,7 +119,7 @@ class TestBirthApplication:
         assert application.RegMiddleName == mock_vital_records_request.middle_name
         assert application.RegLastName == mock_vital_records_request.last_name
         assert application.County == mock_vital_records_request.county_of_event
-        assert application.RegDOE == mock_vital_records_request.date_of_event.strftime("%m/%d/%Y")
+        assert application.RegDOE == mock_vital_records_request.date_of_birth.strftime("%m/%d/%Y")
         assert application.Parent1FirstName == mock_vital_records_request.person_1_first_name
         assert application.Parent1LastName == mock_vital_records_request.person_1_last_name
         assert application.Parent2FirstName == mock_vital_records_request.person_2_first_name
