@@ -28,7 +28,7 @@
 | web/vital\_records/apps.py                                                                      |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms/birth.py                                                               |       24 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/forms/common.py                                                              |       87 |       22 |       12 |        1 |     71% |194->exit, 266-273, 276-286, 289-297 |
+| web/vital\_records/forms/common.py                                                              |       95 |        0 |       14 |        3 |     97% |194->exit, 298->301, 301->303 |
 | web/vital\_records/forms/death.py                                                               |       16 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms/marriage.py                                                            |       21 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/hooks.py                                                                     |       16 |        6 |        0 |        0 |     62% |10-11, 15-16, 20-21 |
@@ -41,9 +41,10 @@
 | web/vital\_records/migrations/0007\_alter\_vitalrecordsrequest\_number\_of\_records.py          |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/0008\_alter\_vitalrecordsrequest\_choices.py                      |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/0009\_alter\_vitalrecordsrequest\_choices\_number\_of\_records.py |        4 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/0010\_vitalrecordsrequest\_date\_of\_birth.py                     |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/\_\_init\_\_.py                                                   |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/mixins.py                                                                    |       74 |        2 |       12 |        1 |     94% |     13-14 |
-| web/vital\_records/models.py                                                                    |       85 |        6 |        4 |        0 |     93% |86, 90, 94, 98, 102, 106 |
+| web/vital\_records/models.py                                                                    |       86 |        6 |        4 |        0 |     93% |87, 91, 95, 99, 103, 107 |
 | web/vital\_records/routes.py                                                                    |       27 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/session.py                                                                   |       26 |        0 |        6 |        0 |    100% |           |
 | web/vital\_records/tasks/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
@@ -56,11 +57,11 @@
 | web/vital\_records/urls.py                                                                      |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views/birth.py                                                               |       58 |       33 |        0 |        0 |     43% |16-28, 36-47, 54-60, 71-90 |
-| web/vital\_records/views/common.py                                                              |      150 |       53 |        6 |        0 |     62% |60-63, 87-92, 95-98, 108-112, 115-122, 154-162, 174-182, 185-192, 195-200, 208-210, 214-225 |
-| web/vital\_records/views/death.py                                                               |       33 |       14 |        0 |        0 |     58% |12-24, 32-44 |
+| web/vital\_records/views/common.py                                                              |      156 |       53 |        6 |        0 |     64% |61-64, 88-93, 96-99, 109-113, 116-123, 163-171, 183-191, 194-201, 204-209, 217-219, 223-234 |
+| web/vital\_records/views/death.py                                                               |       40 |       20 |        0 |        0 |     50% |12-24, 32-44, 55-61 |
 | web/vital\_records/views/marriage.py                                                            |       39 |       26 |        0 |        0 |     33% |10-36, 44-57, 64-70 |
 | web/wsgi.py                                                                                     |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                       **TOTAL** | **1430** |  **224** |  **138** |   **18** | **83%** |           |
+|                                                                                       **TOTAL** | **1456** |  **208** |  **140** |   **20** | **85%** |           |
 
 
 ## Setup coverage badge
