@@ -47,7 +47,7 @@ class CountyView(ValidateTypeMixin, common.CountyView):
         return context
 
 
-class DateOfBirthView(ValidateTypeMixin, common.DateOfEventView):
+class DateOfBirthView(ValidateTypeMixin, common.DateOfBirthView):
     step_name = Steps.date_of_birth
 
     def get_context_data(self, **kwargs):
