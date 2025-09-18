@@ -28,6 +28,7 @@ class VitalRecordsRequest(models.Model):
     middle_name = models.CharField(max_length=128, blank=True)
     last_name = models.CharField(max_length=128)
     county_of_event = models.CharField(max_length=15)
+    date_of_birth = models.DateField(null=True)
     date_of_event = models.DateField(null=True)
     person_1_first_name = models.CharField(max_length=128)
     person_1_middle_name = models.CharField(max_length=128)

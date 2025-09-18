@@ -227,7 +227,10 @@ class StatementForm(DisableFieldsMixin, forms.ModelForm):
         fields = ["relationship", "legal_attestation"]
 
 
-class DateOfEventForm(DisableFieldsMixin, forms.ModelForm):
+class DateForm(DisableFieldsMixin, forms.ModelForm):
+
+    date_field_name = None
+
     month = forms.ChoiceField(
         choices=MONTH_DISPLAY_CHOICES,
         label="Month",
@@ -263,14 +266,17 @@ class DateOfEventForm(DisableFieldsMixin, forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        if not self.date_field_name:
+            raise NotImplementedError("'date_field_name' must be set on the subclass.")
         super().__init__(*args, **kwargs)
 
         # Pre-populate form fields from model instance
         instance = kwargs.get("instance")
-        if instance and instance.date_of_event:
-            self.fields["month"].initial = instance.date_of_event.month
-            self.fields["day"].initial = instance.date_of_event.day
-            self.fields["year"].initial = instance.date_of_event.year
+        instance_date = getattr(instance, self.date_field_name, None)
+        if instance and instance_date:
+            self.fields["month"].initial = instance_date.month
+            self.fields["day"].initial = instance_date.day
+            self.fields["year"].initial = instance_date.year
 
     def clean(self):
         cleaned_data = super().clean()
@@ -280,17 +286,17 @@ class DateOfEventForm(DisableFieldsMixin, forms.ModelForm):
             day = int(cleaned_data.get("day"))
             year = int(cleaned_data.get("year"))
 
-            cleaned_data["date_of_event"] = datetime.date(year, month, day)
+            cleaned_data[self.date_field_name] = datetime.date(year, month, day)
         except (ValueError, TypeError):
             raise forms.ValidationError("Enter a valid date.")
         return cleaned_data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        date_of_event = self.cleaned_data.get("date_of_event")
+        date_field_value = self.cleaned_data.get(self.date_field_name)
 
-        if date_of_event:
-            instance.date_of_event = date_of_event
+        if date_field_value:
+            setattr(instance, self.date_field_name, date_field_value)
 
         if commit:
             instance.save()
@@ -299,6 +305,14 @@ class DateOfEventForm(DisableFieldsMixin, forms.ModelForm):
     class Meta:
         model = VitalRecordsRequest
         fields = []
+
+
+class DateOfEventForm(DateForm):
+    date_field_name = "date_of_event"
+
+
+class DateOfBirthForm(DateForm):
+    date_field_name = "date_of_birth"
 
 
 class OrderInfoForm(DisableFieldsMixin, forms.ModelForm):

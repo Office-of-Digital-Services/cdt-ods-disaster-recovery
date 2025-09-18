@@ -48,8 +48,17 @@ class DateOfDeathView(common.DateOfEventView):
     pass
 
 
-class DateOfBirthView(common.DateOfEventView):
-    pass
+class DateOfBirthView(ValidateTypeMixin, common.DateOfBirthView):
+    step_name = Steps.date_of_birth
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_question"] = "What was the deceased person’s date of birth?"
+        context["form_layout"] = "date_form"
+        context["form_hint"] = "If you’re not sure, enter their approximate date of birth."
+        context["form_hint_name"] = "dob-hint"
+
+        return context
 
 
 class ParentView(UpdateView):
