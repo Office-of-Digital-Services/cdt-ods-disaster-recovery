@@ -11,6 +11,7 @@ from web.vital_records.routes import Routes
 from web.vital_records.tasks.package import submit_request
 from web.vital_records.forms.common import (
     DateOfEventForm,
+    DateOfBirthForm,
     EligibilityForm,
     TypeForm,
     StatementForm,
@@ -139,6 +140,14 @@ class CountyView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
 class DateOfEventView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = DateOfEventForm
+    template_name = "vital_records/request/form.html"
+    context_object_name = "vital_request"
+
+
+@method_decorator(never_cache, name="dispatch")
+class DateOfBirthView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+    model = VitalRecordsRequest
+    form_class = DateOfBirthForm
     template_name = "vital_records/request/form.html"
     context_object_name = "vital_request"
 
