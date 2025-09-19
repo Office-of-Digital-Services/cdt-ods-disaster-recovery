@@ -1,7 +1,11 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.views.generic.edit import UpdateView
 
-from web.vital_records.forms.death import NameForm, CountyForm
-from web.vital_records.mixins import Steps, ValidateTypeMixin
+from web.core.views import EligibilityMixin
+from web.vital_records.forms.death import NameForm, CountyForm, ParentNameForm
+from web.vital_records.mixins import Steps, StepsMixin, ValidateRequestIdMixin, ValidateTypeMixin
+from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.views import common
 
 
@@ -70,8 +74,25 @@ class DateOfBirthView(ValidateTypeMixin, common.DateOfBirthView):
         return context
 
 
-class ParentView(UpdateView):
-    pass
+@method_decorator(never_cache, name="dispatch")
+class ParentView(ValidateTypeMixin, StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
+    model = VitalRecordsRequest
+    form_class = ParentNameForm
+    template_name = "vital_records/request/form.html"
+    step_name = Steps.parent_name
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_question"] = "What was the full name of the deceased person’s mother or parent?"
+
+        form = context["form"]
+        context["form_fields"] = [
+            form["person_1_first_name"],
+            form["person_1_middle_name"],
+            form["person_1_last_name"],
+        ]
+
+        return context
 
 
 class SpouseView(UpdateView):
