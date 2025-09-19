@@ -99,6 +99,9 @@ class TestSubmitView:
         context = view.get_context_data()
 
         assert context["record_description"] == expected_record_description
+        assert "type" in context
+        assert "county_display" in context
+        assert context["details_include"] == f"vital_records/_confirm_{record_type}_details.html"
 
 
 class TestSubmittedView:
