@@ -23,7 +23,21 @@ class TestEmailTask:
         assert task.kwargs["package"] == "package"
         assert task.started is False
 
-    @pytest.mark.parametrize("request_type, request_type_formatted", [("birth", "Birth"), ("marriage", "Marriage")])
+    @pytest.mark.parametrize(
+        "record_type, expected_output",
+        [
+            ("birth", "Birth"),
+            ("marriage", "Marriage"),
+            ("death", "Death"),
+            ("invalid_type", None),
+        ],
+    )
+    def test__format_record_type(self, task, record_type, expected_output):
+        assert task._format_record_type(record_type) == expected_output
+
+    @pytest.mark.parametrize(
+        "request_type, request_type_formatted", [("birth", "Birth"), ("marriage", "Marriage"), ("death", "Death")]
+    )
     def test_handler(
         self,
         settings,
