@@ -104,6 +104,48 @@ class BirthApplication(BaseApplication):
 
 
 @dataclass
+class DeathApplication(BaseApplication):
+    CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_D52594BE"
+    EventType: Optional[str] = "Death"
+
+    RegFirstName: Optional[str] = None
+    RegMiddleName: Optional[str] = None
+    RegLastName: Optional[str] = None
+    RegDOB: Optional[str] = None
+    RegPartnerFirstName: Optional[str] = None
+    RegPartnerLastName: Optional[str] = None
+    Parent1FirstName: Optional[str] = None
+    Parent1LastName: Optional[str] = None
+
+    @staticmethod
+    def create(request: VitalRecordsRequest) -> "DeathApplication":
+        return DeathApplication(
+            package_id=request.id,
+            WildfireName=request.fire.capitalize(),
+            NumberOfCopies=request.number_of_records,
+            RegFirstName=request.first_name,
+            RegMiddleName=request.middle_name,
+            RegLastName=request.last_name,
+            County=request.county_of_event,
+            RegDOE=request.date_of_event.strftime("%m/%d/%Y"),
+            RegDOB=request.date_of_birth.strftime("%m/%d/%Y"),
+            RegPartnerFirstName=request.person_2_first_name,
+            RegPartnerLastName=request.person_2_last_name,
+            Parent1FirstName=request.person_1_first_name,
+            Parent1LastName=request.person_1_last_name,
+            RequestorFirstName=request.order_first_name,
+            RequestorLastName=request.order_last_name,
+            RequestorMailingAddress=" ".join(_filter_empty((request.address, request.address_2))),
+            RequestorCity=request.city,
+            RequestorStateProvince=request.state,
+            RequestorZipCode=request.zip_code,
+            RequestorCountry="United States",
+            RequestorEmail=request.email_address,
+            RequestorTelephone=request.phone_number,
+        )
+
+
+@dataclass
 class MarriageApplication(BaseApplication):
     CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_M27FFEAFF"
     EventType: Optional[str] = "Marriage"
