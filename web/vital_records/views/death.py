@@ -95,6 +95,7 @@ class ParentView(ValidateTypeMixin, StepsMixin, EligibilityMixin, ValidateReques
         return context
 
 
+@method_decorator(never_cache, name="dispatch")
 class SpouseView(ValidateTypeMixin, StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateView):
     model = VitalRecordsRequest
     form_class = SpouseNameForm
