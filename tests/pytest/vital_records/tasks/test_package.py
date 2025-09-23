@@ -147,12 +147,13 @@ class TestDeathApplication:
         assert d["package_id"] == app.package_id
         assert d["CDPH_VR_FORMTYPE"] == app.CDPH_VR_FORMTYPE
         assert d["CopyType"] == app.CopyType
-        assert d["RelationshipToRegistrant"] == app.RelationshipToRegistrant
         assert d["NumberOfCopies"] == app.NumberOfCopies
         assert d["EventType"] == app.EventType
 
-    def test_create(self, mock_vital_records_request, request_id):
+    @pytest.mark.parametrize("relationship,expected_relationship_option", [("self", "/1"), ("surviving_next_of_kin", "/6")])
+    def test_create(self, mock_vital_records_request, request_id, relationship, expected_relationship_option):
         mock_vital_records_request.id = request_id
+        mock_vital_records_request.relationship = relationship
 
         application = DeathApplication.create(mock_vital_records_request)
 
@@ -160,6 +161,7 @@ class TestDeathApplication:
         assert application.package_id == mock_vital_records_request.id
         assert application.WildfireName == mock_vital_records_request.fire.capitalize()
         assert application.NumberOfCopies == mock_vital_records_request.number_of_records
+        assert application.RelationshipToRegistrant == expected_relationship_option
         assert application.RegFirstName == mock_vital_records_request.first_name
         assert application.RegMiddleName == mock_vital_records_request.middle_name
         assert application.RegLastName == mock_vital_records_request.last_name
@@ -302,7 +304,7 @@ class TestPackageTask:
         [
             ("birth", BirthApplication, "create_birth_sworn_statement"),
             ("marriage", MarriageApplication, "create_marriage_sworn_statement"),
-            ("death", DeathApplication, "create_death_sworn_statement")
+            ("death", DeathApplication, "create_death_sworn_statement"),
         ],
     )
     def test_handler(

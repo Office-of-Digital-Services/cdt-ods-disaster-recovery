@@ -108,6 +108,7 @@ class DeathApplication(BaseApplication):
     CDPH_VR_FORMTYPE: str = "WILDFIRE_CDPH_VR_D52594BE"
     EventType: Optional[str] = "Death"
 
+    RelationshipToRegistrant: Optional[str] = None
     RegFirstName: Optional[str] = None
     RegMiddleName: Optional[str] = None
     RegLastName: Optional[str] = None
@@ -119,10 +120,16 @@ class DeathApplication(BaseApplication):
 
     @staticmethod
     def create(request: VitalRecordsRequest) -> "DeathApplication":
+        if request.relationship == "surviving_next_of_kin":
+            relationship = "/6"
+        else:
+            relationship = "/1"
+
         return DeathApplication(
             package_id=request.id,
             WildfireName=request.fire.capitalize(),
             NumberOfCopies=request.number_of_records,
+            RelationshipToRegistrant=relationship,
             RegFirstName=request.first_name,
             RegMiddleName=request.middle_name,
             RegLastName=request.last_name,
