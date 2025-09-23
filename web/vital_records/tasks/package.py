@@ -274,6 +274,9 @@ class PackageTask(Task):
         elif request.type == "marriage":
             application = MarriageApplication.create(request)
             sworn_statement = SwornStatement.create_marriage_sworn_statement(request)
+        elif request.type == "death":
+            application = DeathApplication.create(request)
+            sworn_statement = SwornStatement.create_death_sworn_statement(request)
 
         app_template = os.path.join(APPLICATION_FOLDER, f"application_{request.type}.pdf")
         app_reader = PdfReader(app_template)

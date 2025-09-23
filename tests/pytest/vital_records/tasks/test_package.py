@@ -302,6 +302,7 @@ class TestPackageTask:
         [
             ("birth", BirthApplication, "create_birth_sworn_statement"),
             ("marriage", MarriageApplication, "create_marriage_sworn_statement"),
+            ("death", DeathApplication, "create_death_sworn_statement")
         ],
     )
     def test_handler(
