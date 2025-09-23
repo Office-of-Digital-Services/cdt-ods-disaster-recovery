@@ -239,6 +239,14 @@ class SwornStatement:
         return SwornStatement.create_sworn_statement(request, registrant_fields)
 
     @staticmethod
+    def create_death_sworn_statement(request: VitalRecordsRequest) -> "SwornStatement":
+        registrant_fields = {
+            "registrantNameRow1": " ".join(_filter_empty((request.first_name, request.middle_name, request.last_name))),
+            "applicantRelationToRegistrantRow1": request.relationship,
+        }
+        return SwornStatement.create_sworn_statement(request, registrant_fields)
+
+    @staticmethod
     def create_marriage_sworn_statement(request: VitalRecordsRequest) -> "SwornStatement":
         registrant_1 = " ".join((f"{request.person_1_first_name[0]}.", request.person_1_last_name))
         registrant_2 = " ".join((f"{request.person_2_first_name[0]}.", request.person_2_last_name))

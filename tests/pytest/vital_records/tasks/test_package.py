@@ -268,6 +268,22 @@ class TestSwornStatement:
         assert sworn_statement.registrantNameRow1 == "F. Last1 / F. Last2"
         assert sworn_statement.applicantRelationToRegistrantRow1 == "Relationship"
 
+    def test_create_death_sworn_statement(self, mock_vital_records_request):
+        now = datetime.datetime.now(tz=datetime.UTC)
+        mock_vital_records_request.started_at = now
+
+        sworn_statement = SwornStatement.create_death_sworn_statement(mock_vital_records_request)
+
+        assert isinstance(sworn_statement, SwornStatement)
+        assert sworn_statement.applicantName == "Legal Attestation"
+        assert sworn_statement.applicantSignature1 == "Legal Attestation"
+        assert sworn_statement.applicantSignature2 == (
+            f"Authorized via California Identity Gateway "
+            f"{now.astimezone(timezone.get_default_timezone()).strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        assert sworn_statement.registrantNameRow1 == "Jane Anne Doe"
+        assert sworn_statement.applicantRelationToRegistrantRow1 == "Relationship"
+
 
 class TestPackageTask:
 
