@@ -10,6 +10,7 @@ from web.vital_records.tasks.package import (
     APPLICATION_FOLDER,
     SWORNSTATEMENT_TEMPLATE,
     BirthApplication,
+    DeathApplication,
     MarriageApplication,
     PackageTask,
     SwornStatement,
@@ -137,6 +138,53 @@ class TestBirthApplication:
         assert application.RequestorTelephone == mock_vital_records_request.phone_number
 
 
+class TestDeathApplication:
+    def test_asdict(self):
+        app = DeathApplication()
+
+        d = app.dict()
+
+        assert d["package_id"] == app.package_id
+        assert d["CDPH_VR_FORMTYPE"] == app.CDPH_VR_FORMTYPE
+        assert d["CopyType"] == app.CopyType
+        assert d["NumberOfCopies"] == app.NumberOfCopies
+        assert d["EventType"] == app.EventType
+
+    @pytest.mark.parametrize("relationship,expected_relationship_option", [("self", "/1"), ("surviving_next_of_kin", "/6")])
+    def test_create(self, mock_vital_records_request, request_id, relationship, expected_relationship_option):
+        mock_vital_records_request.id = request_id
+        mock_vital_records_request.relationship = relationship
+
+        application = DeathApplication.create(mock_vital_records_request)
+
+        assert isinstance(application, DeathApplication)
+        assert application.package_id == mock_vital_records_request.id
+        assert application.WildfireName == mock_vital_records_request.fire.capitalize()
+        assert application.NumberOfCopies == mock_vital_records_request.number_of_records
+        assert application.RelationshipToRegistrant == expected_relationship_option
+        assert application.RegFirstName == mock_vital_records_request.first_name
+        assert application.RegMiddleName == mock_vital_records_request.middle_name
+        assert application.RegLastName == mock_vital_records_request.last_name
+        assert application.County == mock_vital_records_request.county_of_event
+        assert application.RegDOE == mock_vital_records_request.date_of_event.strftime("%m/%d/%Y")
+        assert application.RegDOB == mock_vital_records_request.date_of_birth.strftime("%m/%d/%Y")
+        assert application.Parent1FirstName == mock_vital_records_request.person_1_first_name
+        assert application.Parent1LastName == mock_vital_records_request.person_1_last_name
+        assert application.RegPartnerFirstName == mock_vital_records_request.person_2_first_name
+        assert application.RegPartnerLastName == mock_vital_records_request.person_2_last_name
+        assert application.RequestorFirstName == mock_vital_records_request.order_first_name
+        assert application.RequestorLastName == mock_vital_records_request.order_last_name
+        assert application.RequestorMailingAddress == " ".join(
+            _filter_empty((mock_vital_records_request.address, mock_vital_records_request.address_2))
+        )
+        assert application.RequestorCity == mock_vital_records_request.city
+        assert application.RequestorStateProvince == mock_vital_records_request.state
+        assert application.RequestorZipCode == mock_vital_records_request.zip_code
+        assert application.RequestorCountry == "United States"
+        assert application.RequestorEmail == mock_vital_records_request.email_address
+        assert application.RequestorTelephone == mock_vital_records_request.phone_number
+
+
 class TestMarriageApplication:
     def test_asdict(self):
         app = MarriageApplication()
@@ -222,6 +270,22 @@ class TestSwornStatement:
         assert sworn_statement.registrantNameRow1 == "F. Last1 / F. Last2"
         assert sworn_statement.applicantRelationToRegistrantRow1 == "Relationship"
 
+    def test_create_death_sworn_statement(self, mock_vital_records_request):
+        now = datetime.datetime.now(tz=datetime.UTC)
+        mock_vital_records_request.started_at = now
+
+        sworn_statement = SwornStatement.create_death_sworn_statement(mock_vital_records_request)
+
+        assert isinstance(sworn_statement, SwornStatement)
+        assert sworn_statement.applicantName == "Legal Attestation"
+        assert sworn_statement.applicantSignature1 == "Legal Attestation"
+        assert sworn_statement.applicantSignature2 == (
+            f"Authorized via California Identity Gateway "
+            f"{now.astimezone(timezone.get_default_timezone()).strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        assert sworn_statement.registrantNameRow1 == "Jane Anne Doe"
+        assert sworn_statement.applicantRelationToRegistrantRow1 == "Relationship"
+
 
 class TestPackageTask:
 
@@ -240,6 +304,7 @@ class TestPackageTask:
         [
             ("birth", BirthApplication, "create_birth_sworn_statement"),
             ("marriage", MarriageApplication, "create_marriage_sworn_statement"),
+            ("death", DeathApplication, "create_death_sworn_statement"),
         ],
     )
     def test_handler(
