@@ -13,7 +13,7 @@ class NameView(ValidateTypeMixin, common.NameView):
             "What are the names of the First Person and Second Person as they appear on the marriage record?"
         )
         context["form_hint"] = "Please write the information as it appears on the marriage certificate."
-        context["font_hint_name"] = "name-hint"
+        context["form_hint_name"] = "name-hint"
 
         form = context["form"]
         context["person_1_fields"] = [
@@ -63,7 +63,7 @@ class DateOfMarriageView(ValidateTypeMixin, common.DateOfEventView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form_layout"] = "date_form"
-        context["font_hint_name"] = "marriage-date-hint"
+        context["form_hint_name"] = "marriage-date-hint"
         context["form_question"] = "What was the date of the marriage?"
         context["form_hint"] = "If you’re not sure, enter your approximate date of marriage."
 
