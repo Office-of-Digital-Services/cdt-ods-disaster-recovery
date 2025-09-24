@@ -2,6 +2,7 @@ from django.urls import reverse
 
 import pytest
 
+from web.vital_records.models import VitalRecordsRequest
 from web.vital_records.views import common
 from web.vital_records.forms.common import EligibilityForm
 from web.vital_records.session import Session
@@ -75,6 +76,32 @@ class TestStartView:
         # response is a redirect
         assert response.status_code == 302
         assert response.url == f"/vital-records/request/{request_id}/type"
+
+
+@pytest.mark.django_db
+class TestSubmitView:
+    @pytest.fixture
+    def view(self, app_request):
+        v = common.SubmitView()
+        v.setup(app_request)
+        return v
+
+    @pytest.mark.parametrize(
+        "record_type,expected_first_sentence",
+        [
+            ("birth", "The following information will be used to search for your replacement record."),
+            ("marriage", "This is the information that will be used to search for the replacement marriage record."),
+            ("death", "This is the information that will be used to search for the replacement death record."),
+        ],
+    )
+    def test_get_context_data(self, view, record_type, expected_first_sentence):
+        view.object = VitalRecordsRequest(type=record_type)
+        context = view.get_context_data()
+
+        assert context["first_sentence"] == expected_first_sentence
+        assert "type" in context
+        assert "county_display" in context
+        assert context["details_include"] == f"vital_records/_confirm_{record_type}_details.html"
 
 
 class TestSubmittedView:
