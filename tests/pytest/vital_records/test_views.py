@@ -87,18 +87,18 @@ class TestSubmitView:
         return v
 
     @pytest.mark.parametrize(
-        "record_type,expected_record_description",
+        "record_type,expected_first_sentence",
         [
-            ("birth", "your replacement record"),
-            ("marriage", "the replacement marriage record"),
-            ("death", "the replacement death record"),
+            ("birth", "The following information will be used to search for your replacement record."),
+            ("marriage", "This is the information that will be used to search for the replacement marriage record."),
+            ("death", "This is the information that will be used to search for the replacement death record."),
         ],
     )
-    def test_get_context_data(self, view, record_type, expected_record_description):
+    def test_get_context_data(self, view, record_type, expected_first_sentence):
         view.object = VitalRecordsRequest(type=record_type)
         context = view.get_context_data()
 
-        assert context["record_description"] == expected_record_description
+        assert context["first_sentence"] == expected_first_sentence
         assert "type" in context
         assert "county_display" in context
         assert context["details_include"] == f"vital_records/_confirm_{record_type}_details.html"

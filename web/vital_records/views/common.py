@@ -209,11 +209,13 @@ class SubmitView(StepsMixin, EligibilityMixin, ValidateRequestIdMixin, UpdateVie
         context["details_include"] = "vital_records/_confirm_" + record_type + "_details.html"
 
         if record_type == "marriage":
-            context["record_description"] = "the replacement marriage record"
+            context["first_sentence"] = (
+                "This is the information that will be used to search for the replacement marriage record."
+            )
         elif record_type == "death":
-            context["record_description"] = "the replacement death record"
+            context["first_sentence"] = "This is the information that will be used to search for the replacement death record."
         else:
-            context["record_description"] = "your replacement record"
+            context["first_sentence"] = "The following information will be used to search for your replacement record."
 
         return context
 
