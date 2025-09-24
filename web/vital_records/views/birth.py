@@ -16,7 +16,7 @@ class NameView(ValidateTypeMixin, common.NameView):
         context = super().get_context_data(**kwargs)
         context["form_question"] = "What is the name on the birth certificate?"
         context["form_hint"] = "Please write the information as it appears on the birth certificate."
-        context["font_hint_name"] = "name-hint"
+        context["form_hint_name"] = "name-hint"
         form = context["form"]
 
         context["form_fields"] = [
@@ -39,7 +39,7 @@ class CountyView(ValidateTypeMixin, common.CountyView):
             "We only have records for people born in California. If you were born in a different state, please contact the "
             "Vital Records office in the state you were born to request a new birth record."
         )
-        context["font_hint_name"] = "county-hint"
+        context["form_hint_name"] = "county-hint"
         form = context["form"]
 
         context["form_fields"] = [form["county_of_event"]]
@@ -53,7 +53,7 @@ class DateOfBirthView(ValidateTypeMixin, common.DateOfBirthView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form_layout"] = "date_form"
-        context["font_hint_name"] = "dob-hint"
+        context["form_hint_name"] = "dob-hint"
         context["form_question"] = "What is the date of birth?"
         context["form_hint"] = "If you’re not sure, enter your approximate date of birth."
 
@@ -70,7 +70,7 @@ class ParentsNamesView(ValidateTypeMixin, StepsMixin, EligibilityMixin, Validate
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form_layout"] = "couples_names_form"
-        context["font_hint_name"] = "parents-hint"
+        context["form_hint_name"] = "parents-hint"
         context["form_question"] = "What were the names of the registrant’s parents at the time of the registrant’s birth?"
         context["form_hint"] = "Please write the information as it appears on the birth certificate."
         form = context["form"]
