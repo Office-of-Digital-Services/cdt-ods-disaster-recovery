@@ -86,6 +86,7 @@ class CleanupTask(Task):
         logger.debug(f"Creating metadata record for: {request.id}")
         metadata = VitalRecordsRequestMetadata.objects.create(
             request_id=request.id,
+            type=request.type,
             fire=request.fire,
             number_of_records=request.number_of_records,
             submitted_at=request.submitted_at,
