@@ -110,6 +110,7 @@ class VitalRecordsRequest(models.Model):
 class VitalRecordsRequestMetadata(models.Model):
     id = models.BigAutoField(primary_key=True)
     request_id = models.UUIDField(editable=False)
+    type = models.CharField(max_length=10, editable=False)
     fire = models.CharField(max_length=50, editable=False)
     number_of_records = models.IntegerField(editable=False)
     submitted_at = models.DateTimeField(editable=False)
