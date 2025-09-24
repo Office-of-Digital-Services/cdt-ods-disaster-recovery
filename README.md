@@ -57,11 +57,11 @@
 | web/vital\_records/urls.py                                                                      |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views/birth.py                                                               |       58 |       33 |        0 |        0 |     43% |16-28, 36-47, 54-60, 71-90 |
-| web/vital\_records/views/common.py                                                              |      156 |       53 |        6 |        0 |     64% |61-64, 88-93, 96-99, 109-113, 116-123, 163-171, 183-191, 194-201, 204-209, 217-219, 223-234 |
+| web/vital\_records/views/common.py                                                              |      162 |       44 |       10 |        1 |     72% |61-64, 88-93, 96-99, 109-113, 116-123, 163-171, 183-191, 199, 228-230, 234-245 |
 | web/vital\_records/views/death.py                                                               |       71 |       25 |        0 |        0 |     65% |16-28, 36-48, 68-74, 85-95 |
 | web/vital\_records/views/marriage.py                                                            |       39 |       26 |        0 |        0 |     33% |10-36, 44-57, 64-70 |
 | web/wsgi.py                                                                                     |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                       **TOTAL** | **1501** |  **213** |  **140** |   **20** | **85%** |           |
+|                                                                                       **TOTAL** | **1507** |  **204** |  **144** |   **21** | **86%** |           |
 
 
 ## Setup coverage badge
