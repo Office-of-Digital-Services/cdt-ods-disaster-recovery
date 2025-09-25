@@ -29,6 +29,7 @@ class EmailTask(Task):
         type_format = {
             "birth": "Birth",
             "marriage": "Marriage",
+            "death": "Death",
         }
 
         return type_format.get(record_type)
@@ -36,17 +37,18 @@ class EmailTask(Task):
     def handler(self, request_id: UUID, package: str):
         logger.debug(f"Sending request package for: {request_id}")
         request = VitalRecordsRequest.get_with_status(request_id, "packaged")
+        request_type = self._format_record_type(request.type)
 
         context = {
             "number_of_copies": request.number_of_records,
             "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
             "email_address": request.email_address,
-            "request_type": self._format_record_type(request.type),
+            "request_type": request_type,
         }
         text_content = render_to_string(EMAIL_TXT_TEMPLATE, context)
         html_content = render_to_string(EMAIL_HTML_TEMPLATE, context)
         email = EmailMultiAlternatives(
-            subject=f"Completed: {self._format_record_type(request.type)} Record Request",
+            subject=f"Completed: {request_type} Record Request",
             body=text_content,
             to=[settings.VITAL_RECORDS_EMAIL_TO],
         )
