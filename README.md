@@ -42,9 +42,10 @@
 | web/vital\_records/migrations/0008\_alter\_vitalrecordsrequest\_choices.py                      |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/0009\_alter\_vitalrecordsrequest\_choices\_number\_of\_records.py |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/0010\_vitalrecordsrequest\_date\_of\_birth.py                     |        4 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/migrations/0011\_vitalrecordsrequestmetadata\_type.py                        |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/migrations/\_\_init\_\_.py                                                   |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/mixins.py                                                                    |       74 |        2 |       12 |        1 |     94% |     13-14 |
-| web/vital\_records/models.py                                                                    |       86 |        6 |        4 |        0 |     93% |87, 91, 95, 99, 103, 107 |
+| web/vital\_records/models.py                                                                    |       87 |        6 |        4 |        0 |     93% |87, 91, 95, 99, 103, 107 |
 | web/vital\_records/routes.py                                                                    |       27 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/session.py                                                                   |       26 |        0 |        6 |        0 |    100% |           |
 | web/vital\_records/tasks/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
@@ -61,7 +62,7 @@
 | web/vital\_records/views/death.py                                                               |       71 |       25 |        0 |        0 |     65% |16-28, 36-48, 68-74, 85-95 |
 | web/vital\_records/views/marriage.py                                                            |       39 |       26 |        0 |        0 |     33% |10-36, 44-57, 64-70 |
 | web/wsgi.py                                                                                     |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                       **TOTAL** | **1534** |  **202** |  **148** |   **21** | **86%** |           |
+|                                                                                       **TOTAL** | **1539** |  **202** |  **148** |   **21** | **86%** |           |
 
 
 ## Setup coverage badge
