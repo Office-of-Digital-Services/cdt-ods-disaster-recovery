@@ -14,6 +14,12 @@ MD033: false
 # Allow duplicate headers
 MD024: false
 
+# Allow using code blocks without specifying a language
+MD040: false
+
 # Allow mixing code block and fenced code regions
 # Useful for pages with admonitions and fenced code blocks
 MD046: false
+
+# Allow using link reference definitions in admonitions
+MD053: false

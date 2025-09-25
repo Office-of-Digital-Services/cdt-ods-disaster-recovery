@@ -78,7 +78,7 @@ The CDT Identity Gateway transforms PII from Login.gov into anonymized boolean c
 
 !!! example "Entrypoint"
 
-    [`cdt-ods-disaster-recovery/web/vital_records/views/common.py`][oauth-eligibility-views]
+    [`cdt-ods-disaster-recovery/web/vital_records/views/common.py`][order-record-views]
 
 !!! example "Key supporting files"
 
@@ -121,7 +121,7 @@ In this phase, DDRC verifies the user's claims by using claims previously stored
 
 !!! example "Entrypoint"
 
-    [`cdt-ods-disaster-recovery/web/vital_records/views/common.py`][oauth-eligibility-views]
+    [`cdt-ods-disaster-recovery/web/vital_records/views/common.py`][order-record-views]
 
 !!! example "Key supporting files"
 
@@ -200,6 +200,7 @@ The DDRC application generates a PDF of the vital records request and emails it 
 !!! example "Async tasks"
 
     [`cdt-ods-disaster-recovery/web/vital_records/tasks/package.py`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/web/vital_records/tasks/package.py)
+
     [`cdt-ods-disaster-recovery/web/vital_records/tasks/email.py`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/web/vital_records/tasks/email.py)
 
 ```mermaid
@@ -228,9 +229,8 @@ email->>user: email confirmation of vital records request PDF application submit
     deactivate email
 ```
 
-[core-middleware]: https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/web/core/middleware.py <!-- markdownlint-disable-line MD034 -->
-[eligibility-verify]: https://github.com/Office-of-Digital-Services/django-cdt-identity/blob/main/cdt_identity/views.py <!-- markdownlint-disable-line MD034 -->
-[order-record-views]: https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/web/vital_records/views/common.py <!-- markdownlint-disable-line MD034 -->
-[oauth-client]: https://github.com/Office-of-Digital-Services/django-cdt-identity/blob/main/cdt_identity/client.py <!-- markdownlint-disable-line MD034 -->
-[oauth-hooks]: https://github.com/Office-of-Digital-Services/django-cdt-identity/blob/main/cdt_identity/hooks.py <!-- markdownlint-disable-line MD034 -->
-[oauth-eligibility-views]: https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/web/vital_records/views/common.py <!-- markdownlint-disable-line MD034 -->
+[core-middleware]: https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/web/core/middleware.py
+[eligibility-verify]: https://github.com/Office-of-Digital-Services/django-cdt-identity/blob/main/cdt_identity/views.py
+[order-record-views]: https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/web/vital_records/views/common.py
+[oauth-client]: https://github.com/Office-of-Digital-Services/django-cdt-identity/blob/main/cdt_identity/client.py
+[oauth-hooks]: https://github.com/Office-of-Digital-Services/django-cdt-identity/blob/main/cdt_identity/hooks.py
