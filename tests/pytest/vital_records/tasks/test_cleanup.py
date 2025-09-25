@@ -142,6 +142,7 @@ class TestCleanupScheduledTask:
 
         mock_VitalRecordsRequestMetadata.objects.create.assert_called_once_with(
             request_id=mock_VitalRecordsRequest.id,
+            type=mock_VitalRecordsRequest.type,
             fire=mock_VitalRecordsRequest.fire,
             number_of_records=mock_VitalRecordsRequest.number_of_records,
             submitted_at=mock_VitalRecordsRequest.submitted_at,
