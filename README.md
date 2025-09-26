@@ -50,7 +50,7 @@
 | web/vital\_records/session.py                                                                   |       26 |        0 |        6 |        0 |    100% |           |
 | web/vital\_records/tasks/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/tasks/cleanup.py                                                             |       68 |        0 |       18 |        0 |    100% |           |
-| web/vital\_records/tasks/email.py                                                               |       34 |        0 |        0 |        0 |    100% |           |
+| web/vital\_records/tasks/email.py                                                               |       41 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/tasks/package.py                                                             |      178 |        0 |       10 |        1 |     99% |  284->288 |
 | web/vital\_records/tasks/utils.py                                                               |        7 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/templatetags/\_\_init\_\_.py                                                 |        0 |        0 |        0 |        0 |    100% |           |
@@ -62,7 +62,7 @@
 | web/vital\_records/views/death.py                                                               |       71 |       25 |        0 |        0 |     65% |16-28, 36-48, 68-74, 85-95 |
 | web/vital\_records/views/marriage.py                                                            |       39 |       26 |        0 |        0 |     33% |10-36, 44-57, 64-70 |
 | web/wsgi.py                                                                                     |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                       **TOTAL** | **1539** |  **202** |  **148** |   **21** | **86%** |           |
+|                                                                                       **TOTAL** | **1546** |  **202** |  **148** |   **21** | **86%** |           |
 
 
 ## Setup coverage badge
