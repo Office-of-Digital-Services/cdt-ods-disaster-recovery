@@ -176,6 +176,23 @@ class TypeForm(DisableFieldsMixin, forms.ModelForm):
         widget=forms.Select(attrs={"class": "form-select"}),
     )
 
+    def save(self, commit=True):
+        """
+        When saving the type, we need to reset all the fields that are filled out by later forms in case
+        we are saving the type because the user came back to the type form.
+        """
+        if "type" in self.changed_data:
+            # Create a new instance so we can copy the values to our existing instance.
+            # We cannot simply save the new instance as the existing one because the Django ORM will raise an IntegrityError.
+            new_instance = VitalRecordsRequest()
+
+            for f in self.instance._meta.fields:
+                if f.name not in ["id", "type", "fire", "status"]:
+                    field_value = getattr(new_instance, f.name)
+                    setattr(self.instance, f.name, field_value)
+
+        return super().save(commit=commit)
+
     class Meta:
         model = VitalRecordsRequest
         fields = ["type"]
