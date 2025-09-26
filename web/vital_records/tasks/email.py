@@ -34,32 +34,55 @@ class EmailTask(Task):
 
         return type_format.get(record_type)
 
+    def _create_base_email(
+        self, subject: str, to_address: list[str], text_content: str, html_content: str
+    ) -> EmailMultiAlternatives:
+        """Helper method to create and configure a base email object."""
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            to=to_address,
+        )
+        email.attach_alternative(html_content, "text/html")
+        return email
+
     def handler(self, request_id: UUID, package: str):
         logger.debug(f"Sending request package for: {request_id}")
         request = VitalRecordsRequest.get_with_status(request_id, "packaged")
         request_type = self._format_record_type(request.type)
+        requestor_email_address = request.email_address
 
         context = {
             "number_of_copies": request.number_of_records,
             "logo_url": "https://webstandards.ca.gov/wp-content/uploads/sites/8/2024/10/cagov-logo-coastal-flat.png",
-            "email_address": request.email_address,
+            "email_address": requestor_email_address,
             "request_type": request_type,
         }
         text_content = render_to_string(EMAIL_TXT_TEMPLATE, context)
         html_content = render_to_string(EMAIL_HTML_TEMPLATE, context)
-        email = EmailMultiAlternatives(
+
+        email_office = self._create_base_email(
             subject=f"Completed: {request_type} Record Request",
-            body=text_content,
-            to=[settings.VITAL_RECORDS_EMAIL_TO],
+            to_address=[settings.VITAL_RECORDS_EMAIL_TO],
+            text_content=text_content,
+            html_content=html_content,
         )
-        email.attach_alternative(html_content, "text/html")
-        email.attach_file(package, "application/pdf")
-        result = email.send()
+        email_office.attach_file(package, "application/pdf")
+        result_office = email_office.send()  # returns number of successfully sent emails
+
+        email_requestor = self._create_base_email(
+            subject=f"Completed: {request_type} Record Request",
+            to_address=[requestor_email_address],
+            text_content=text_content,
+            html_content=html_content,
+        )
+        result_requestor = email_requestor.send()  # returns number of successfully sent emails
 
         request.complete_send()
         request.finish()
         request.save()
 
-        logger.debug(f"Request package sent for: {request_id} with response {result}")
+        logger.debug(f"Request package sent to CDPH for: {request_id} with response {result_office}")
+        logger.debug(f"Request package sent to requestor for: {request_id} with response {result_requestor}")
 
-        return result
+        return (result_office, result_requestor)  # (1,1) is a successful task run
