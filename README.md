@@ -28,7 +28,7 @@
 | web/vital\_records/apps.py                                                                      |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms/birth.py                                                               |       24 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/forms/common.py                                                              |       95 |        0 |       14 |        3 |     97% |194->exit, 298->301, 301->303 |
+| web/vital\_records/forms/common.py                                                              |      103 |        0 |       20 |        3 |     98% |211->exit, 315->318, 318->320 |
 | web/vital\_records/forms/death.py                                                               |       30 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms/marriage.py                                                            |       21 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/hooks.py                                                                     |       16 |        6 |        0 |        0 |     62% |10-11, 15-16, 20-21 |
@@ -62,7 +62,7 @@
 | web/vital\_records/views/death.py                                                               |       71 |       25 |        0 |        0 |     65% |16-28, 36-48, 68-74, 85-95 |
 | web/vital\_records/views/marriage.py                                                            |       39 |       26 |        0 |        0 |     33% |10-36, 44-57, 64-70 |
 | web/wsgi.py                                                                                     |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                       **TOTAL** | **1546** |  **202** |  **148** |   **21** | **86%** |           |
+|                                                                                       **TOTAL** | **1554** |  **202** |  **154** |   **21** | **86%** |           |
 
 
 ## Setup coverage badge
