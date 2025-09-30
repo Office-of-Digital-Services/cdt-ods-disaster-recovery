@@ -63,14 +63,16 @@ module "network" {
 }
 
 module "monitoring" {
-  source                       = "./modules/monitoring"
-  resource_group_name          = local.resource_group_name
-  location                     = local.location
-  log_analytics_workspace_name = local.log_analytics_workspace_name
-  application_insights_name    = local.application_insights_name
-  action_group_name            = "Slack channel email"
-  action_group_short_name      = "slack-notify"
-  notification_email_address   = var.SLACK_NOTIFY_EMAIL
+  source                        = "./modules/monitoring"
+  resource_group_name           = local.resource_group_name
+  location                      = local.location
+  log_analytics_workspace_name  = local.log_analytics_workspace_name
+  application_insights_name     = local.application_insights_name
+  action_group_name             = "Slack channel email"
+  action_group_short_name       = "slack-notify"
+  notification_email_address    = var.SLACK_NOTIFY_EMAIL
+  functions_app_hostname         = module.application.app_fqdns.functions
+  functions_app_hostkey          = module.application.functions_app_hostkey
 }
 
 module "key_vault" {
@@ -134,30 +136,32 @@ module "database" {
 }
 
 module "application" {
-  source                                 = "./modules/application"
-  resource_group_name                    = local.resource_group_name
-  location                               = local.location
-  env_letter                             = local.env_letter
-  env_name                               = local.env_name
-  is_prod                                = local.is_prod
-  hostname                               = local.hostname
-  virtual_network_id                     = module.network.vnet_id
-  container_app_environment_prefix       = local.container_app_environment_prefix
-  container_app_prefix                   = local.container_app_prefix
-  container_tag                          = var.container_tag
-  database_fqdn                          = module.database.server_fqdn
-  email_connection_string_secret_name    = module.email.connection_string_secret_name
-  from_email_secret_name                 = module.email.from_email_secret_name
-  key_vault_id                           = module.key_vault.key_vault_id
-  key_vault_secret_uri_prefix            = local.key_vault_secret_uri_prefix
-  log_analytics_workspace_id             = module.monitoring.log_analytics_workspace_id
-  application_insights_connection_string = module.monitoring.application_insights_connection_string
-  postgres_admin_login                   = "postgres_admin"
-  postgres_admin_password_secret_name    = module.database.admin_password_secret_name
-  storage_account_name                   = local.storage_account_name
-  storage_account_primary_access_key     = module.storage.storage_account_primary_access_key
-  storage_share_names                    = module.storage.share_names
-  subnet_ids                             = module.network.subnet_ids
-  web_app_config_secrets                 = local.web_app_config_secrets
-  worker_app_config_secrets              = local.worker_app_config_secrets
+  source                                    = "./modules/application"
+  resource_group_name                       = local.resource_group_name
+  location                                  = local.location
+  env_letter                                = local.env_letter
+  env_name                                  = local.env_name
+  is_prod                                   = local.is_prod
+  hostname                                  = local.hostname
+  virtual_network_id                        = module.network.vnet_id
+  container_app_environment_prefix          = local.container_app_environment_prefix
+  container_app_prefix                      = local.container_app_prefix
+  container_tag                             = var.container_tag
+  database_fqdn                             = module.database.server_fqdn
+  email_connection_string_secret_name       = module.email.connection_string_secret_name
+  from_email_secret_name                    = module.email.from_email_secret_name
+  key_vault_id                              = module.key_vault.key_vault_id
+  key_vault_secret_uri_prefix               = local.key_vault_secret_uri_prefix
+  log_analytics_workspace_id                = module.monitoring.log_analytics_workspace_id
+  application_insights_connection_string    = module.monitoring.application_insights_connection_string
+  application_insights_id                   = module.monitoring.application_insights_id
+  postgres_admin_login                      = "postgres_admin"
+  postgres_admin_password_secret_name       = module.database.admin_password_secret_name
+  storage_account_name                      = local.storage_account_name
+  storage_account_primary_access_key        = module.storage.storage_account_primary_access_key
+  storage_account_primary_connection_string = module.storage.storage_account_primary_connection_string
+  storage_share_names                       = module.storage.share_names
+  subnet_ids                                = module.network.subnet_ids
+  web_app_config_secrets                    = local.web_app_config_secrets
+  worker_app_config_secrets                 = local.worker_app_config_secrets
 }
