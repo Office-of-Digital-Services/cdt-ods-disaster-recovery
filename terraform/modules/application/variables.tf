@@ -62,6 +62,10 @@ variable "log_analytics_workspace_id" {
   type        = string
 }
 
+variable "application_insights_id" {
+  description = "The ID of the Application Insights resource."
+  type        = string
+}
 variable "application_insights_connection_string" {
   description = "The connection string for applications to connect to Application Insights."
   sensitive   = true
@@ -104,6 +108,12 @@ variable "storage_account_name" {
 
 variable "storage_account_primary_access_key" {
   description = "The primary access key for the storage account."
+  type        = string
+  sensitive   = true
+}
+
+variable "storage_account_primary_connection_string" {
+  description = "The primary connection string for the storage account."
   type        = string
   sensitive   = true
 }
