@@ -187,7 +187,7 @@ class TypeForm(DisableFieldsMixin, forms.ModelForm):
             new_instance = VitalRecordsRequest()
 
             for f in self.instance._meta.fields:
-                if f.name not in ["id", "type", "fire", "status"]:
+                if f.name not in ["id", "type", "fire", "status", "started_at"]:
                     field_value = getattr(new_instance, f.name)
                     setattr(self.instance, f.name, field_value)
 
