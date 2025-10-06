@@ -36,7 +36,7 @@ class CountyView(ValidateTypeMixin, common.CountyView):
         context = super().get_context_data(**kwargs)
         context["form_question"] = "What was the county of death?"
         context["form_hint"] = (
-            "We can only issue death records for deaths that occurred in California. If the death took place in a "
+            "We can only issue death records that occurred in California. If the death took place in a "
             "different state, please contact the Vital Records office in the state the death occurred in to request "
             "a new record."
         )
