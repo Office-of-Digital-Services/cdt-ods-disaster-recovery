@@ -79,6 +79,33 @@ class TestStartView:
 
 
 @pytest.mark.django_db
+class TestStatementView:
+    @pytest.fixture
+    def view(self, app_request):
+        v = common.StatementView()
+        v.setup(app_request)
+        return v
+
+    @pytest.mark.parametrize(
+        "record_type,expected_authorized_copy_explanation",
+        [
+            ("birth",  "To get an authorized copy, you must be the person named on the record or someone legally allowed to "
+             "request it — like a parent, guardian, child, sibling, grandparent or spouse."),
+            ("marriage", "To get an authorized copy, you must be the person named on the record or someone legally allowed to "
+             "request it — like a parent, guardian, child, sibling, grandparent or spouse."),
+            ("death", "To get an authorized copy, you must be the individual legally authorized to make this request — like a "
+                "parent, guardian, child, sibling, grandparent or spouse."),
+        ],
+    )
+    def test_get_context_data(self, view, record_type, expected_authorized_copy_explanation):
+        view.object = VitalRecordsRequest(type=record_type)
+        context = view.get_context_data()
+
+        assert context["authorized_copy_explanation"] == expected_authorized_copy_explanation
+        assert context["page_title"] == f"Replacement {record_type} record"
+
+
+@pytest.mark.django_db
 class TestSubmitView:
     @pytest.fixture
     def view(self, app_request):
