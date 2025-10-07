@@ -93,7 +93,7 @@ class TestStatementView:
              "request it — like a parent, guardian, child, sibling, grandparent or spouse."),
             ("marriage", "To get an authorized copy, you must be the person named on the record or someone legally allowed to "
              "request it — like a parent, guardian, child, sibling, grandparent or spouse."),
-            ("death", "To get an authorized copy, you must be the individual legally authorized to make this request — like a "
+            ("death", "To get an authorized copy, you must be an individual legally authorized to make this request — like a "
                 "parent, guardian, child, sibling, grandparent or spouse."),
         ],
     )

@@ -116,7 +116,7 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
         if record_type == "death":
             context["authorized_copy_explanation"] = (
-                "To get an authorized copy, you must be the individual legally authorized to make this request — like a "
+                "To get an authorized copy, you must be an individual legally authorized to make this request — like a "
                 "parent, guardian, child, sibling, grandparent or spouse."
             )
         else:
