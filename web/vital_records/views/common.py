@@ -107,9 +107,24 @@ class StatementView(EligibilityMixin, ValidateRequestIdMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = f"Replacement {self.object.type} record"
+
+        record_type = self.object.type
+
+        context["page_title"] = f"Replacement {record_type} record"
         previous_route = Routes.app_route(Routes.request_type)
         context["previous_url"] = reverse(previous_route, kwargs={"pk": self.object.pk})
+
+        if record_type == "death":
+            context["authorized_copy_explanation"] = (
+                "To get an authorized copy, you must be an individual legally authorized to make this request — like a "
+                "parent, guardian, child, sibling, grandparent or spouse."
+            )
+        else:
+            context["authorized_copy_explanation"] = (
+                "To get an authorized copy, you must be the person named on the record or someone legally allowed to request "
+                "it — like a parent, guardian, child, sibling, grandparent or spouse."
+            )
+
         return context
 
     def form_valid(self, form):
