@@ -1,17 +1,5 @@
 # The functions app used for doing utility tasks using Azure Functions
 
- # A random key to secure the function's alert_to_slack endpoint
-resource "random_string" "function_key" {
-  length  = 32
-  special = false
-}
-
-# Key Vault Secret
-data "azurerm_key_vault_secret" "slack_webhook_url" {
-  name         = "slack-webhook-url"
-  key_vault_id = var.key_vault_id
-}
-
 # An API key for querying Application Insights Log search data
 resource "azurerm_application_insights_api_key" "appi_api_key" {
   name                    = "functions-app-api-key"
@@ -34,15 +22,29 @@ resource "azurerm_container_app" "functions" {
   }
 
   # Secrets that will be injected as environment variables
-  secret {
-    name     = data.azurerm_key_vault_secret.slack_webhook_url.name
-    key_vault_secret_id = "${var.key_vault_secret_uri_prefix}/${data.azurerm_key_vault_secret.slack_webhook_url.name}"
-    identity = azurerm_user_assigned_identity.functions_app_identity.id
+
+  # Dynamic secret definitions using the input map
+  dynamic "secret" {
+    for_each = var.functions_app_config_secrets
+    content {
+      name                = secret.value
+      key_vault_secret_id = "${var.key_vault_secret_uri_prefix}/${secret.value}"
+      identity            = azurerm_user_assigned_identity.functions_app_identity.id
+    }
   }
-  secret {
-    name  = "alert-to-slack-function-key"
-    value = random_string.function_key.result
+  # Dynamic secret definitions from this module
+  dynamic "secret" {
+    # Loop over the same set of names used to create the secrets
+    for_each = local.generated_secrets
+
+    content {
+      # 'secret.key' here will be "django-db-password", "django-secret-key", etc.
+      name                = azurerm_key_vault_secret.main[secret.key].name
+      key_vault_secret_id = azurerm_key_vault_secret.main[secret.key].id
+      identity            = azurerm_user_assigned_identity.functions_app_identity.id
+    }
   }
+  # App managed secret
   secret {
     name = "appinsights-api-key"
     value = azurerm_application_insights_api_key.appi_api_key.api_key
@@ -78,7 +80,7 @@ resource "azurerm_container_app" "functions" {
       }
       env {
         name        = "SLACK_WEBHOOK_URL"
-        secret_name = data.azurerm_key_vault_secret.slack_webhook_url.name
+        secret_name = var.functions_app_config_secrets.SlackWebhookUrl
       }
       # The Function's runtime key for the 'alert_to_slack' function.
       env {

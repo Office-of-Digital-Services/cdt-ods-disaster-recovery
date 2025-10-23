@@ -175,3 +175,8 @@ variable "worker_app_config_secrets" {
   description = "A map of pre-existing Key Vault secret names that the worker app needs to mount (e.g., { DajngoDbName = 'django-db-name' })."
   type        = map(string)
 }
+
+variable "functions_app_config_secrets" {
+  description = "A map of pre-existing Key Vault secret names that the functions app needs to mount (e.g., { SlackWebhookUrl = 'slack-webhook-url' })."
+  type        = map(string)
+}
