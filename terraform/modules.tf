@@ -75,8 +75,8 @@ module "monitoring" {
   action_group_name             = "Slack channel email"
   action_group_short_name       = "slack-notify"
   notification_email_address    = var.SLACK_NOTIFY_EMAIL
-  functions_app_hostname         = module.application.app_fqdns.functions
-  functions_app_hostkey          = module.application.functions_app_hostkey
+  functions_app_hostname        = module.application.app_fqdns.functions
+  functions_app_hostkey         = module.application.functions_app_hostkey
 }
 
 module "key_vault" {
