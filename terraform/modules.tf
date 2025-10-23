@@ -45,6 +45,10 @@ locals {
     DjangoLogLevel      = "django-log-level"
     VitalRecordsEmailTo = "vital-records-email-to"
   }
+  # pre-existing secrets not managed via Terraform, to reference in the functions app
+  functions_app_config_secrets = {
+    SlackWebhookUrl = "slack-webhook-url"
+  }
 }
 
 module "network" {
@@ -164,4 +168,5 @@ module "application" {
   subnet_ids                                = module.network.subnet_ids
   web_app_config_secrets                    = local.web_app_config_secrets
   worker_app_config_secrets                 = local.worker_app_config_secrets
+  functions_app_config_secrets              = local.functions_app_config_secrets
 }

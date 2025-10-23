@@ -29,5 +29,6 @@ output "azurerm_container_app_environment_public_id" {
 
 output "functions_app_hostkey" {
   description = "The host key of the Functions App."
-  value       = random_string.function_key.result
+  value       = random_password.main["alert-to-slack-function-key"].result
+  sensitive   = true
 }
