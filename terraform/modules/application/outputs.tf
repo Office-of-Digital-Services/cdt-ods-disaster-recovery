@@ -24,7 +24,7 @@ output "identity_object_ids" {
 
 output "azurerm_container_app_environment_public_id" {
   description = "The Container App Environment for public-facing web app(s)"
-  value = azurerm_container_app_environment.public.id
+  value       = azurerm_container_app_environment.public.id
 }
 
 output "functions_app_hostkey" {

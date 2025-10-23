@@ -1,7 +1,7 @@
 # The functions app used for doing utility tasks using Azure Functions
 
 # An API key for querying Application Insights Log search data
-resource "azurerm_application_insights_api_key" "appi_api_key" {
+resource "azurerm_application_insights_api_key" "main" {
   name                    = "functions-app-api-key"
   application_insights_id = var.application_insights_id
   read_permissions        = ["search"]
@@ -47,7 +47,7 @@ resource "azurerm_container_app" "functions" {
   # App managed secret
   secret {
     name = "appinsights-api-key"
-    value = azurerm_application_insights_api_key.appi_api_key.api_key
+    value = azurerm_application_insights_api_key.main.api_key
   }
 
   ingress {
@@ -66,7 +66,7 @@ resource "azurerm_container_app" "functions" {
 
     container {
       name   = "functions"
-      image  = "ghcr.io/office-of-digital-services/cdt-ods-disaster-recovery-functions:${var.container_tag}" # pull out the common part of the image name to use it for web app too
+      image  = "ghcr.io/office-of-digital-services/cdt-ods-disaster-recovery-functions:${var.container_tag}"
       cpu    = 0.25
       memory = "0.5Gi"
 

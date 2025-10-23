@@ -23,7 +23,7 @@ resource "azurerm_application_insights" "main" {
   }
 }
 
-resource "azurerm_monitor_action_group" "eng_email_webhook" {
+resource "azurerm_monitor_action_group" "main" {
   name                = var.action_group_name
   resource_group_name = var.resource_group_name
   short_name          = var.action_group_short_name

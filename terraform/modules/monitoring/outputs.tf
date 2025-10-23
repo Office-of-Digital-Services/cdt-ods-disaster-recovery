@@ -21,5 +21,5 @@ output "application_insights_instrumentation_key" {
 
 output "action_group_id" {
   description = "The ID of the monitor action group."
-  value       = azurerm_monitor_action_group.eng_email_webhook.id
+  value       = azurerm_monitor_action_group.main.id
 }
