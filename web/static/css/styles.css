@@ -1,3 +1,7 @@
+:root {
+  --bs-border-color: var(--gray-600);
+}
+
 @font-face {
   font-family: "Public Sans";
   font-style: italic;
@@ -165,7 +169,7 @@ header {
 }
 
 .ca-gov-icon-check-fill {
-  color: #336C39;
+  color: #336c39;
 }
 
 #vital-records {
@@ -237,6 +241,7 @@ header {
 
   .form-control {
     border-radius: 0;
+    border-color: var(--bs-border-color);
     font-size: 18px;
     padding: 9.5px 16px;
   }
@@ -259,7 +264,6 @@ header {
     font-size: 18px;
     border-radius: 0;
     padding: 9.5px 2.25rem 9.5px 0.75rem;
-    border-color: var(--gray-200, #d4d4d7);
   }
 
   form .btn-row {
