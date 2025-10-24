@@ -35,14 +35,26 @@ jobs:
     permissions:
       packages: write
 
+    strategy:
+      matrix:
+        image:
+          - name: web app
+            dockerfile: appcontainer/Dockerfile
+            suffix: ""
+          - name: functions
+            dockerfile: azure_functions/Dockerfile
+            suffix: "-functions"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
       - name: Write commit SHA to file
+        if: ${{ matrix.image.name == 'web app' }}
         run: echo "${{ github.sha }}" >> web/static/sha.txt
 
       - name: Write tag to file
+        if: ${{ matrix.image.name == 'web app' }}
         run: echo "${{ github.ref_name }}" >> web/static/version.txt
 
       - name: Docker Login to GitHub Container Registry
@@ -70,7 +82,7 @@ jobs:
           echo "cache_from_args=type=gha,scope=${CACHE_SCOPE},ref=${MAIN_BRANCH_REF}" >> $GITHUB_OUTPUT
           echo "cache_to_args=type=gha,scope=${CACHE_SCOPE},mode=max,ref=${MAIN_BRANCH_REF}" >> $GITHUB_OUTPUT
 
-      - name: Build, tag, and push image to GitHub Container Registry
+      - name: Build, tag, and push ${{ matrix.image.name }} image to GitHub Container Registry
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64
@@ -79,11 +91,11 @@ jobs:
           cache-from: ${{ steps.cache_params.outputs.cache_from_args }}
           cache-to: ${{ steps.cache_params.outputs.cache_to_args }}
           context: .
-          file: appcontainer/Dockerfile
+          file: ${{ matrix.image.dockerfile }}
           push: true
           tags: |
-            ghcr.io/${{ steps.repo.outputs.lower }}:${{ github.ref_name }}
-            ghcr.io/${{ steps.repo.outputs.lower }}:${{ github.sha }}
+            ghcr.io/${{ steps.repo.outputs.lower }}${{ matrix.image.suffix }}:${{ github.ref_name }}
+            ghcr.io/${{ steps.repo.outputs.lower }}${{ matrix.image.suffix }}:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
