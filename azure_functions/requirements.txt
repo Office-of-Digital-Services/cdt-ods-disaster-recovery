@@ -2,5 +2,5 @@
 # Ref: aka.ms/functions-azure-monitor-python
 # azure-monitor-opentelemetry
 
-azure-functions
-requests
+azure-functions==1.24.0
+requests==2.32.5
