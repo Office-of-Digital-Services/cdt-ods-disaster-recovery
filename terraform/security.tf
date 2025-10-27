@@ -38,6 +38,15 @@ resource "azurerm_key_vault_access_policy" "container_app_worker_access" {
   secret_permissions = local.key_vault_policy_secret_permissions
 }
 
+# Key Vault access policy for the functions app
+resource "azurerm_key_vault_access_policy" "container_app_functions_access" {
+  key_vault_id = module.key_vault.key_vault_id
+  tenant_id    = local.tenant_id
+  object_id    = module.application.identity_object_ids.functions
+
+  secret_permissions = local.key_vault_policy_secret_permissions
+}
+
 # These rules are for the 'public' NSG created in the network module.
 # They allow outbound traffic to private IP addresses of the database, key vault, and storage account.
 resource "azurerm_network_security_rule" "public_to_db" {

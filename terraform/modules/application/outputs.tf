@@ -17,8 +17,9 @@ output "default_domains" {
 output "identity_object_ids" {
   description = "A map of the Object IDs for the application managed identities."
   value = {
-    web    = azurerm_user_assigned_identity.web_app_identity.principal_id
-    worker = azurerm_user_assigned_identity.worker_app_identity.principal_id
+    web       = azurerm_user_assigned_identity.web_app_identity.principal_id
+    worker    = azurerm_user_assigned_identity.worker_app_identity.principal_id
+    functions = azurerm_user_assigned_identity.functions_app_identity.principal_id
   }
 }
 
