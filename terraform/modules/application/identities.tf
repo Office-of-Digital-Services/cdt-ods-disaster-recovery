@@ -23,3 +23,14 @@ resource "azurerm_user_assigned_identity" "worker_app_identity" {
     ignore_changes = [tags]
   }
 }
+
+# Create a User-Assigned Managed Identity for the functions App
+resource "azurerm_user_assigned_identity" "functions_app_identity" {
+  name                = "${local.user_managed_identity_prefix}-functions"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}

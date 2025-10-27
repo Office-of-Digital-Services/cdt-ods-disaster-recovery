@@ -36,3 +36,13 @@ variable "notification_email_address" {
   description = "The email address for the action group's receiver."
   type        = string
 }
+
+variable "functions_app_hostname" {
+  description = "The hostname of the Functions App, typically in the format <functionappname>.azurewebsites.net"
+  type        = string
+}
+
+variable "functions_app_hostkey" {
+  description = "The host key of the Functions App."
+  type        = string
+}

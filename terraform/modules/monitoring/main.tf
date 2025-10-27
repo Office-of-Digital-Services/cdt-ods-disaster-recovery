@@ -23,7 +23,7 @@ resource "azurerm_application_insights" "main" {
   }
 }
 
-resource "azurerm_monitor_action_group" "eng_email" {
+resource "azurerm_monitor_action_group" "main" {
   name                = var.action_group_name
   resource_group_name = var.resource_group_name
   short_name          = var.action_group_short_name
@@ -31,6 +31,11 @@ resource "azurerm_monitor_action_group" "eng_email" {
   email_receiver {
     name          = "engineering team"
     email_address = var.notification_email_address
+  }
+
+  webhook_receiver {
+    name        = "funcapp-webhook"
+    service_uri = "https://${var.functions_app_hostname}/api/alert_to_slack?code=${var.functions_app_hostkey}"
   }
 
   lifecycle {

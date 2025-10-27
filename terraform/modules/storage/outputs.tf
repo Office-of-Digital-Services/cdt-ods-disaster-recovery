@@ -9,6 +9,12 @@ output "storage_account_primary_access_key" {
   sensitive   = true
 }
 
+output "storage_account_primary_connection_string" {
+  description = "The primary connection string for the storage account, needed by the application module."
+  value       = azurerm_storage_account.main.primary_connection_string
+  sensitive   = true
+}
+
 output "share_names" {
   description = "A map of the created file share names."
   # This assumes the shares are created with a for_each loop over var.share_configurations
