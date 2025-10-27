@@ -236,7 +236,9 @@ class StatementForm(DisableFieldsMixin, forms.ModelForm):
             self.fields["relationship"].choices = choices
 
     legal_attestation = forms.CharField(
-        label="Type your full name to sign", max_length=386, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Type your full name to sign",
+        max_length=386,
+        widget=forms.TextInput(attrs={"autocomplete": "name", "class": "form-control"}),
     )
 
     class Meta:
