@@ -84,12 +84,12 @@ def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
     """
     logging.info("alert_to_slack processed a request.")
 
-    provided_code = req.params.get("CODE")
+    provided_code = req.params.get("code")
     if not provided_code:
-        return func.HttpResponse("Missing CODE authentication.", status_code=401)
+        return func.HttpResponse("Missing code authentication.", status_code=401)
     if provided_code != FUNCTION_KEY:
-        logging.warning("Invalid CODE provided.")
-        return func.HttpResponse("Unauthorized: invalid CODE.", status_code=403)
+        logging.warning("Invalid code provided.")
+        return func.HttpResponse("Unauthorized: invalid code.", status_code=403)
 
     try:
         alert_data = req.get_json()
