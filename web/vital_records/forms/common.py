@@ -236,7 +236,9 @@ class StatementForm(DisableFieldsMixin, forms.ModelForm):
             self.fields["relationship"].choices = choices
 
     legal_attestation = forms.CharField(
-        label="Type your full name to sign", max_length=386, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Type your full name to sign",
+        max_length=386,
+        widget=forms.TextInput(attrs={"autocomplete": "name", "class": "form-control"}),
     )
 
     class Meta:
@@ -334,28 +336,40 @@ class DateOfBirthForm(DateForm):
 
 class OrderInfoForm(DisableFieldsMixin, forms.ModelForm):
     order_first_name = forms.CharField(
-        label="First name", required=True, max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="First name",
+        required=True,
+        max_length=128,
+        widget=forms.TextInput(attrs={"autocomplete": "given-name", "class": "form-control"}),
     )
     order_last_name = forms.CharField(
-        label="Last name", required=True, max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Last name",
+        required=True,
+        max_length=128,
+        widget=forms.TextInput(attrs={"autocomplete": "family-name", "class": "form-control"}),
     )
     address = forms.CharField(
-        label="Street address", required=True, max_length=128, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Street address",
+        required=True,
+        max_length=128,
+        widget=forms.TextInput(attrs={"autocomplete": "address-line1", "class": "form-control"}),
     )
     address_2 = forms.CharField(
         label="Apartment, suite or unit",
         max_length=128,
         required=False,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        widget=forms.TextInput(attrs={"autocomplete": "address-line2", "class": "form-control"}),
     )
     city = forms.CharField(
-        label="City", max_length=128, required=True, widget=forms.TextInput(attrs={"class": "form-control"})
+        label="City",
+        max_length=128,
+        required=True,
+        widget=forms.TextInput(attrs={"autocomplete": "address-level2", "class": "form-control"}),
     )
     state = forms.ChoiceField(
         choices=STATE_CHOICES,
         label="State",
         required=True,
-        widget=forms.Select(attrs={"class": "form-select"}),
+        widget=forms.Select(attrs={"autocomplete": "address-level1", "class": "form-select"}),
     )
     zip_code = forms.CharField(
         label="Zip code",
@@ -363,6 +377,7 @@ class OrderInfoForm(DisableFieldsMixin, forms.ModelForm):
         required=True,
         widget=forms.TextInput(
             attrs={
+                "autocomplete": "postal-code",
                 "class": "form-control",
                 "inputmode": "numeric",
                 "pattern": r"[\d]{5}(-[\d]{4})?",
@@ -373,7 +388,7 @@ class OrderInfoForm(DisableFieldsMixin, forms.ModelForm):
         label="Email address",
         required=True,
         max_length=128,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "email"}),
+        widget=forms.TextInput(attrs={"autocomplete": "email", "class": "form-control", "type": "email"}),
     )
     phone_number = forms.CharField(
         label="Phone number",
@@ -381,6 +396,7 @@ class OrderInfoForm(DisableFieldsMixin, forms.ModelForm):
         max_length=10,
         widget=forms.TextInput(
             attrs={
+                "autocomplete": "tel",
                 "class": "form-control",
                 "inputmode": "numeric",
                 "pattern": "^[0-9]+$",
