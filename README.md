@@ -28,7 +28,7 @@
 | web/vital\_records/apps.py                                                                      |        5 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms/birth.py                                                               |       24 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/forms/common.py                                                              |      103 |        0 |       20 |        3 |     98% |211->exit, 315->318, 318->320 |
+| web/vital\_records/forms/common.py                                                              |      103 |        0 |       20 |        3 |     98% |211->exit, 317->320, 320->322 |
 | web/vital\_records/forms/death.py                                                               |       30 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/forms/marriage.py                                                            |       21 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/hooks.py                                                                     |       16 |        6 |        0 |        0 |     62% |10-11, 15-16, 20-21 |
