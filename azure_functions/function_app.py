@@ -69,7 +69,7 @@ def format_for_slack(data: dict) -> str:
                             if key == "rawStack" and isinstance(v, str):
                                 # Format traceback as code block in Slack
                                 stack = textwrap.dedent(value).strip()
-                                formatted_lines.append(f"*{key}:*\n```{stack}```")
+                                formatted_lines.append(f"*{key}:*\n```\n{stack}\n```")
                 else:
                     formatted_lines.append(f"*details:* {details}")
             except json.JSONDecodeError:
