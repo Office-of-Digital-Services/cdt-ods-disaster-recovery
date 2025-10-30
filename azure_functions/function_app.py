@@ -61,16 +61,19 @@ def format_for_slack(data: dict) -> str:
     formatted_lines = []
     for k, v in data.items():
         if k == "details":
-            details = json.loads(v)
-            if isinstance(details, list):
-                for item in details:
-                    for key, value in item.items():
-                        if key == "rawStack" and isinstance(v, str):
-                            # Format traceback as code block in Slack
-                            stack = textwrap.dedent(value).strip()
-                            formatted_lines.append(f"*{key}:*\n```{stack}```")
-            else:
-                formatted_lines.append(f"*details:* {details}")
+            try:
+                details = json.loads(v)
+                if isinstance(details, list):
+                    for item in details:
+                        for key, value in item.items():
+                            if key == "rawStack" and isinstance(v, str):
+                                # Format traceback as code block in Slack
+                                stack = textwrap.dedent(value).strip()
+                                formatted_lines.append(f"*{key}:*\n```\n{stack}\n```")
+                else:
+                    formatted_lines.append(f"*details:* {details}")
+            except json.JSONDecodeError:
+                formatted_lines.append(f"*{k}:* {v}")
         else:
             formatted_lines.append(f"*{k}:* {v}")
     formatted_message = "\n".join(formatted_lines) + "\n"
