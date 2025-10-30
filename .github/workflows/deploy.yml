@@ -122,6 +122,7 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
+            az login
             RUN_ID=$(az pipelines run \
               --id "${{ secrets.ADO_PIPELINE_ID }}" \
               --org "${{ secrets.ADO_ORG_URL }}" \
@@ -136,6 +137,7 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
+            az login
             echo "Waiting for Azure DevOps Pipeline run to complete..."
             while true; do
               PIPELINE_STATUS=$(az pipelines runs show \
