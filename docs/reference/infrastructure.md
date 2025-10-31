@@ -127,14 +127,3 @@ Use the following shorthand for conveying the Resource Type as part of the Resou
 | Database         | `DB`       |
 | Subnet           | `SNET`     |
 | Front Door       | `FD`       |
-
-### Infrastructure pipeline
-
-[![Build Status](https://calenterprise.visualstudio.com/CDT.ODS.DDRC/_apis/build/status/CDT.ODS.DDRC-terraform?branchName=main)](https://calenterprise.visualstudio.com/CDT.ODS.DDRC/_build/latest?definitionId=1168&branchName=main)
-
-When code is pushed to any branch on GitHub, our infrastructure pipeline in Azure DevOps runs [`terraform plan`](https://www.terraform.io/cli/commands/plan). When the pull request is merged into `main`, the pipeline runs [`terraform apply`](https://www.terraform.io/cli/commands/apply).
-
-While other automation for this project is done through GitHub Actions, we use an Azure Pipeline for a couple of reasons:
-
-- Easier authentication with the Azure API using a service connnection
-- Log output is hidden, avoiding accidentally leaking secrets
