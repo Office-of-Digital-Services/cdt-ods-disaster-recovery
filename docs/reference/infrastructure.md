@@ -1,6 +1,6 @@
 # Infrastructure
 
-The infrastructure is configured as code via [Terraform](https://www.terraform.io/), for [various reasons](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-benefits-of-infrastructure-as-code/ba-p/2069350), and is deployed into a Microsoft Azure account provided by the California Department of Technology (CDT)'s Office of Enterprise Technology (OET) team.
+The infrastructure is configured as code via [Terraform](./terraform.md), for [various reasons](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-benefits-of-infrastructure-as-code/ba-p/2069350), and is deployed into a Microsoft Azure account provided by the California Department of Technology (CDT)'s Office of Enterprise Technology (OET) team.
 
 The Azure portal is where you can view the infrastructure resources for DDRC. Azure DevOps is where our [infrastructure pipeline](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/terraform/azure-pipelines.yml) is run to build and deploy those infrastructure resources.
 
