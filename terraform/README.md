@@ -1,3 +1,3 @@
 # Documentation
 
-See the Cal-ITP docs for now: <https://docs.calitp.org/benefits/deployment/infrastructure>
+See the docs site: <https://office-of-digital-services.github.io/cdt-ods-disaster-recovery/reference/terraform/>
