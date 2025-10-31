@@ -50,7 +50,7 @@ include = '\.pyi?$'
 [tool.coverage.run]
 branch = true
 relative_files = true
-source = ["web"]
+source = ["web", "azure_functions"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.web.settings"
