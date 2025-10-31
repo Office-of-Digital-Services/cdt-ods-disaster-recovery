@@ -27,7 +27,7 @@ jobs:
         run: pip install -e .[test] -r azure_functions/requirements.txt
 
       - name: Run tests
-        run: ./tests/pytest/run.sh
+        run: ./tests/run.sh
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v5

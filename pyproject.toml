@@ -53,7 +53,7 @@ relative_files = true
 source = ["web"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "tests.pytest.web.settings"
+DJANGO_SETTINGS_MODULE = "tests.web.settings"
 
 # This section ensures setuptools is fully aware that non-code files within
 # these packages should be bundled
