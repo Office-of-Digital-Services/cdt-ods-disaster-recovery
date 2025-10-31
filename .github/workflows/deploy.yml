@@ -106,9 +106,6 @@ jobs:
       contents: read
 
     steps:
-      - name: Install/Update Azure DevOps Extension
-        run: az extension add --upgrade -y --name azure-devops
-
       - name: Azure login
         uses: azure/login@v2
         with:
