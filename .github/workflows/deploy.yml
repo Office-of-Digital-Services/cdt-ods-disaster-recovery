@@ -122,7 +122,7 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            az account get-access-token --resource https://app.vssps.visualstudio.com/
+            az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798
             RUN_ID=$(az pipelines run \
               --id "${{ secrets.ADO_PIPELINE_ID }}" \
               --org "${{ secrets.ADO_ORG_URL }}" \
@@ -137,7 +137,7 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            az account get-access-token --resource https://app.vssps.visualstudio.com/
+            az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798
             echo "Waiting for Azure DevOps Pipeline run to complete..."
             while true; do
               PIPELINE_STATUS=$(az pipelines runs show \
