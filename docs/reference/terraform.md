@@ -142,6 +142,8 @@ This file is dedicated to defining monitoring alerts for the application. It cre
 
 The `terraform/modules/` directory contains a set of reusable modules, each responsible for a specific piece of the infrastructure. This modular approach makes the configuration easier to manage and reason about.
 
+The modules below are reflected in more-or-less "dependency" order, e.g. we need the network to exist before we can create a database, and that has to exist before we can create the apps.
+
 ### `network`
 
 !!! abstract "Source"
