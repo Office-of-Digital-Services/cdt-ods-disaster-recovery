@@ -78,7 +78,7 @@ The `.tf` files in the root of the `/terraform` directory define the core config
 
 ### `main.tf`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/main.tf`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/main.tf)
 
@@ -90,7 +90,7 @@ This file is the primary entrypoint for the Terraform configuration. It is respo
 
 ### `modules.tf`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/modules.tf`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules.tf)
 
@@ -117,7 +117,7 @@ module "network" {
 
 ### `security.tf`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/security.tf`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/security.tf)
 
@@ -128,7 +128,7 @@ This file centralizes security-related configurations that span across multiple 
 
 ### `alerts.tf`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/alerts.tf`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/alerts.tf)
 
@@ -144,7 +144,7 @@ The `terraform/modules/` directory contains a set of reusable modules, each resp
 
 ### `network`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/modules/network/`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/network)
 
@@ -159,7 +159,7 @@ Creates the foundational networking resources for the application.
 
 ### `monitoring`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/modules/monitoring/`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/monitoring)
 
@@ -173,7 +173,7 @@ Sets up the shared monitoring, logging, and alerting infrastructure.
 
 ### `key_vault`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/modules/key_vault/`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/key_vault)
 
@@ -187,7 +187,7 @@ Deploys a secure and private Azure Key Vault for managing secrets.
 
 ### `database`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/modules/database/`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/database)
 
@@ -201,7 +201,7 @@ Deploys the PostgreSQL database for the application.
 
 ### `storage`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/modules/storage/`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/storage)
 
@@ -215,7 +215,7 @@ Creates the Azure Storage Account and file shares required by the application.
 
 ### `email`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/modules/email/`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/email)
 
@@ -229,7 +229,7 @@ Configures the Azure Communication Service for sending emails.
 
 ### `application`
 
-!!! abstract Source
+!!! abstract "Source"
 
     [`terraform/modules/application/`](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/application)
 
