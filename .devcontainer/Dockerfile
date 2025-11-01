@@ -16,12 +16,13 @@ USER $USER
 
 COPY .git .git
 COPY pyproject.toml pyproject.toml
+COPY azure_functions/requirements.txt azure_functions/requirements.txt
 
 # this RUN command uses pipcache
 # setting uid,gid here is critical, as otherwise the Buildkit cache is mounted as root
 # even though we are running in the context of non-root $USER
 RUN --mount=type=cache,id=pipcache,target=${PIP_CACHE_DIR},uid=${USER_UID},gid=${USER_GID} \
-     pip install -e .[dev,test]
+     pip install -e .[dev,test] -r azure_functions/requirements.txt
 
 COPY . .
 

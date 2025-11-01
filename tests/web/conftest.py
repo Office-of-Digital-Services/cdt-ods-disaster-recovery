@@ -3,11 +3,6 @@ from uuid import uuid4
 from django.contrib.sessions.middleware import SessionMiddleware
 
 import pytest
-from pytest_socket import disable_socket
-
-
-def pytest_runtest_setup():
-    disable_socket()
 
 
 @pytest.fixture
