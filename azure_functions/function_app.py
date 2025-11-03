@@ -13,6 +13,19 @@ FUNCTION_KEY = os.environ.get("AZURE_FUNCTION_KEY")
 APPINSIGHTS_API_KEY = os.environ.get("APPINSIGHTS_API_KEY")
 
 
+def validate_function_key(key: str) -> func.HttpResponse | None:
+    """
+    Validates the function key from the request.
+    Returns an HttpResponse if validation fails, None if it succeeds.
+    """
+    if not key:
+        return func.HttpResponse("Missing code authentication.", status_code=401)
+    if key != FUNCTION_KEY:
+        logging.warning("Invalid code provided.")
+        return func.HttpResponse("Unauthorized: invalid code.", status_code=403)
+    return None
+
+
 def fetch_search_results(api_link: str) -> dict:
     """
     Fetches log details from the Search Results API.
@@ -85,14 +98,12 @@ def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
     """
     Receives an alert from Azure Monitor, formats it, and sends it to Slack via webhook.
     """
-    logging.info("alert_to_slack processed a request.")
+    logging.info("alert_to_slack received a request.")
 
     provided_code = req.params.get("code")
-    if not provided_code:
-        return func.HttpResponse("Missing code authentication.", status_code=401)
-    if provided_code != FUNCTION_KEY:
-        logging.warning("Invalid code provided.")
-        return func.HttpResponse("Unauthorized: invalid code.", status_code=403)
+    auth_response = validate_function_key(provided_code)
+    if auth_response:
+        return auth_response
 
     try:
         alert_data = req.get_json()
