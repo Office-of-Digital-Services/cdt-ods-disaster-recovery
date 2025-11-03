@@ -106,21 +106,20 @@ jobs:
       contents: read
 
     steps:
-      - name: Install/Update Azure DevOps Extension
-        run: az extension add --upgrade -y --name azure-devops
-
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
       - name: Trigger Azure pipeline run
         id: trigger_pipeline
         run: |
-          ADO_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken -o tsv)
-          export AZURE_DEVOPS_EXT_PAT=$ADO_TOKEN
+          az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+          AZURE_DEVOPS_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken --output tsv)
+
+          if [ -z "$AZURE_DEVOPS_TOKEN" ]; then
+            echo "Failed to get Azure DevOps token"
+            exit 1
+          fi
+
+          export AZURE_DEVOPS_EXT_PAT=$AZURE_DEVOPS_TOKEN
+
           RUN_ID=$(az pipelines run \
             --id "${{ secrets.ADO_PIPELINE_ID }}" \
             --org "${{ secrets.ADO_ORG_URL }}" \
@@ -132,8 +131,17 @@ jobs:
 
       - name: Wait for Azure pipeline run to complete
         run: |
-          ADO_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken -o tsv)
-          export AZURE_DEVOPS_EXT_PAT=$ADO_TOKEN
+          az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+          AZURE_DEVOPS_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken --output tsv)
+
+          if [ -z "$AZURE_DEVOPS_TOKEN" ]; then
+            echo "Failed to get Azure DevOps token"
+            exit 1
+          fi
+
+          export AZURE_DEVOPS_EXT_PAT=$AZURE_DEVOPS_TOKEN
+
           echo "Waiting for Azure DevOps Pipeline run to complete..."
           while true; do
             PIPELINE_STATUS=$(az pipelines runs show \
