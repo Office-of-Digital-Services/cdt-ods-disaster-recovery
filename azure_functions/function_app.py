@@ -106,11 +106,11 @@ def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
         return auth_response
 
     try:
-        alert_data = req.get_json()
+        alert_payload = req.get_json()
     except ValueError:
         return func.HttpResponse("Request body is not valid JSON.", status_code=400)
 
-    data = alert_data.get("data", {})
+    data = alert_payload.get("data", {})
 
     data_str = json.dumps(data, indent=2)  # pretty print 2 spaces indent
     if len(data_str) > 10000:  # 1 byte per char, roughly 10KB, Azure limits to 64KB
