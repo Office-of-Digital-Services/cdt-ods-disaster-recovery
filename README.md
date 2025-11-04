@@ -18,6 +18,8 @@
 | web/core/models.py                                                                              |        8 |        0 |        0 |        0 |    100% |           |
 | web/core/session.py                                                                             |       25 |        5 |        4 |        2 |     76% |13-19, 25-26, 33 |
 | web/core/tasks.py                                                                               |       15 |        2 |        0 |        0 |     87% |    60, 64 |
+| web/core/templatetags/\_\_init\_\_.py                                                           |        0 |        0 |        0 |        0 |    100% |           |
+| web/core/templatetags/form\_helpers.py                                                          |       10 |       10 |        2 |        0 |      0% |      1-13 |
 | web/core/urls.py                                                                                |        5 |        0 |        0 |        0 |    100% |           |
 | web/core/views.py                                                                               |        9 |        0 |        2 |        0 |    100% |           |
 | web/monitoring.py                                                                               |       12 |        0 |        4 |        0 |    100% |           |
@@ -53,8 +55,6 @@
 | web/vital\_records/tasks/email.py                                                               |       41 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/tasks/package.py                                                             |      178 |        0 |       10 |        1 |     99% |  284->288 |
 | web/vital\_records/tasks/utils.py                                                               |        7 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/templatetags/\_\_init\_\_.py                                                 |        0 |        0 |        0 |        0 |    100% |           |
-| web/vital\_records/templatetags/form\_helpers.py                                                |       10 |       10 |        2 |        0 |      0% |      1-13 |
 | web/vital\_records/urls.py                                                                      |        4 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views/\_\_init\_\_.py                                                        |        0 |        0 |        0 |        0 |    100% |           |
 | web/vital\_records/views/birth.py                                                               |       58 |       33 |        0 |        0 |     43% |16-28, 36-47, 54-60, 71-90 |
