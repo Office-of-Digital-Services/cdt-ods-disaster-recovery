@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 import os
@@ -11,6 +12,20 @@ app = func.FunctionApp()
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 FUNCTION_KEY = os.environ.get("AZURE_FUNCTION_KEY")
 APPINSIGHTS_API_KEY = os.environ.get("APPINSIGHTS_API_KEY")
+
+
+def format_alert_date(date_str: str | None) -> str:
+    """
+    Parses an ISO date string, truncates milliseconds, and returns a formatted string.
+    Returns "N/A" if the date is None or is in an invalid format.
+    """
+    if not date_str:
+        return "N/A"
+    try:
+        date_obj = datetime.fromisoformat(date_str)
+        return date_obj.replace(microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        return "N/A"
 
 
 def validate_function_key(key: str) -> func.HttpResponse | None:
@@ -127,7 +142,7 @@ def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
     alert_id = essentials.get("alertId", "N/A")
     alert_rule = essentials.get("alertRule", "N/A")
     severity = essentials.get("severity", "N/A")
-    fired_date_time = essentials.get("firedDateTime", "N/A")
+    fired_date_time = format_alert_date(essentials.get("firedDateTime"))
     investigation_link = essentials.get("investigationLink", "#")
 
     alert_context = data.get("alertContext", {})

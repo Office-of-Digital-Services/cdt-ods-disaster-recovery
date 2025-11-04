@@ -1,6 +1,6 @@
 import pytest
 
-from azure_functions.function_app import select_search_results, validate_function_key
+from azure_functions.function_app import format_alert_date, select_search_results, validate_function_key
 
 
 def test_select_search_results(log_search_result):
@@ -15,6 +15,15 @@ def test_select_search_results(log_search_result):
         "cloud_RoleInstance": "Instance-1",
     }
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "data, expected_output",
+    [("2023-01-01T12:00:00.12345Z", "2023-01-01T12:00:00Z"), ("", "N/A"), (None, "N/A"), ("invalid-datetime", "N/A")],
+)
+def test_format_alert_date(data, expected_output):
+    result = format_alert_date(data)
+    assert result == expected_output
 
 
 @pytest.fixture
