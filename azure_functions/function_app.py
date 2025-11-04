@@ -12,6 +12,7 @@ app = func.FunctionApp()
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 FUNCTION_KEY = os.environ.get("AZURE_FUNCTION_KEY")
 APPINSIGHTS_API_KEY = os.environ.get("APPINSIGHTS_API_KEY")
+PRODUCTION_ALERT_RULE = "msqalert-cdt-pub-vip-ddrc-P-001"
 
 
 def format_alert_date(date_str: str | None) -> str:
@@ -141,6 +142,9 @@ def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
     essentials = data.get("essentials", {})
     alert_id = essentials.get("alertId", "N/A")
     alert_rule = essentials.get("alertRule", "N/A")
+    emoji_prefix = ""
+    if alert_rule == PRODUCTION_ALERT_RULE:
+        emoji_prefix = "🚨 "
     severity = essentials.get("severity", "N/A")
     fired_date_time = format_alert_date(essentials.get("firedDateTime"))
     investigation_link = essentials.get("investigationLink", "#")
@@ -153,12 +157,11 @@ def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
     details_str = format_for_slack(selected_search_results)
 
     message = (
-        f"🚨 *Azure Alert Fired: {alert_rule}*\n\n"
+        f"{emoji_prefix}*Azure Alert Fired: {alert_rule}*\n\n"
         f"*Severity*: {severity}\n"
         f"*Date*: {fired_date_time}\n"
         f"*Alert ID*: {alert_id}\n\n"
         f"---------------------------------------------------\n"
-        f"Details:\n"
         f"{details_str}"
         f"<{investigation_link}|Click here to investigate in Azure Portal>"
     )
