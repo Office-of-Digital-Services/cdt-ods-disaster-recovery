@@ -82,6 +82,11 @@ def format_for_slack(data: dict) -> str:
                             if key == "rawStack" and isinstance(v, str):
                                 # Format traceback as code block in Slack
                                 stack = textwrap.dedent(value).strip()
+                                lines = stack.splitlines()
+                                if len(lines) > 20:
+                                    first_10_lines = "\n".join(lines[:10])
+                                    last_10_lines = "\n".join(lines[-10:])
+                                    stack = f"{first_10_lines}\n ... \n{last_10_lines}"
                                 formatted_lines.append(f"*{key}:*\n```\n{stack}\n```")
                 else:
                     formatted_lines.append(f"*details:* {details}")
