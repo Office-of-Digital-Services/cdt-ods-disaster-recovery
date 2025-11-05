@@ -114,30 +114,10 @@ def format_for_slack(data: dict) -> str:
     return formatted_message
 
 
-@app.route(route="alert_to_slack", auth_level=func.AuthLevel.ANONYMOUS, methods=["POST"])
-def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
+def build_slack_message(data: dict) -> str:
     """
-    Receives an alert from Azure Monitor, formats it, and sends it to Slack via webhook.
+    Builds the Slack message string from the alert data.
     """
-    logging.info("alert_to_slack received a request.")
-
-    provided_code = req.params.get("code")
-    auth_response = validate_function_key(provided_code)
-    if auth_response:
-        return auth_response
-
-    try:
-        alert_payload = req.get_json()
-    except ValueError:
-        return func.HttpResponse("Request body is not valid JSON.", status_code=400)
-
-    data = alert_payload.get("data", {})
-
-    data_str = json.dumps(data, indent=2)  # pretty print 2 spaces indent
-    if len(data_str) > 10000:  # 1 byte per char, roughly 10KB, Azure limits to 64KB
-        data_str = data_str[:10000] + "... [truncated]"
-    logging.info(f"Received Azure alert data:\n{data_str}")
-
     # See https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-common-schema for available fields
     essentials = data.get("essentials", {})
     alert_id = essentials.get("alertId", "N/A")
@@ -166,6 +146,34 @@ def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
         f"<{investigation_link}|Click here to investigate in Azure Portal>"
     )
 
+    return message
+
+
+@app.route(route="alert_to_slack", auth_level=func.AuthLevel.ANONYMOUS, methods=["POST"])
+def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Receives an alert from Azure Monitor, formats it, and sends it to Slack via webhook.
+    """
+    logging.info("alert_to_slack received a request.")
+
+    provided_code = req.params.get("code")
+    auth_response = validate_function_key(provided_code)
+    if auth_response:
+        return auth_response
+
+    try:
+        alert_payload = req.get_json()
+    except ValueError:
+        return func.HttpResponse("Request body is not valid JSON.", status_code=400)
+
+    data = alert_payload.get("data", {})
+
+    data_str = json.dumps(data, indent=2)  # pretty print 2 spaces indent
+    if len(data_str) > 10000:  # 1 byte per char, roughly 10KB, Azure limits to 64KB
+        data_str = data_str[:10000] + "... [truncated]"
+    logging.info(f"Received Azure alert data:\n{data_str}")
+
+    message = build_slack_message(data)
     slack_payload = {"text": message}
 
     try:
