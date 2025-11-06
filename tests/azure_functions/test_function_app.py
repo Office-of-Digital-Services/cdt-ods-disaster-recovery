@@ -3,7 +3,9 @@ import textwrap
 import pytest
 import requests.exceptions
 
+import azure.functions as func
 from azure_functions.function_app import (
+    alert_to_slack,
     build_slack_message,
     fetch_search_results,
     format_alert_date,
@@ -268,6 +270,62 @@ def test_build_slack_message(data, expected_heading, mocker, request):
     assert "*problemId:* mocked-id" in message
     assert "*outerMessage:* mocked error" in message
     assert "<http://link.to/portal|Click here to investigate in Azure Portal>" in message
+
+
+@pytest.fixture
+def mock_http_request(mocker):
+    """Creates a mock azure.functions.HttpRequest."""
+    mock = mocker.MagicMock(spec=func.HttpRequest)
+    mock.params = {}
+    return mock
+
+
+@pytest.mark.usefixtures("mock_http_response")
+def test_alert_to_slack_success(mocker, mock_http_request, sample_alert_data):
+    """Test a successful alert_to_slack."""
+    mock_url = "http://mock.slack.url"
+    mocker.patch("azure_functions.function_app.SLACK_WEBHOOK_URL", mock_url)
+
+    # Mock a valid function key
+    mock_http_request.params["code"] = "valid_key"
+    mock_validate = mocker.patch("azure_functions.function_app.validate_function_key", return_value=None)
+
+    # Mock JSON success
+    mock_http_request.get_json.return_value = {"data": sample_alert_data}
+
+    # Mock a message to Slack
+    mock_msg = "Mocked Slack Message"
+    mock_build = mocker.patch("azure_functions.function_app.build_slack_message", return_value=mock_msg)
+
+    # Mock response from requests
+    mock_post_response = mocker.MagicMock()
+    mock_post_response.raise_for_status.return_value = None
+    mock_post_response.status_code = 200
+    mock_post = mocker.patch("azure_functions.function_app.requests.post", return_value=mock_post_response)
+
+    response = alert_to_slack(mock_http_request)
+
+    mock_validate.assert_called_once_with("valid_key")
+    mock_http_request.get_json.assert_called_once()
+    mock_build.assert_called_once_with(sample_alert_data)
+    mock_post.assert_called_once_with(mock_url, json={"text": mock_msg})
+    assert response == ("Alert successfully forwarded to Slack.", 200)
+
+
+@pytest.mark.usefixtures("mock_http_response")
+def test_alert_to_slack_invalid_key(mocker, mock_http_request):
+    """Test an invalid key provided to alert_to_slack."""
+    auth_fail_response = ("Unauthorized", 401)
+    mock_validate = mocker.patch(
+        "azure_functions.function_app.validate_function_key",
+        return_value=auth_fail_response,
+    )
+    mock_http_request.params["code"] = "invalid_key"
+
+    response = alert_to_slack(mock_http_request)
+
+    mock_validate.assert_called_once_with("invalid_key")
+    assert response == auth_fail_response
 
 
 @pytest.mark.usefixtures("mock_http_response")
