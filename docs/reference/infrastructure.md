@@ -1,6 +1,6 @@
 # Infrastructure
 
-The infrastructure is configured as code via [Terraform](https://www.terraform.io/), for [various reasons](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-benefits-of-infrastructure-as-code/ba-p/2069350), and is deployed into a Microsoft Azure account provided by the California Department of Technology (CDT)'s Office of Enterprise Technology (OET) team.
+The infrastructure is configured as code via [Terraform](./terraform.md), for [various reasons](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-benefits-of-infrastructure-as-code/ba-p/2069350), and is deployed into a Microsoft Azure account provided by the California Department of Technology (CDT)'s Office of Enterprise Technology (OET) team.
 
 The Azure portal is where you can view the infrastructure resources for DDRC. Azure DevOps is where our [infrastructure pipeline](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/terraform/azure-pipelines.yml) is run to build and deploy those infrastructure resources.
 
@@ -127,14 +127,3 @@ Use the following shorthand for conveying the Resource Type as part of the Resou
 | Database         | `DB`       |
 | Subnet           | `SNET`     |
 | Front Door       | `FD`       |
-
-### Infrastructure pipeline
-
-[![Build Status](https://calenterprise.visualstudio.com/CDT.ODS.DDRC/_apis/build/status/CDT.ODS.DDRC-terraform?branchName=main)](https://calenterprise.visualstudio.com/CDT.ODS.DDRC/_build/latest?definitionId=1168&branchName=main)
-
-When code is pushed to any branch on GitHub, our infrastructure pipeline in Azure DevOps runs [`terraform plan`](https://www.terraform.io/cli/commands/plan). When the pull request is merged into `main`, the pipeline runs [`terraform apply`](https://www.terraform.io/cli/commands/apply).
-
-While other automation for this project is done through GitHub Actions, we use an Azure Pipeline for a couple of reasons:
-
-- Easier authentication with the Azure API using a service connnection
-- Log output is hidden, avoiding accidentally leaking secrets

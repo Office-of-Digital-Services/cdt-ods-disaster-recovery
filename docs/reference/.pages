@@ -2,4 +2,5 @@ nav:
   - application-logic.md
   - commits-branches-merging.md
   - infrastructure.md
+  - terraform.md
   - analytics.md
