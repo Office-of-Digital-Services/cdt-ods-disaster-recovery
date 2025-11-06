@@ -50,10 +50,10 @@ include = '\.pyi?$'
 [tool.coverage.run]
 branch = true
 relative_files = true
-source = ["web"]
+source = ["web", "azure_functions"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "tests.pytest.settings"
+DJANGO_SETTINGS_MODULE = "tests.web.settings"
 
 # This section ensures setuptools is fully aware that non-code files within
 # these packages should be bundled
