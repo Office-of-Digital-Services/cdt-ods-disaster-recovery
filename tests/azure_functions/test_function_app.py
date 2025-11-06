@@ -1,6 +1,77 @@
+import json
 import pytest
+import requests.exceptions
 
-from azure_functions.function_app import build_slack_message, format_alert_date, select_search_results, validate_function_key
+from azure_functions.function_app import (
+    build_slack_message,
+    fetch_search_results,
+    format_alert_date,
+    select_search_results,
+    validate_function_key,
+)
+
+
+def test_fetch_search_results_success(mocker):
+    mock_api_link = (
+        "https://api.applicationinsights.io/v1/apps/mock-id/query?query=union%20%28exceptions%20%7C%20where%20type"
+        "%20%21has%20%22ServiceResponseError%22%29%2C%20%28traces%20%7C%20where%20severityLevel%20%3E%3D%203%29&timespan="
+        "2025-10-28T20%3a18%3a09.0000000Z%2f2025-10-28T20%3a23%3a09.0000000Z"
+    )
+    mock_api_key = "mock-api-key"
+    mocker.patch("azure_functions.function_app.APPINSIGHTS_API_KEY", mock_api_key)
+    mock_api_response = {
+        "tables": [
+            {
+                "name": "PrimaryResult",
+                "columns": [
+                    {"name": "timestamp", "type": "datetime"},
+                    {"name": "problemId", "type": "string"},
+                    {"name": "outerMessage", "type": "string"},
+                ],
+                "rows": [
+                    [
+                        "2025-10-28T20:21:04.1465456Z",
+                        "",
+                        "System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, " "PublicKeyToken=7cec85d7bea7798e",
+                        "System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw",
+                    ]
+                ],
+            }
+        ]
+    }
+    expected_table_result = mock_api_response["tables"][0]
+    expected_headers = {"x-api-key": mock_api_key}
+    mock_response = mocker.MagicMock()
+    mock_response.json.return_value = mock_api_response
+    mock_response.raise_for_status.return_value = None
+    mock_requests_get = mocker.patch("azure_functions.function_app.requests.get", return_value=mock_response)
+
+    search_results = fetch_search_results(mock_api_link)
+
+    mock_requests_get.assert_called_once_with(mock_api_link, headers=expected_headers)
+    mock_response.raise_for_status.assert_called_once()
+    mock_response.json.assert_called_once()
+    assert search_results == expected_table_result
+
+
+def test_fetch_search_results_error(mocker):
+    mock_api_link = (
+        "https://api.applicationinsights.io/v1/apps/mock-id/query?query=union%20%28exceptions%20%7C%20where%20type"
+        "%20%21has%20%22ServiceResponseError%22%29%2C%20%28traces%20%7C%20where%20severityLevel%20%3E%3D%203%29&timespan="
+        "2025-10-28T20%3a18%3a09.0000000Z%2f2025-10-28T20%3a23%3a09.0000000Z"
+    )
+    mock_api_key = "mock-api-key"
+    mocker.patch("azure_functions.function_app.APPINSIGHTS_API_KEY", mock_api_key)
+    test_exception = requests.exceptions.RequestException("Connection error")
+    mock_requests_get = mocker.patch("azure_functions.function_app.requests.get", side_effect=test_exception)
+
+    expected_headers = {"x-api-key": mock_api_key}
+    expected_error_result = {"error": "Failed to fetch log details."}
+
+    search_results = fetch_search_results(mock_api_link)
+
+    mock_requests_get.assert_called_once_with(mock_api_link, headers=expected_headers)
+    assert search_results == expected_error_result
 
 
 def test_select_search_results(log_search_result):
