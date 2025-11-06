@@ -1,4 +1,5 @@
 import json
+import textwrap
 import pytest
 import requests.exceptions
 
@@ -6,6 +7,7 @@ from azure_functions.function_app import (
     build_slack_message,
     fetch_search_results,
     format_alert_date,
+    format_search_results,
     health_check,
     select_search_results,
     validate_function_key,
@@ -87,6 +89,105 @@ def test_select_search_results(log_search_result):
         "cloud_RoleInstance": "Instance-1",
     }
     assert result == expected
+
+
+def test_format_search_results_empty():
+    """An empty details item."""
+    data = {}
+    expected_result = "_No additional details found._\n"
+    result = format_search_results(data)
+    assert result == expected_result
+
+
+def test_format_search_results_simple():
+    """details contains simple key-value pairs."""
+    data = {"problemId": "pid-123", "outerMessage": "Error msg"}
+    expected_result = "*problemId:* pid-123\n*outerMessage:* Error msg\n"
+    result = format_search_results(data)
+    assert result == expected_result
+
+
+def test_format_search_results_details_not_json():
+    """details is a plain string, not JSON."""
+    data = {"details": "This is just a string."}
+    expected_result = "*details:* This is just a string.\n"
+    result = format_search_results(data)
+    assert result == expected_result
+
+
+def test_format_search_results_details_json_not_list():
+    """details is valid JSON, but not a list."""
+    data = {"details": json.dumps({"key": "value"})}
+    expected_result = "*details:* {'key': 'value'}\n"
+    result = format_search_results(data)
+    assert result == expected_result
+
+
+def test_format_search_results_details_with_short_raw_stack():
+    """details contains a JSON list with a short rawStack."""
+    short_stack = textwrap.dedent(
+        """
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        """
+    ).strip()
+
+    details_list = [{"message": "not interested in this field", "rawStack": short_stack}]
+    data = {"details": json.dumps(details_list)}
+
+    expected_stack_block = f"```\n{short_stack}\n```"
+    expected_result = f"*rawStack:*\n{expected_stack_block}\n"
+    result = format_search_results(data)
+    assert result == expected_result
+
+
+def test_format_search_results_details_with_long_raw_stack():
+    """details contains a JSON list with a long rawStack."""
+    long_stack = textwrap.dedent(
+        """
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        """
+    ).strip()
+
+    details_list = [{"message": "not interested in this field", "rawStack": long_stack}]
+    data = {"details": json.dumps(details_list)}
+
+    all_lines = long_stack.splitlines()
+    expected_first_10 = "\n".join(all_lines[:10])
+    expected_last_10 = "\n".join(all_lines[-10:])
+
+    expected_stack_block = f"```\n{expected_first_10}\n ... \n{expected_last_10}\n```"
+
+    expected_result = f"*rawStack:*\n{expected_stack_block}\n"
+    result = format_search_results(data)
+    assert result == expected_result
 
 
 @pytest.mark.parametrize(

@@ -81,7 +81,7 @@ def select_search_results(data: dict) -> dict:
     return details
 
 
-def format_for_slack(data: dict) -> str:
+def format_search_results(data: dict) -> str:
     """
     Converts a dictionary into a formatted string with bolded keys for Slack messages.
     """
@@ -95,7 +95,7 @@ def format_for_slack(data: dict) -> str:
                 if isinstance(details, list):
                     for item in details:
                         for key, value in item.items():
-                            if key == "rawStack" and isinstance(v, str):
+                            if key == "rawStack" and isinstance(value, str):
                                 # Format traceback as code block in Slack
                                 stack = textwrap.dedent(value).strip()
                                 lines = stack.splitlines()
@@ -134,7 +134,7 @@ def build_slack_message(data: dict) -> str:
     api_link = condition.get("allOf", [{}])[0].get("linkToSearchResultsAPI", "#")
     search_results = fetch_search_results(api_link)
     selected_search_results = select_search_results(search_results) if "error" not in search_results else {}
-    details_str = format_for_slack(selected_search_results)
+    details_str = format_search_results(selected_search_results)
 
     message = (
         f"{emoji_prefix}*Azure Alert Fired: {alert_rule}*\n\n"
