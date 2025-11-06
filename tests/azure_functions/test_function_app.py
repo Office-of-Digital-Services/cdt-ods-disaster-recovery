@@ -6,6 +6,7 @@ from azure_functions.function_app import (
     build_slack_message,
     fetch_search_results,
     format_alert_date,
+    health_check,
     select_search_results,
     validate_function_key,
 )
@@ -166,3 +167,15 @@ def test_build_slack_message(data, expected_heading, mocker, request):
     assert "*problemId:* mocked-id" in message
     assert "*outerMessage:* mocked error" in message
     assert "<http://link.to/portal|Click here to investigate in Azure Portal>" in message
+
+
+@pytest.mark.usefixtures("mock_http_response")
+def test_health_check(mocker):
+    """
+    Test the health_check endpoint.
+    """
+    mock_req = mocker.MagicMock()
+
+    response = health_check(mock_req)
+
+    assert response == ("Healthy.", 200)
