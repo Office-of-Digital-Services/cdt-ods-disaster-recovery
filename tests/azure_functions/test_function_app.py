@@ -10,8 +10,10 @@ from azure_functions.function_app import (
     fetch_search_results,
     format_alert_date,
     format_search_results,
+    get_details_string,
     health_check,
     select_search_results,
+    send_to_slack,
     validate_function_key,
 )
 
@@ -243,6 +245,23 @@ def sample_alert_prod_data(sample_alert_data):
     return sample_alert_data
 
 
+def test_get_details_string(mocker, sample_alert_data):
+    mock_raw_results = {"tables": "mocked_raw_data"}
+    mock_selected_results = {"outerMessage": "mocked_selected_data"}
+    mock_formatted_string = "*Message*: mocked_selected_data\n"
+    mock_fetch = mocker.patch("azure_functions.function_app.fetch_search_results", return_value=mock_raw_results)
+    mock_select = mocker.patch("azure_functions.function_app.select_search_results", return_value=mock_selected_results)
+    mock_format = mocker.patch("azure_functions.function_app.format_search_results", return_value=mock_formatted_string)
+
+    result = get_details_string(sample_alert_data)
+
+    expected_api_link = "http://link.to/api"
+    mock_fetch.assert_called_once_with(expected_api_link)
+    mock_select.assert_called_once_with(mock_raw_results)
+    mock_format.assert_called_once_with(mock_selected_results)
+    assert result == mock_formatted_string
+
+
 @pytest.mark.parametrize(
     "data, expected_heading",
     [
@@ -278,6 +297,26 @@ def mock_http_request(mocker):
     mock = mocker.MagicMock(spec=func.HttpRequest)
     mock.params = {}
     return mock
+
+
+@pytest.mark.usefixtures("mock_http_response")
+def test_send_to_slack(mocker):
+    mock_url = "http://mock.slack.url"
+    mocker.patch("azure_functions.function_app.SLACK_WEBHOOK_URL", mock_url)
+
+    mock_message = "Test Slack Message"
+    expected_payload = {"text": mock_message}
+
+    mock_post_response = mocker.MagicMock()
+    mock_post_response.raise_for_status.return_value = None
+    mock_post_response.status_code = 200
+    mock_post = mocker.patch("azure_functions.function_app.requests.post", return_value=mock_post_response)
+
+    response = send_to_slack(mock_message)
+
+    mock_post.assert_called_once_with(mock_url, json=expected_payload)
+    mock_post_response.raise_for_status.assert_called_once()
+    assert response == ("Alert successfully forwarded to Slack.", 200)
 
 
 @pytest.mark.usefixtures("mock_http_response")
