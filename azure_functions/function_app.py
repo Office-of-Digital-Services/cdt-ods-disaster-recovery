@@ -29,6 +29,20 @@ def format_alert_date(date_str: str | None) -> str:
         return "N/A"
 
 
+def format_raw_stack(raw_stack: str) -> str:
+    """
+    Truncate long raw stack traces for better readability in Slack messages.
+    Returns the original stack trace if it's short enough.
+    """
+    stack = textwrap.dedent(raw_stack).strip()
+    lines = stack.splitlines()
+    if len(lines) > 20:
+        first_10_lines = "\n".join(lines[:10])
+        last_10_lines = "\n".join(lines[-10:])
+        stack = f"{first_10_lines}\n ... \n{last_10_lines}"
+    return stack
+
+
 def validate_function_key(key: str) -> func.HttpResponse | None:
     """
     Validates the function key from the request.
@@ -96,13 +110,7 @@ def format_search_results(data: dict) -> str:
                     for item in details:
                         for key, value in item.items():
                             if key == "rawStack" and isinstance(value, str):
-                                # Format traceback as code block in Slack
-                                stack = textwrap.dedent(value).strip()
-                                lines = stack.splitlines()
-                                if len(lines) > 20:
-                                    first_10_lines = "\n".join(lines[:10])
-                                    last_10_lines = "\n".join(lines[-10:])
-                                    stack = f"{first_10_lines}\n ... \n{last_10_lines}"
+                                stack = format_raw_stack(value)
                                 formatted_lines.append(f"*{key}:*\n```\n{stack}\n```")
                 else:
                     formatted_lines.append(f"*details:* {details}")

@@ -9,6 +9,7 @@ from azure_functions.function_app import (
     build_slack_message,
     fetch_search_results,
     format_alert_date,
+    format_raw_stack,
     format_search_results,
     get_details_string,
     health_check,
@@ -16,6 +17,59 @@ from azure_functions.function_app import (
     send_to_slack,
     validate_function_key,
 )
+
+
+def test_format_raw_stack_long():
+    stack = """
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        """
+    dedented_stack = textwrap.dedent(stack).strip()
+    lines = dedented_stack.splitlines()
+    expected_first_10 = "\n".join(lines[:10])
+    expected_last_10 = "\n".join(lines[-10:])
+    expected_result = f"{expected_first_10}\n ... \n{expected_last_10}"
+
+    result = format_raw_stack(stack)
+
+    assert result == expected_result
+
+
+def test_format_raw_stack_short():
+    stack = """
+        Traceback (most recent call last):
+          File "app.py", line 10, in <module>
+            my_func()
+          File "app.py", line 7, in my_func
+            raise ValueError("An error")
+        ValueError: An error
+        """
+    expected_result = textwrap.dedent(stack).strip()
+    result = format_raw_stack(stack)
+
+    assert result == expected_result
 
 
 def test_fetch_search_results_success(mocker):
