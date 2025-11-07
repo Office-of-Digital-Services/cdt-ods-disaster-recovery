@@ -111,13 +111,13 @@ def format_search_results(data: dict) -> str:
                         for key, value in item.items():
                             if key == "rawStack" and isinstance(value, str):
                                 stack = format_raw_stack(value)
-                                formatted_lines.append(f"*{key}:*\n```\n{stack}\n```")
+                                formatted_lines.append(f"*{key}*:\n```\n{stack}\n```")
                 else:
                     formatted_lines.append(f"*details:* {details}")
             except json.JSONDecodeError:
-                formatted_lines.append(f"*{k}:* {v}")
+                formatted_lines.append(f"*{k}*: {v}")
         else:
-            formatted_lines.append(f"*{k}:* {v}")
+            formatted_lines.append(f"*{k}*: {v}")
     formatted_message = "\n".join(formatted_lines) + "\n"
     return formatted_message
 
