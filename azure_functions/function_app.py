@@ -94,7 +94,7 @@ def select_search_results(data: dict) -> dict:
     columns = [col["name"] for col in json_columns]
     rows: list[list[str | None | int]] = data["rows"]
 
-    selected_columns = ["problemId", "outerMessage", "details", "client_City", "client_StateOrProvince", "cloud_RoleInstance"]
+    selected_columns = ["outerMessage", "details"]
     selected_columns_indexes = {col: columns.index(col) for col in selected_columns}
 
     details = {}

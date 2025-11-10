@@ -139,14 +139,7 @@ def test_fetch_search_results_error(mocker):
 def test_select_search_results(log_search_result):
     """Test the selection logic."""
     result = select_search_results(log_search_result)
-    expected = {
-        "problemId": "pid-123",
-        "outerMessage": "Error msg",
-        "details": "JSON details",
-        "client_City": "TestCity",
-        "client_StateOrProvince": "TestState",
-        "cloud_RoleInstance": "Instance-1",
-    }
+    expected = {"outerMessage": "Error msg", "details": "JSON details"}
     assert result == expected
 
 
