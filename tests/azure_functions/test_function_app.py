@@ -109,18 +109,14 @@ def saved_function_key(mocker):
         (None, ("Missing code authentication.", 401)),
     ],
 )
-@pytest.mark.usefixtures("saved_function_key")
-def test_validate_function_key(received_function_key, expected_return, mock_http_response):
+@pytest.mark.usefixtures("saved_function_key", "mock_http_response")
+def test_validate_function_key(received_function_key, expected_return):
     result = validate_function_key(received_function_key)
     assert result == expected_return
 
 
 def test_fetch_search_results_success(mocker):
-    mock_api_link = (
-        "https://api.applicationinsights.io/v1/apps/mock-id/query?query=union%20%28exceptions%20%7C%20where%20type"
-        "%20%21has%20%22ServiceResponseError%22%29%2C%20%28traces%20%7C%20where%20severityLevel%20%3E%3D%203%29&timespan="
-        "2025-10-28T20%3a18%3a09.0000000Z%2f2025-10-28T20%3a23%3a09.0000000Z"
-    )
+    mock_api_link = "http://link.to/api"
     mock_api_key = "mock-api-key"
     mocker.patch("azure_functions.function_app.APPINSIGHTS_API_KEY", mock_api_key)
     mock_api_response = {
@@ -159,11 +155,7 @@ def test_fetch_search_results_success(mocker):
 
 
 def test_fetch_search_results_error(mocker):
-    mock_api_link = (
-        "https://api.applicationinsights.io/v1/apps/mock-id/query?query=union%20%28exceptions%20%7C%20where%20type"
-        "%20%21has%20%22ServiceResponseError%22%29%2C%20%28traces%20%7C%20where%20severityLevel%20%3E%3D%203%29&timespan="
-        "2025-10-28T20%3a18%3a09.0000000Z%2f2025-10-28T20%3a23%3a09.0000000Z"
-    )
+    mock_api_link = "http://link.to/api"
     mock_api_key = "mock-api-key"
     mocker.patch("azure_functions.function_app.APPINSIGHTS_API_KEY", mock_api_key)
     test_exception = requests.exceptions.RequestException("Connection error")
@@ -176,6 +168,22 @@ def test_fetch_search_results_error(mocker):
 
     mock_requests_get.assert_called_once_with(mock_api_link, headers=expected_headers)
     assert search_results == expected_error_result
+
+
+@pytest.fixture
+def log_search_result():
+    return {
+        "columns": [
+            {"name": "problemId"},
+            {"name": "otherCol"},
+            {"name": "outerMessage"},
+            {"name": "details"},
+            {"name": "client_City"},
+            {"name": "client_StateOrProvince"},
+            {"name": "cloud_RoleInstance"},
+        ],
+        "rows": [["pid-123", "ignore", "Error msg", "JSON details", "TestCity", "TestState", "Instance-1"]],
+    }
 
 
 def test_select_search_results(log_search_result):
@@ -344,14 +352,6 @@ def test_build_slack_message(data_fixture_name, expected_heading, request):
     assert mock_details in message
 
 
-@pytest.fixture
-def mock_http_request(mocker):
-    """Creates a mock azure.functions.HttpRequest."""
-    mock = mocker.MagicMock(spec=func.HttpRequest)
-    mock.params = {}
-    return mock
-
-
 @pytest.mark.usefixtures("mock_http_response")
 def test_send_to_slack(mocker):
     mock_url = "http://mock.slack.url"
@@ -370,6 +370,14 @@ def test_send_to_slack(mocker):
     mock_post.assert_called_once_with(mock_url, json=expected_payload)
     mock_post_response.raise_for_status.assert_called_once()
     assert response == ("Alert successfully forwarded to Slack.", 200)
+
+
+@pytest.fixture
+def mock_http_request(mocker):
+    """Creates a mock azure.functions.HttpRequest."""
+    mock = mocker.MagicMock(spec=func.HttpRequest)
+    mock.params = {}
+    return mock
 
 
 @pytest.mark.usefixtures("mock_http_response")
