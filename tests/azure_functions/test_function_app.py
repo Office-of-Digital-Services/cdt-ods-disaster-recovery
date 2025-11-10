@@ -167,7 +167,7 @@ def test_format_search_results_empty():
 def test_format_search_results_simple():
     """details contains simple key-value pairs."""
     data = {"problemId": "pid-123", "outerMessage": "Error msg"}
-    expected_result = "*problemId:* pid-123\n*outerMessage:* Error msg\n"
+    expected_result = "*Message*: Error msg\n*Details*: \n"
     result = format_search_results(data)
     assert result == expected_result
 
@@ -175,7 +175,7 @@ def test_format_search_results_simple():
 def test_format_search_results_details_not_json():
     """details is a plain string, not JSON."""
     data = {"details": "This is just a string."}
-    expected_result = "*details:* This is just a string.\n"
+    expected_result = "*Message*: \n*Details*: This is just a string.\n"
     result = format_search_results(data)
     assert result == expected_result
 
@@ -183,7 +183,7 @@ def test_format_search_results_details_not_json():
 def test_format_search_results_details_json_not_list():
     """details is valid JSON, but not a list."""
     data = {"details": json.dumps({"key": "value"})}
-    expected_result = "*details:* {'key': 'value'}\n"
+    expected_result = "*Message*: \n*Details*: {'key': 'value'}\n"
     result = format_search_results(data)
     assert result == expected_result
 
@@ -205,7 +205,7 @@ def test_format_search_results_details_with_short_raw_stack():
     data = {"details": json.dumps(details_list)}
 
     expected_stack_block = f"```\n{short_stack}\n```"
-    expected_result = f"*rawStack:*\n{expected_stack_block}\n"
+    expected_result = f"*Message*: \n*Details*:\n{expected_stack_block}\n"
     result = format_search_results(data)
     assert result == expected_result
 
@@ -250,7 +250,7 @@ def test_format_search_results_details_with_long_raw_stack():
 
     expected_stack_block = f"```\n{expected_first_10}\n ... \n{expected_last_10}\n```"
 
-    expected_result = f"*rawStack:*\n{expected_stack_block}\n"
+    expected_result = f"*Message*: \n*Details*:\n{expected_stack_block}\n"
     result = format_search_results(data)
     assert result == expected_result
 
