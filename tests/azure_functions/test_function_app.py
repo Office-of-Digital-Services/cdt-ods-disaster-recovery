@@ -324,32 +324,24 @@ def test_get_details_string(mocker, sample_alert_data):
 
 
 @pytest.mark.parametrize(
-    "data, expected_heading",
+    "data_fixture_name, expected_heading",
     [
         ("sample_alert_data", "*Azure Alert Fired: msqalert-cdt-pub-vip-ddrc-T-001*"),
         ("sample_alert_prod_data", "🚨 *Azure Alert Fired: msqalert-cdt-pub-vip-ddrc-P-001*"),
     ],
 )
-def test_build_slack_message(data, expected_heading, mocker, request):
-    data = request.getfixturevalue(data)
-    mocker.patch("azure_functions.function_app.PRODUCTION_ALERT_RULE", "msqalert-cdt-pub-vip-ddrc-P-001")
-    mocker.patch(
-        "azure_functions.function_app.fetch_search_results",
-        return_value={"tables": [], "rows": []},
-    )
-    mocker.patch(
-        "azure_functions.function_app.select_search_results",
-        return_value={"problemId": "mocked-id", "outerMessage": "mocked error"},
-    )
-    message = build_slack_message(data)
+def test_build_slack_message(data_fixture_name, expected_heading, request):
+    data = request.getfixturevalue(data_fixture_name)
+    mock_details = "*Message*: mocked message\n*Details*: mock stack\n"
+
+    message = build_slack_message(data, mock_details)
 
     assert expected_heading in message
     assert "*Severity*: Sev1" in message
     assert "*Date*: 2023-01-01T12:00:00Z" in message
     assert "*Alert ID*: alert-id-001" in message
-    assert "*problemId:* mocked-id" in message
-    assert "*outerMessage:* mocked error" in message
     assert "<http://link.to/portal|Click here to investigate in Azure Portal>" in message
+    assert mock_details in message
 
 
 @pytest.fixture
@@ -383,9 +375,6 @@ def test_send_to_slack(mocker):
 @pytest.mark.usefixtures("mock_http_response")
 def test_alert_to_slack_success(mocker, mock_http_request, sample_alert_data):
     """Test a successful alert_to_slack."""
-    mock_url = "http://mock.slack.url"
-    mocker.patch("azure_functions.function_app.SLACK_WEBHOOK_URL", mock_url)
-
     # Mock a valid function key
     mock_http_request.params["code"] = "valid_key"
     mock_validate = mocker.patch("azure_functions.function_app.validate_function_key", return_value=None)
@@ -393,22 +382,23 @@ def test_alert_to_slack_success(mocker, mock_http_request, sample_alert_data):
     # Mock JSON success
     mock_http_request.get_json.return_value = {"data": sample_alert_data}
 
-    # Mock a message to Slack
+    mock_details_str = "*Message*: mocked error\n"
+    mock_get_details = mocker.patch("azure_functions.function_app.get_details_string", return_value=mock_details_str)
     mock_msg = "Mocked Slack Message"
     mock_build = mocker.patch("azure_functions.function_app.build_slack_message", return_value=mock_msg)
 
-    # Mock response from requests
-    mock_post_response = mocker.MagicMock()
-    mock_post_response.raise_for_status.return_value = None
-    mock_post_response.status_code = 200
-    mock_post = mocker.patch("azure_functions.function_app.requests.post", return_value=mock_post_response)
+    mock_send = mocker.patch(
+        "azure_functions.function_app.send_to_slack",
+        return_value=("Alert successfully forwarded to Slack.", 200),
+    )
 
     response = alert_to_slack(mock_http_request)
 
     mock_validate.assert_called_once_with("valid_key")
     mock_http_request.get_json.assert_called_once()
-    mock_build.assert_called_once_with(sample_alert_data)
-    mock_post.assert_called_once_with(mock_url, json={"text": mock_msg})
+    mock_get_details.assert_called_once_with(sample_alert_data)
+    mock_build.assert_called_once_with(sample_alert_data, mock_details_str)
+    mock_send.assert_called_once_with(mock_msg)
     assert response == ("Alert successfully forwarded to Slack.", 200)
 
 
