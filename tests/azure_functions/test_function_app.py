@@ -10,6 +10,7 @@ from azure_functions.function_app import (
     fetch_search_results,
     format_alert_date,
     format_raw_stack,
+    format_item,
     format_search_results,
     get_details_string,
     health_check,
@@ -147,6 +148,19 @@ def test_select_search_results(log_search_result):
         "cloud_RoleInstance": "Instance-1",
     }
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "key, value, expected_output",
+    [
+        ("Severity", "Sev1", "*Severity*: Sev1"),
+        ("", "Value", "**: Value"),
+        ("Key", None, "*Key*: N/A"),
+    ],
+)
+def test_format_item(key, value, expected_output):
+    result = format_item(key, value)
+    assert result == expected_output
 
 
 def test_format_search_results_empty():
