@@ -115,10 +115,17 @@ def test_validate_function_key(received_function_key, expected_return):
     assert result == expected_return
 
 
-def test_fetch_search_results_success(mocker):
+@pytest.fixture
+def mock_api_setup(mocker):
     mock_api_link = "http://link.to/api"
     mock_api_key = "mock-api-key"
     mocker.patch("azure_functions.function_app.APPINSIGHTS_API_KEY", mock_api_key)
+
+    return mock_api_link, mock_api_key
+
+
+def test_fetch_search_results_success(mocker, mock_api_setup):
+    mock_api_link, mock_api_key = mock_api_setup
     mock_api_response = {
         "tables": [
             {
@@ -154,10 +161,8 @@ def test_fetch_search_results_success(mocker):
     assert search_results == expected_table_result
 
 
-def test_fetch_search_results_error(mocker):
-    mock_api_link = "http://link.to/api"
-    mock_api_key = "mock-api-key"
-    mocker.patch("azure_functions.function_app.APPINSIGHTS_API_KEY", mock_api_key)
+def test_fetch_search_results_error(mocker, mock_api_setup):
+    mock_api_link, mock_api_key = mock_api_setup
     test_exception = requests.exceptions.RequestException("Connection error")
     mock_requests_get = mocker.patch("azure_functions.function_app.requests.get", side_effect=test_exception)
 
