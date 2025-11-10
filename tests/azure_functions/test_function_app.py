@@ -9,8 +9,8 @@ from azure_functions.function_app import (
     build_slack_message,
     fetch_search_results,
     format_alert_date,
-    format_raw_stack,
     format_item,
+    format_raw_stack,
     format_search_results,
     get_details_string,
     health_check,
@@ -18,6 +18,28 @@ from azure_functions.function_app import (
     send_to_slack,
     validate_function_key,
 )
+
+
+@pytest.mark.parametrize(
+    "key, value, expected_output",
+    [
+        ("Severity", "Sev1", "*Severity*: Sev1"),
+        ("", "Value", "**: Value"),
+        ("Key", None, "*Key*: N/A"),
+    ],
+)
+def test_format_item(key, value, expected_output):
+    result = format_item(key, value)
+    assert result == expected_output
+
+
+@pytest.mark.parametrize(
+    "data, expected_output",
+    [("2023-01-01T12:00:00.12345Z", "2023-01-01T12:00:00Z"), ("", "N/A"), (None, "N/A"), ("invalid-datetime", "N/A")],
+)
+def test_format_alert_date(data, expected_output):
+    result = format_alert_date(data)
+    assert result == expected_output
 
 
 def test_format_raw_stack_long():
@@ -71,6 +93,26 @@ def test_format_raw_stack_short():
     result = format_raw_stack(stack)
 
     assert result == expected_result
+
+
+@pytest.fixture
+def saved_function_key(mocker):
+    function_key = "saved_key"
+    mocker.patch("azure_functions.function_app.FUNCTION_KEY", function_key)
+
+
+@pytest.mark.parametrize(
+    "received_function_key, expected_return",
+    [
+        ("saved_key", None),
+        ("wrong_key", ("Unauthorized: invalid code.", 403)),
+        (None, ("Missing code authentication.", 401)),
+    ],
+)
+@pytest.mark.usefixtures("saved_function_key")
+def test_validate_function_key(received_function_key, expected_return, mock_http_response):
+    result = validate_function_key(received_function_key)
+    assert result == expected_return
 
 
 def test_fetch_search_results_success(mocker):
@@ -141,19 +183,6 @@ def test_select_search_results(log_search_result):
     result = select_search_results(log_search_result)
     expected = {"outerMessage": "Error msg", "details": "JSON details"}
     assert result == expected
-
-
-@pytest.mark.parametrize(
-    "key, value, expected_output",
-    [
-        ("Severity", "Sev1", "*Severity*: Sev1"),
-        ("", "Value", "**: Value"),
-        ("Key", None, "*Key*: N/A"),
-    ],
-)
-def test_format_item(key, value, expected_output):
-    result = format_item(key, value)
-    assert result == expected_output
 
 
 def test_format_search_results_empty():
@@ -253,35 +282,6 @@ def test_format_search_results_details_with_long_raw_stack():
     expected_result = f"*Message*: \n*Details*:\n{expected_stack_block}\n"
     result = format_search_results(data)
     assert result == expected_result
-
-
-@pytest.mark.parametrize(
-    "data, expected_output",
-    [("2023-01-01T12:00:00.12345Z", "2023-01-01T12:00:00Z"), ("", "N/A"), (None, "N/A"), ("invalid-datetime", "N/A")],
-)
-def test_format_alert_date(data, expected_output):
-    result = format_alert_date(data)
-    assert result == expected_output
-
-
-@pytest.fixture
-def saved_function_key(mocker):
-    function_key = "saved_key"
-    mocker.patch("azure_functions.function_app.FUNCTION_KEY", function_key)
-
-
-@pytest.mark.parametrize(
-    "received_function_key, expected_return",
-    [
-        ("saved_key", None),
-        ("wrong_key", ("Unauthorized: invalid code.", 403)),
-        (None, ("Missing code authentication.", 401)),
-    ],
-)
-@pytest.mark.usefixtures("saved_function_key")
-def test_validate_function_key(received_function_key, expected_return, mock_http_response):
-    result = validate_function_key(received_function_key)
-    assert result == expected_return
 
 
 @pytest.fixture
