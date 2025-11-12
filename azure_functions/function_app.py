@@ -79,7 +79,7 @@ def fetch_search_results(api_link: str) -> dict:
         data_str = json.dumps(data, indent=2)  # pretty print 2 spaces indent
         if len(data_str) > 10000:  # 1 byte per character, roughly 10KB, Azure limits to 64KB
             data_str = data_str[:10000] + "... [truncated]"
-        logging.info(f"Fetched log details: {data_str}")
+        logging.debug(f"Fetched log details: {data_str}")
         return data["tables"][0] if data["tables"] else {}
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching log details from API: {e}")
@@ -209,7 +209,7 @@ def alert_to_slack(req: func.HttpRequest) -> func.HttpResponse:
     data_str = json.dumps(data, indent=2)  # pretty print 2 spaces indent
     if len(data_str) > 10000:  # 1 byte per char, roughly 10KB, Azure limits to 64KB
         data_str = data_str[:10000] + "... [truncated]"
-    logging.info(f"Received Azure alert data:\n{data_str}")
+    logging.debug(f"Received Azure alert data:\n{data_str}")
 
     details = get_details_string(data)
     message = build_slack_message(data, details)
