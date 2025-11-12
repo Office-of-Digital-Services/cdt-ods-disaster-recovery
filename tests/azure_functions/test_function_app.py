@@ -20,6 +20,67 @@ from azure_functions.function_app import (
 )
 
 
+@pytest.fixture
+def saved_function_key(mocker):
+    function_key = "saved_key"
+    mocker.patch("azure_functions.function_app.FUNCTION_KEY", function_key)
+
+
+@pytest.fixture
+def mock_api_setup(mocker):
+    mock_api_link = "http://link.to/api"
+    mock_api_key = "mock-api-key"
+    mocker.patch("azure_functions.function_app.APPINSIGHTS_API_KEY", mock_api_key)
+
+    return mock_api_link, mock_api_key
+
+
+@pytest.fixture
+def log_search_result():
+    return {
+        "columns": [
+            {"name": "problemId"},
+            {"name": "otherCol"},
+            {"name": "outerMessage"},
+            {"name": "details"},
+            {"name": "client_City"},
+            {"name": "client_StateOrProvince"},
+            {"name": "cloud_RoleInstance"},
+        ],
+        "rows": [["pid-123", "ignore", "Error msg", "JSON details", "TestCity", "TestState", "Instance-1"]],
+    }
+
+
+@pytest.fixture
+def sample_alert_data():
+    """Provides sample test alert data"""
+    return {
+        "essentials": {
+            "alertId": "alert-id-001",
+            "alertRule": "msqalert-cdt-pub-vip-ddrc-T-001",
+            "severity": "Sev1",
+            "firedDateTime": "2023-01-01T12:00:00.12345Z",
+            "investigationLink": "http://link.to/portal",
+        },
+        "alertContext": {"condition": {"allOf": [{"linkToSearchResultsAPI": "http://link.to/api"}]}},
+    }
+
+
+@pytest.fixture
+def sample_alert_prod_data(sample_alert_data):
+    """Provides sample production alert data"""
+    sample_alert_data["essentials"]["alertRule"] = "msqalert-cdt-pub-vip-ddrc-P-001"
+    return sample_alert_data
+
+
+@pytest.fixture
+def mock_http_request(mocker):
+    """Creates a mock azure.functions.HttpRequest."""
+    mock = mocker.MagicMock(spec=func.HttpRequest)
+    mock.params = {}
+    return mock
+
+
 @pytest.mark.parametrize(
     "key, value, expected_output",
     [
@@ -95,12 +156,6 @@ def test_format_raw_stack_short():
     assert result == expected_result
 
 
-@pytest.fixture
-def saved_function_key(mocker):
-    function_key = "saved_key"
-    mocker.patch("azure_functions.function_app.FUNCTION_KEY", function_key)
-
-
 @pytest.mark.parametrize(
     "received_function_key, expected_return",
     [
@@ -113,15 +168,6 @@ def saved_function_key(mocker):
 def test_validate_function_key(received_function_key, expected_return):
     result = validate_function_key(received_function_key)
     assert result == expected_return
-
-
-@pytest.fixture
-def mock_api_setup(mocker):
-    mock_api_link = "http://link.to/api"
-    mock_api_key = "mock-api-key"
-    mocker.patch("azure_functions.function_app.APPINSIGHTS_API_KEY", mock_api_key)
-
-    return mock_api_link, mock_api_key
 
 
 def test_fetch_search_results_success(mocker, mock_api_setup):
@@ -175,22 +221,6 @@ def test_fetch_search_results_error(mocker, mock_api_setup):
     assert search_results == expected_error_result
 
 
-@pytest.fixture
-def log_search_result():
-    return {
-        "columns": [
-            {"name": "problemId"},
-            {"name": "otherCol"},
-            {"name": "outerMessage"},
-            {"name": "details"},
-            {"name": "client_City"},
-            {"name": "client_StateOrProvince"},
-            {"name": "cloud_RoleInstance"},
-        ],
-        "rows": [["pid-123", "ignore", "Error msg", "JSON details", "TestCity", "TestState", "Instance-1"]],
-    }
-
-
 def test_select_search_results(log_search_result):
     """Test the selection logic."""
     result = select_search_results(log_search_result)
@@ -230,28 +260,6 @@ def test_format_search_results_details_json_list():
     expected_result = f"*Message*: \n*Details*:\n{expected_stack_block}\n"
     result = format_search_results(data)
     assert result == expected_result
-
-
-@pytest.fixture
-def sample_alert_data():
-    """Provides sample test alert data"""
-    return {
-        "essentials": {
-            "alertId": "alert-id-001",
-            "alertRule": "msqalert-cdt-pub-vip-ddrc-T-001",
-            "severity": "Sev1",
-            "firedDateTime": "2023-01-01T12:00:00.12345Z",
-            "investigationLink": "http://link.to/portal",
-        },
-        "alertContext": {"condition": {"allOf": [{"linkToSearchResultsAPI": "http://link.to/api"}]}},
-    }
-
-
-@pytest.fixture
-def sample_alert_prod_data(sample_alert_data):
-    """Provides sample production alert data"""
-    sample_alert_data["essentials"]["alertRule"] = "msqalert-cdt-pub-vip-ddrc-P-001"
-    return sample_alert_data
 
 
 def test_get_details_string(mocker, sample_alert_data):
@@ -310,14 +318,6 @@ def test_send_to_slack(mocker):
     mock_post.assert_called_once_with(mock_url, json=expected_payload)
     mock_post_response.raise_for_status.assert_called_once()
     assert response == ("Alert successfully forwarded to Slack.", 200)
-
-
-@pytest.fixture
-def mock_http_request(mocker):
-    """Creates a mock azure.functions.HttpRequest."""
-    mock = mocker.MagicMock(spec=func.HttpRequest)
-    mock.params = {}
-    return mock
 
 
 @pytest.mark.usefixtures("mock_http_response")
