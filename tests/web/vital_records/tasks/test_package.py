@@ -293,6 +293,10 @@ class TestPackageTask:
     def task(self, request_id) -> PackageTask:
         return PackageTask(request_id)
 
+    @pytest.fixture(autouse=True)
+    def mock_open(self, mocker):
+        mocker.patch("web.vital_records.tasks.package.open")
+
     def test_task(self, request_id, task):
         assert task.group == "vital-records"
         assert task.name == "package"
