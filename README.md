@@ -64,7 +64,7 @@
 | web/vital\_records/views/death.py                                                               |       71 |       25 |        0 |        0 |     65% |16-28, 36-48, 68-74, 85-95 |
 | web/vital\_records/views/marriage.py                                                            |       39 |       26 |        0 |        0 |     33% |10-36, 44-57, 64-70 |
 | web/wsgi.py                                                                                     |        6 |        6 |        0 |        0 |      0% |      8-16 |
-|                                                                                       **TOTAL** | **1699** |  **204** |  **180** |   **23** | **87%** |           |
+| **TOTAL**                                                                                       | **1699** |  **204** |  **180** |   **23** | **87%** |           |
 
 
 ## Setup coverage badge
