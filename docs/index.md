@@ -13,8 +13,8 @@ The DDRC app supports the following vital records requests:
 | Vital Record Type    | Status      | Launch                                                                                                    |
 | -------------------- | ----------- | --------------------------------------------------------------------------------------------------------- |
 | Birth Certificate    | Live        | [08/2025](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/releases/tag/2025.08.1) |
-| Marriage Certificate | In progress | TBD                                                                                                       |
-| Death Certificate    | To do       | TBD                                                                                                       |
+| Marriage Certificate | Live        | [09/2025](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/releases/tag/2025.09.1) |
+| Death Certificate    | Live        | [10/2025](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/releases/tag/2025.10.1) |
 
 ## Technical and security details
 
