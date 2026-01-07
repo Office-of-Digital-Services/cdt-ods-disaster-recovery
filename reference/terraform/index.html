@@ -1,0 +1,1553 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://Office-of-Digital-Services.github.io/cdt-ods-disaster-recovery/reference/terraform/">
+      
+      
+        <link rel="prev" href="../infrastructure/">
+      
+      
+        <link rel="next" href="../analytics/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Terraform - Office-of-Digital-Services/cdt-ods-disaster-recovery: Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.2/css/all.css">
+    
+      <link rel="stylesheet" href="../../styles/theme.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#terraform" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Office-of-Digital-Services/cdt-ods-disaster-recovery: Documentation" class="md-header__button md-logo" aria-label="Office-of-Digital-Services/cdt-ods-disaster-recovery: Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Office-of-Digital-Services/cdt-ods-disaster-recovery: Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Terraform
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../concepts/" class="md-tabs__link">
+          
+  
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/development/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../application-logic/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Office-of-Digital-Services/cdt-ods-disaster-recovery: Documentation" class="md-nav__button md-logo" aria-label="Office-of-Digital-Services/cdt-ods-disaster-recovery: Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Office-of-Digital-Services/cdt-ods-disaster-recovery: Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vital Records Request
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/infrastructure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Making infrastructure changes via Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Making a regular release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/hotfix/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Making a hotfix release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/rollback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Making a rollback release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../application-logic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application logic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commits-branches-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits, branches, and merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../infrastructure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrastructure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#workspaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Directory structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#root-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        modules/
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pipeline/
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        secrets/
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#root-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root modules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Root modules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maintf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        main.tf
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modulestf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        modules.tf
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#securitytf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        security.tf
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alertstf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        alerts.tf
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-modules-terraformmodules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core modules (terraform/modules/*)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core modules (terraform/modules/*)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        network
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key_vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        key_vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#email" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        email
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        application
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managing-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managing secrets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managing secrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#azure-key-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Key Vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terraform-and-key-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terraform and Key Vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-secret-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual secret management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local development
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#infrastructure-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Infrastructure pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Infrastructure pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terraform-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        terraform plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terraform-apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        terraform apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modular-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modular pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analytics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="terraform">Terraform<a class="headerlink" href="#terraform" title="Permanent link"> ¶</a></h1>
+<p>This document provides a detailed reference for the Terraform configuration that defines the project&rsquo;s infrastructure. <a href="https://developer.hashicorp.com/terraform">Terraform</a> is used to implement the principle of Infrastructure as Code (IaC), which allows us to manage and provision our infrastructure through code and configuration files.</p>
+<p>The core Terraform configuration is located in the <a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform"><code>/terraform</code> directory</a>.</p>
+<p>The primary goal of this configuration is to create a secure, repeatable, and modular infrastructure on Microsoft Azure. The <a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs">Terraform Azure Provider</a> defines the necessary resource blocks to enable this configuration in Terraform.</p>
+<h2 id="workspaces">Workspaces<a class="headerlink" href="#workspaces" title="Permanent link"> ¶</a></h2>
+<p>The project uses <a href="https://developer.hashicorp.com/terraform/cli/workspaces">Terraform Workspaces</a> to manage and deploy to multiple environments from the same codebase. Each workspace corresponds to a distinct environment and has its own state file, which prevents environments from interfering with each other.</p>
+<p>The workspaces are:</p>
+<ul>
+<li><strong><code>dev</code></strong>: Corresponds to the <code>dev</code> environment.</li>
+<li><strong><code>test</code></strong>: Corresponds to the <code>test</code> environment.</li>
+<li><strong><code>default</code></strong>: Corresponds to the <code>prod</code> environment.</li>
+</ul>
+<p>While each workspace is distinct with its own state file, all 3 state files are stored in the <code>prod</code> environment.</p>
+<p>The selection of the workspace is automated in the Azure DevOps pipeline. The <code>terraform/pipeline/workspace.py</code> script inspects the Git branch or tag that triggered the pipeline to determine which workspace to use. For example, a pull request to <code>main</code> will deploy to the <code>dev</code> environment, while a release tag will deploy to <code>test</code> or <code>prod</code>.</p>
+<p>For more details on each Azure environment, see the <a href="../infrastructure/#environments">Environments section in the Infrastructure reference</a>.</p>
+<h2 id="directory-structure">Directory structure<a class="headerlink" href="#directory-structure" title="Permanent link"> ¶</a></h2>
+<p>The <code>/terraform</code> directory is organized to separate concerns between the root configuration, reusable modules, and Azure DevOps pipeline logic.</p>
+<div class="highlight"><pre><span></span><code>/terraform
+├── alerts.tf
+├── azure-pipelines.yml
+├── main.tf
+├── modules.tf
+├── security.tf
+├── variables.tf
+├── modules/
+│   ├── application/
+│   ├── database/
+│   ├── email/
+│   ├── key_vault/
+│   ├── monitoring/
+│   ├── network/
+│   └── storage/
+├── pipeline/
+│   ├── deploy.yml
+│   ├── tags.py
+│   └── workspace.py
+└── secrets/
+    ├── file.sh
+    ├── read.sh
+    └── value.sh
+</code></pre></div>
+<h3 id="root-files">Root files<a class="headerlink" href="#root-files" title="Permanent link"> ¶</a></h3>
+<ul>
+<li><code>main.tf</code>: The entrypoint for the root module. It configures the Azure provider and backend state storage.</li>
+<li><code>variables.tf</code>: Defines input variables for the root module, such as subscription and object IDs.</li>
+<li><code>modules.tf</code>: The central wiring file that instantiates all the core modules from the <code>modules/</code> directory and connects their inputs and outputs.</li>
+<li><code>security.tf</code>: Contains centralized security configurations, such as Network Security Group (NSG) rules and Key Vault access policies that span across multiple modules.</li>
+<li><code>alerts.tf</code>: Defines monitoring alerts, such as the Application Insights error alert.</li>
+</ul>
+<h3 id="modules"><code>modules/</code><a class="headerlink" href="#modules" title="Permanent link"> ¶</a></h3>
+<p>This directory contains reusable, self-contained modules for different parts of the infrastructure. Each subdirectory is a separate Terraform module.</p>
+<h3 id="pipeline"><code>pipeline/</code><a class="headerlink" href="#pipeline" title="Permanent link"> ¶</a></h3>
+<p>Contains the definitions for the Azure DevOps pipeline that automates <code>terraform plan</code> and <code>terraform apply</code>.</p>
+<h3 id="secrets"><code>secrets/</code><a class="headerlink" href="#secrets" title="Permanent link"> ¶</a></h3>
+<p>Includes helper scripts for manually reading and writing secrets to Azure Key Vault.</p>
+<h2 id="root-modules">Root modules<a class="headerlink" href="#root-modules" title="Permanent link"> ¶</a></h2>
+<p>The <code>.tf</code> files in the root of the <code>/terraform</code> directory define the core configuration and orchestrate the modules.</p>
+<h3 id="maintf"><code>main.tf</code><a class="headerlink" href="#maintf" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/main.tf"><code>terraform/main.tf</code></a></p>
+</div>
+<p>This file is the primary entrypoint for the Terraform configuration. It is responsible for:</p>
+<ul>
+<li><strong>Provider Configuration</strong>: It declares the required providers, <code>azurerm</code> and <code>random</code>, and their versions.</li>
+<li><strong>Backend Configuration</strong>: It configures the <code>azurerm</code> backend, which tells Terraform to store its state file in an Azure Storage Account. This is critical for a team environment to ensure that the state is shared and locked to prevent concurrent modifications.</li>
+<li><strong>Core Data Lookups</strong>: It uses data sources to fetch information about the Azure environment at runtime, such as the current client configuration (<code>azurerm_client_config</code>) and the main resource group (<code>azurerm_resource_group</code>).</li>
+</ul>
+<h3 id="modulestf"><code>modules.tf</code><a class="headerlink" href="#modulestf" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules.tf"><code>terraform/modules.tf</code></a></p>
+</div>
+<p>This file acts as the central nervous system for the infrastructure, connecting all the individual modules defined in the <code>/terraform/modules</code> directory.</p>
+<ul>
+<li><strong>Orchestration</strong>: It instantiates each core module (<code>network</code>, <code>monitoring</code>, <code>database</code>, etc.).</li>
+<li><strong>Wiring</strong>: It passes the outputs from one module as inputs to another. This creates a dependency graph and ensures resources are created in the correct order. For example, the network module&rsquo;s subnet IDs are passed to the application and database modules.</li>
+<li><strong>Consistent Naming</strong>: It defines a <code>locals</code> block that establishes a consistent naming convention for resources across all modules, based on the environment.</li>
+</ul>
+<p>Here is an example of how <code>modules.tf</code> wires the <code>monitoring</code> and <code>network</code> modules together:</p>
+<div class="highlight"><pre><span></span><code><span class="kr">module</span><span class="w"> </span><span class="nv">&quot;monitoring&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">source</span><span class="w">                        </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;./modules/monitoring&quot;</span>
+<span class="c1">  # ... other variables</span>
+<span class="p">}</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;network&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">source</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;./modules/network&quot;</span>
+<span class="w">  </span><span class="na">log_analytics_workspace_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">module.monitoring.log_analytics_workspace_id</span>
+<span class="c1">  # ... other variables</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="securitytf"><code>security.tf</code><a class="headerlink" href="#securitytf" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/security.tf"><code>terraform/security.tf</code></a></p>
+</div>
+<p>This file centralizes security-related configurations that span across multiple modules. This separation of concerns makes it easier to manage and audit security settings. Its responsibilities include:</p>
+<ul>
+<li><strong>Key Vault Access Policies</strong>: It creates <code>azurerm_key_vault_access_policy</code> resources to grant the managed identities of the application&rsquo;s container apps (<code>web</code>, <code>worker</code>, <code>functions</code>) the necessary permissions to read secrets from Key Vault.</li>
+<li><strong>Network Security Group (NSG) Rules</strong>: It defines the specific <code>azurerm_network_security_rule</code> resources that allow or deny traffic between the different subnets. For example, it contains rules to allow the application subnet to communicate with the database subnet on the correct port.</li>
+</ul>
+<h3 id="alertstf"><code>alerts.tf</code><a class="headerlink" href="#alertstf" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/alerts.tf"><code>terraform/alerts.tf</code></a></p>
+</div>
+<p>This file is dedicated to defining monitoring alerts for the application. It creates an <code>azurerm_monitor_scheduled_query_rules_alert_v2</code> resource that:</p>
+<ul>
+<li>Runs a query against Application Insights logs on a schedule (e.g., every 5 minutes).</li>
+<li>The query checks for exceptions or high-severity traces.</li>
+<li>If the query returns any results, it triggers an alert that notifies the team via the action group configured in the <code>monitoring</code> module.</li>
+</ul>
+<h2 id="core-modules-terraformmodules">Core modules (<code>terraform/modules/*</code>)<a class="headerlink" href="#core-modules-terraformmodules" title="Permanent link"> ¶</a></h2>
+<p>The <code>terraform/modules/</code> directory contains a set of reusable modules, each responsible for a specific piece of the infrastructure. This modular approach makes the configuration easier to manage and reason about.</p>
+<p>The modules below are reflected in more-or-less &ldquo;dependency&rdquo; order, e.g. we need the network to exist before we can create a database, and that has to exist before we can create the apps.</p>
+<h3 id="network"><code>network</code><a class="headerlink" href="#network" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/network"><code>terraform/modules/network/</code></a></p>
+</div>
+<p>Creates the foundational networking resources for the application.</p>
+<p><strong>Key resources</strong>:</p>
+<ul>
+<li><code>azurerm_virtual_network</code>: The main VNet for the environment.</li>
+<li><code>azurerm_subnet</code>: Creates multiple subnets for different components (e.g., <code>public</code>, <code>worker</code>, <code>db</code>, <code>key_vault</code>).</li>
+<li><code>azurerm_nat_gateway</code>: Provides outbound internet access for resources in the private subnets.</li>
+<li><code>azurerm_network_security_group</code>: Defines NSGs to control traffic flow.</li>
+</ul>
+<h3 id="monitoring"><code>monitoring</code><a class="headerlink" href="#monitoring" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/monitoring"><code>terraform/modules/monitoring/</code></a></p>
+</div>
+<p>Sets up the shared monitoring, logging, and alerting infrastructure.</p>
+<p><strong>Key resources</strong>:</p>
+<ul>
+<li><code>azurerm_log_analytics_workspace</code>: The central workspace for collecting logs and metrics.</li>
+<li><code>azurerm_application_insights</code>: The Application Performance Management (APM) service for the application.</li>
+<li><code>azurerm_monitor_action_group</code>: Defines a group of actions (like sending an email or calling a webhook) to take when an alert is triggered.</li>
+</ul>
+<h3 id="key_vault"><code>key_vault</code><a class="headerlink" href="#key_vault" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/key_vault"><code>terraform/modules/key_vault/</code></a></p>
+</div>
+<p>Deploys a secure and private Azure Key Vault for managing secrets.</p>
+<p><strong>Key resources</strong>:</p>
+<ul>
+<li><code>azurerm_key_vault</code>: The Key Vault instance.</li>
+<li><code>azurerm_private_endpoint</code>: Exposes the Key Vault on a private IP address within the VNet.</li>
+<li><code>azurerm_key_vault_access_policy</code>: Base policies for administrative groups.</li>
+</ul>
+<h3 id="database"><code>database</code><a class="headerlink" href="#database" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/database"><code>terraform/modules/database/</code></a></p>
+</div>
+<p>Deploys the PostgreSQL database for the application.</p>
+<p><strong>Key resources</strong>:</p>
+<ul>
+<li><code>azurerm_postgresql_flexible_server</code>: The managed PostgreSQL server.</li>
+<li><code>azurerm_private_endpoint</code>: Exposes the database on a private IP address within the VNet.</li>
+<li><code>azurerm_key_vault_secret</code>: Creates a secret in Key Vault for the generated database password.</li>
+</ul>
+<h3 id="storage"><code>storage</code><a class="headerlink" href="#storage" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/storage"><code>terraform/modules/storage/</code></a></p>
+</div>
+<p>Creates the Azure Storage Account and file shares required by the application.</p>
+<p><strong>Key resources</strong>:</p>
+<ul>
+<li><code>azurerm_storage_account</code>: The main storage account.</li>
+<li><code>azurerm_storage_share</code>: Creates file shares for <code>config</code> and <code>requests</code>.</li>
+<li><code>azurerm_private_endpoint</code>: Exposes the storage account&rsquo;s blob and file services on private IP addresses.</li>
+</ul>
+<h3 id="email"><code>email</code><a class="headerlink" href="#email" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/email"><code>terraform/modules/email/</code></a></p>
+</div>
+<p>Configures the Azure Communication Service for sending emails.</p>
+<p><strong>Key resources</strong>:</p>
+<ul>
+<li><code>azurerm_communication_service</code>: The core communication service.</li>
+<li><code>azurerm_email_communication_service</code>: The email-specific service.</li>
+<li><code>azurerm_email_communication_service_domain</code>: Configures the sending domain (<code>AzureManaged</code> for non-prod, <code>CustomerManaged</code> for prod).</li>
+</ul>
+<h3 id="application"><code>application</code><a class="headerlink" href="#application" title="Permanent link"> ¶</a></h3>
+<div class="admonition abstract">
+<p class="admonition-title">Source</p>
+<p><a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tree/main/terraform/modules/application"><code>terraform/modules/application/</code></a></p>
+</div>
+<p>Deploys the application components. This is the most complex module, bringing together many of the resources from other modules.</p>
+<p><strong>Key resources</strong>:</p>
+<ul>
+<li><code>azurerm_container_app_environment</code>: Creates two environments, one for the public-facing <code>web</code> app and another for the internal <code>worker</code> and <code>functions</code> apps.</li>
+<li><code>azurerm_container_app</code>: Deploys the <code>web</code>, <code>worker</code>, and <code>functions</code> container apps.</li>
+<li><code>azurerm_user_assigned_identity</code>: Creates managed identities for each container app to enable secure access to other Azure resources (like Key Vault).</li>
+<li><code>azurerm_key_vault_secret</code>: Creates application-specific secrets in Key Vault.</li>
+</ul>
+<h2 id="managing-secrets">Managing secrets<a class="headerlink" href="#managing-secrets" title="Permanent link"> ¶</a></h2>
+<p>A robust secret management strategy is in place to handle sensitive information like passwords, API keys, and connection strings.</p>
+<h3 id="azure-key-vault">Azure Key Vault<a class="headerlink" href="#azure-key-vault" title="Permanent link"> ¶</a></h3>
+<p>The primary storage for all secrets is Azure Key Vault. This provides a secure, centralized repository with access control and auditing.</p>
+<h3 id="terraform-and-key-vault">Terraform and Key Vault<a class="headerlink" href="#terraform-and-key-vault" title="Permanent link"> ¶</a></h3>
+<ul>
+<li>Terraform is configured to create secrets in Key Vault (e.g., generated database passwords).</li>
+<li>The application container apps are configured to read secrets directly from Key Vault using their managed identities. The <code>secrets</code> blocks in the <code>azurerm_container_app</code> resources and the associated <code>azurerm_key_vault_access_policy</code> resources manage this.</li>
+</ul>
+<h3 id="manual-secret-management">Manual secret management<a class="headerlink" href="#manual-secret-management" title="Permanent link"> ¶</a></h3>
+<p>For secrets that are not generated by Terraform (e.g., third-party API keys), the <code>terraform/secrets/</code> directory contains helper scripts:</p>
+<ul>
+<li><code>value.sh</code>: Sets a secret from a string value.</li>
+<li><code>file.sh</code>: Sets a secret from the contents of a file.</li>
+</ul>
+<h3 id="local-development">Local development<a class="headerlink" href="#local-development" title="Permanent link"> ¶</a></h3>
+<p>For local development, the <code>terraform.tfvars</code> file is used to provide secrets and other variables to Terraform. This file is explicitly ignored by Git (via <code>.gitignore</code>) to prevent accidental check-in of sensitive information. A <code>terraform.tfvars.sample</code> file is provided as a template.</p>
+<p>This approach ensures that secrets are not hard-coded in the codebase and are securely managed throughout the development and deployment lifecycle.</p>
+<h2 id="infrastructure-pipeline">Infrastructure pipeline<a class="headerlink" href="#infrastructure-pipeline" title="Permanent link"> ¶</a></h2>
+<p>The pipeline is triggered by PRs against the <code>main</code> branch and by the GitHub Actions <a href="https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/.github/workflows/deploy.yml"><code>deploy</code> workflow</a>. The key characteristics of the pipeline are:</p>
+<h3 id="terraform-plan"><code>terraform plan</code><a class="headerlink" href="#terraform-plan" title="Permanent link"> ¶</a></h3>
+<p>For pull requests targeting the <code>main</code> branch, the pipeline runs a <code>terraform plan</code> to show a preview of the changes. This allows for a review of the potential impact before any changes are applied.</p>
+<h3 id="terraform-apply"><code>terraform apply</code><a class="headerlink" href="#terraform-apply" title="Permanent link"> ¶</a></h3>
+<p>The <code>terraform apply</code> command is run when:</p>
+<ul>
+<li>A pull request is merged into the <code>main</code> branch (deploying to the <code>dev</code> environment).</li>
+<li>A release candidate tag (e.g., <code>2025.10.1-rc1</code>) is pushed (deploying to the <code>test</code> environment).</li>
+<li>A release tag (e.g., <code>2025.10.1</code>) is pushed (deploying to the <code>prod</code> environment).</li>
+</ul>
+<h3 id="modular-pipeline">Modular pipeline<a class="headerlink" href="#modular-pipeline" title="Permanent link"> ¶</a></h3>
+<p>The core deployment logic is encapsulated in the <code>terraform/pipeline/deploy.yml</code> template, which is called by the main pipeline. This template handles installing Terraform, setting up authentication, and running the Terraform commands.</p>
+<h3 id="dynamic-configuration">Dynamic configuration<a class="headerlink" href="#dynamic-configuration" title="Permanent link"> ¶</a></h3>
+<ul>
+<li>The <code>terraform/pipeline/workspace.py</code> script dynamically determines the correct Terraform workspace (<code>dev</code>, <code>test</code>, or <code>default</code>) to use based on the source branch or tag.</li>
+<li>The <code>terraform/pipeline/tags.py</code> script determines the container image tag to be deployed.</li>
+</ul>
+<p>While the primary CI/CD automation for this project is done through GitHub Actions, we use an Azure Pipeline for a couple of reasons:</p>
+<ul>
+<li>Easier authentication with the Azure API using a service connnection</li>
+<li>Log output is hidden, avoiding accidentally leaking secrets</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.expand", "navigation.tabs", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
