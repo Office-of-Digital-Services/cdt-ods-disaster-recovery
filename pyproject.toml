@@ -13,7 +13,7 @@ dependencies = [
     "django-azure-communication-email==1.6.0",
     "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@c635773a75e7f184a9382748afcef6d5a705b2d6",
     "django-csp==3.8",
-    "django-fsm-2==4.0.0",
+    "django-fsm-2==4.1.0",
     "django-google-sso==9.0.2",
     "django-q2==1.8.0",
     "gunicorn==23.0.0",
