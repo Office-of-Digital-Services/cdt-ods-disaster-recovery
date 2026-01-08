@@ -15,7 +15,7 @@ dependencies = [
     "django-csp==3.8",
     "django-fsm-2==4.1.0",
     "django-google-sso==9.0.2",
-    "django-q2==1.8.0",
+    "django-q2==1.9.0",
     "gunicorn==23.0.0",
     "opentelemetry-instrumentation-psycopg==0.59b0",
     "psycopg[binary,pool]==3.3.2",
