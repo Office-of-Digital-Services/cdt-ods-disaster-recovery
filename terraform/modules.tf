@@ -10,6 +10,7 @@ locals {
   key_vault_secret_uri_prefix       = "https://${local.key_vault_name}.vault.azure.net/secrets"
   location                          = data.azurerm_resource_group.main.location
   log_analytics_workspace_name      = "CDT-OET-PUB-DDRC-${local.env_letter}-001"
+  monitor_workspace_name            = "AMW-CDT-PUB-VIP-DDRC-${local.env_letter}-001"
   nat_gateway_name                  = lower("nat-cdt-pub-vip-ddrc-${local.env_letter}-001")
   nsg_prefix                        = "NSG-CDT-PUB-VIP-DDRC-${local.env_letter}"
   private_endpoint_prefix           = lower("pe-cdt-pub-vip-ddrc-${local.env_letter}")
@@ -71,6 +72,7 @@ module "monitoring" {
   resource_group_name           = local.resource_group_name
   location                      = local.location
   log_analytics_workspace_name  = local.log_analytics_workspace_name
+  monitor_workspace_name        = local.monitor_workspace_name
   application_insights_name     = local.application_insights_name
   action_group_name             = "Slack channel email"
   action_group_short_name       = "slack-notify"

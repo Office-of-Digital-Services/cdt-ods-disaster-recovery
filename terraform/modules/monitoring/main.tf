@@ -10,6 +10,16 @@ resource "azurerm_log_analytics_workspace" "main" {
   }
 }
 
+resource "azurerm_monitor_workspace" "main" {
+  name                = var.monitor_workspace_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
 resource "azurerm_application_insights" "main" {
   name                = var.application_insights_name
   application_type    = "web"
