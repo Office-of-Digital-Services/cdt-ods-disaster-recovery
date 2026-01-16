@@ -117,7 +117,7 @@ jobs:
             -d "scope=499b84ac-1321-427f-aa17-267ca6975798/.default" \
             "https://login.microsoftonline.com/${{ secrets.AZURE_TENANT_ID }}/oauth2/v2.0/token")
 
-          AZURE_DEVOPS_EXT_PAT=$(echo "$TOKEN_RESPONSE" | jq -r '.access_token // empty')
+          export AZURE_DEVOPS_EXT_PAT=$(echo "$TOKEN_RESPONSE" | jq -r '.access_token // empty')
 
           if [ -z "$AZURE_DEVOPS_EXT_PAT" ]; then
             echo "Failed to get Azure DevOps token"
