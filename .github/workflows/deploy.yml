@@ -117,14 +117,12 @@ jobs:
             -d "scope=499b84ac-1321-427f-aa17-267ca6975798/.default" \
             "https://login.microsoftonline.com/${{ secrets.AZURE_TENANT_ID }}/oauth2/v2.0/token")
 
-          AZURE_DEVOPS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.access_token // empty')
+          AZURE_DEVOPS_EXT_PAT=$(echo "$TOKEN_RESPONSE" | jq -r '.access_token // empty')
 
-          if [ -z "$AZURE_DEVOPS_TOKEN" ]; then
+          if [ -z "$AZURE_DEVOPS_EXT_PAT" ]; then
             echo "Failed to get Azure DevOps token"
             exit 1
           fi
-
-          export AZURE_DEVOPS_EXT_PAT=$AZURE_DEVOPS_TOKEN
 
           RUN_ID=$(az pipelines run \
             --id "${{ secrets.ADO_PIPELINE_ID }}" \
@@ -133,25 +131,11 @@ jobs:
             --branch "${{ github.ref }}" \
             --commit-id ${{ github.sha }} \
             --query "id" -o tsv)
-          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
-
-      - name: Wait for Azure pipeline run to complete
-        run: |
-          az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-
-          AZURE_DEVOPS_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken --output tsv)
-
-          if [ -z "$AZURE_DEVOPS_TOKEN" ]; then
-            echo "Failed to get Azure DevOps token"
-            exit 1
-          fi
-
-          export AZURE_DEVOPS_EXT_PAT=$AZURE_DEVOPS_TOKEN
 
           echo "Waiting for Azure DevOps Pipeline run to complete..."
           while true; do
             PIPELINE_STATUS=$(az pipelines runs show \
-              --id ${{ steps.trigger_pipeline.outputs.run_id }} \
+              --id $RUN_ID \
               --org "${{ secrets.ADO_ORG_URL }}" \
               --project "${{ secrets.ADO_PROJECT }}" \
               --query "status" -o tsv)
@@ -160,7 +144,7 @@ jobs:
 
             if [[ "$PIPELINE_STATUS" == "completed" ]]; then
               PIPELINE_RESULT=$(az pipelines runs show \
-                --id ${{ steps.trigger_pipeline.outputs.run_id }} \
+                --id $RUN_ID \
                 --org "${{ secrets.ADO_ORG_URL }}" \
                 --project "${{ secrets.ADO_PROJECT }}" \
                 --query "result" -o tsv)
