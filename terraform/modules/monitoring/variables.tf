@@ -15,6 +15,11 @@ variable "log_analytics_workspace_name" {
   type        = string
 }
 
+variable "monitor_workspace_name" {
+  description = "The name for the Azure Monitor Workspace."
+  type        = string
+}
+
 variable "application_insights_name" {
   description = "The name for the Application Insights instance."
   type        = string
