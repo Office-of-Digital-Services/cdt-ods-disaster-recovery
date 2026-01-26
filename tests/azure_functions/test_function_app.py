@@ -268,6 +268,16 @@ def test_select_search_results_no_data():
         ({}, "_No additional details found._\n"),
         ({"outerMessage": "Error msg"}, "*Message*: Error msg\n*Details*: \n"),
         ({"details": "This is just a string."}, "*Message*: \n*Details*: This is just a string.\n"),
+        (
+            {
+                "details": (
+                    '[{"message": "Error", "severityLevel": "Error"}, '
+                    '{"message": "Error", "parsedStack": "Traceback...", "severityLevel": "Error"}]'
+                )
+            },
+            "*Message*: \n*Details*:\n```\n\n```\n",
+        ),
+        ({"details": None}, "*Message*: \n*Details*: N/A\n"),
     ],
 )
 def test_format_search_results(data, expected_result):

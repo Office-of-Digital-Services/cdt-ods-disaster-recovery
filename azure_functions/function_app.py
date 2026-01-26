@@ -126,7 +126,7 @@ def format_search_results(data: dict) -> str:
             formatted_lines.append(f"*Details*:\n```\n{stack}\n```")
         else:
             formatted_lines.append(format_item("Details", details))
-    except json.JSONDecodeError:
+    except (json.JSONDecodeError, TypeError):
         formatted_lines.append(format_item("Details", details))
 
     formatted_message = "\n".join(formatted_lines) + "\n"
