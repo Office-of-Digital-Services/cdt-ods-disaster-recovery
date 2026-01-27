@@ -90,16 +90,16 @@ def select_search_results(data: dict) -> dict:
     """
     Selects specific columns from the full log details data.
     """
-    json_columns: list[dict] = data["columns"]
+    json_columns: list[dict] = data.get("columns", [])
     columns = [col["name"] for col in json_columns]
-    rows: list[list[str | None | int]] = data["rows"]
+    rows: list[list[str | None | int]] = data.get("rows", [])
+    desired_columns = ["outerMessage", "details"]
 
-    selected_columns = ["outerMessage", "details"]
-    selected_columns_indexes = {col: columns.index(col) for col in selected_columns}
+    available_indexes = {col: columns.index(col) for col in desired_columns if col in columns}
 
     details = {}
     for row in rows:  # only one row expected but loop anyway
-        entry = {col: row[selected_columns_indexes[col]] for col in selected_columns}
+        entry = {col: row[idx] for col, idx in available_indexes.items()}
         details.update(entry)
 
     return details
@@ -126,7 +126,7 @@ def format_search_results(data: dict) -> str:
             formatted_lines.append(f"*Details*:\n```\n{stack}\n```")
         else:
             formatted_lines.append(format_item("Details", details))
-    except json.JSONDecodeError:
+    except (json.JSONDecodeError, TypeError):
         formatted_lines.append(format_item("Details", details))
 
     formatted_message = "\n".join(formatted_lines) + "\n"

@@ -222,9 +222,43 @@ def test_fetch_search_results_error(mocker, mock_api_setup):
 
 
 def test_select_search_results(log_search_result):
-    """Test the selection logic."""
+    """Test the selection logic with complete data."""
     result = select_search_results(log_search_result)
     expected = {"outerMessage": "Error msg", "details": "JSON details"}
+
+    assert result == expected
+
+
+def test_select_search_results_missing_columns(log_search_result):
+    """Test the selection logic when a column is missing."""
+    log_search_result["columns"].pop(2)  # remove "outerMessage" column
+    log_search_result["rows"][0].pop(2)  # remove corresponding data
+    result = select_search_results(log_search_result)
+    expected = {"details": "JSON details"}
+
+    assert result == expected
+
+
+def test_select_search_results_details_is_json_array(log_search_result):
+    """Test the selection logic when the details data is a JSON array."""
+    details_array = json.dumps(
+        [
+            {"message": "Wrapper Error", "severityLevel": "Error"},
+            {"message": "Actual Python Error", "parsedStack": "Traceback...", "severityLevel": "Error"},
+        ]
+    )
+    log_search_result["rows"][0][3] = details_array  # update "details" data
+    result = select_search_results(log_search_result)
+    expected = {"outerMessage": "Error msg", "details": details_array}
+
+    assert result == expected
+
+
+def test_select_search_results_no_data():
+    """Test the selection logic when there is no data."""
+    result = select_search_results({})
+    expected = {}
+
     assert result == expected
 
 
@@ -234,6 +268,16 @@ def test_select_search_results(log_search_result):
         ({}, "_No additional details found._\n"),
         ({"outerMessage": "Error msg"}, "*Message*: Error msg\n*Details*: \n"),
         ({"details": "This is just a string."}, "*Message*: \n*Details*: This is just a string.\n"),
+        (
+            {
+                "details": (
+                    '[{"message": "Error", "severityLevel": "Error"}, '
+                    '{"message": "Error", "parsedStack": "Traceback...", "severityLevel": "Error"}]'
+                )
+            },
+            "*Message*: \n*Details*:\n```\n\n```\n",
+        ),
+        ({"details": None}, "*Message*: \n*Details*: N/A\n"),
     ],
 )
 def test_format_search_results(data, expected_result):
