@@ -6,6 +6,7 @@ import textwrap
 
 import azure.functions as func
 import requests
+import urllib.parse
 
 app = func.FunctionApp()
 
@@ -23,6 +24,35 @@ def format_item(key: str, value: str | None) -> str:
     if value is None:
         value = "N/A"
     return f"*{key}*: {value}"
+
+
+def make_management_link(alert_id: str, resource_group: str, alert_target_ids: list[str]) -> str:
+    """
+    Generates an alert management link to the Azure Portal for the given alert.
+    """
+    if "N/A" in (alert_id, resource_group, alert_target_ids):
+        return "#"
+
+    base_url = "https://portal.azure.com/#view/Microsoft_Azure_Monitoring_Alerts/AlertDetails.ReactView/alertId~/"
+
+    alert_parts = alert_id.strip().split("/")
+    subscription_id = alert_parts[2]
+    alert_guid = alert_parts[-1]
+
+    alert_target_id = alert_target_ids[0]
+    target_resource_name_list = alert_target_id.strip().split("/")
+    target_resource_name = "/".join(target_resource_name_list[-4:])
+
+    composite_path = (
+        f"/subscriptions/{subscription_id}"
+        f"/resourcegroups/{resource_group}"
+        f"/{target_resource_name}"
+        f"/providers/Microsoft.AlertsManagement/alerts/{alert_guid}"
+    )
+    # URL Encode the path (converts '/' to '%2F')
+    encoded_path = urllib.parse.quote(composite_path, safe="")
+
+    return f"{base_url}{encoded_path}"
 
 
 def format_alert_date(date_str: str | None) -> str:
@@ -156,7 +186,9 @@ def build_slack_message(data: dict, details: str) -> str:
         emoji_prefix = "🚨 "
     severity = essentials.get("severity", "N/A")
     fired_date_time = format_alert_date(essentials.get("firedDateTime"))
-    investigation_link = essentials.get("investigationLink", "#")
+    resource_group = essentials.get("targetResourceGroup", "N/A")
+    alert_target_ids = essentials.get("alertTargetIDs", ["N/A"])
+    management_link = make_management_link(alert_id, resource_group, alert_target_ids)
 
     alert_id_str = format_item("Alert ID", alert_id)
     severity_str = format_item("Severity", severity)
@@ -169,7 +201,7 @@ def build_slack_message(data: dict, details: str) -> str:
         f"{alert_id_str}\n\n"
         f"---------------------------------------------------\n"
         f"{details}"
-        f"<{investigation_link}|Click here to investigate in Azure Portal>"
+        f"<{management_link}|Click here to manage alert in Azure Portal>"
     )
 
     return message
