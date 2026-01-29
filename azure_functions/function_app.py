@@ -30,7 +30,7 @@ def make_management_link(alert_id: str, resource_group: str, alert_target_ids: l
     """
     Generates an alert management link to the Azure Portal for the given alert.
     """
-    if "N/A" in (alert_id, resource_group, alert_target_ids):
+    if "N/A" in [alert_id, resource_group, *alert_target_ids]:
         return "#"
 
     base_url = "https://portal.azure.com/#view/Microsoft_Azure_Monitoring_Alerts/AlertDetails.ReactView/alertId~/"

@@ -115,8 +115,10 @@ def test_format_item(key, value, expected_output):
                 "Microsoft.AlertsManagement%2Falerts%2F67890"
             ),
         ),
-        # Missing Data (N/A)
-        ("N/A", "rg-cdt-pub-vip-ddrc-d-001", ["N/A"], "#"),
+        # Missing Data (N/A in string)
+        ("N/A", "rg-cdt-pub-vip-ddrc-d-001", ["/subscriptions/12345"], "#"),
+        # Missing Data (N/A in list)
+        ("/subscriptions/12345/providers/Microsoft.AlertsManagement/alerts/67890", "rg-cdt-pub-vip-ddrc-d-001", ["N/A"], "#"),
         # Unexpected alert_target_ids
         (
             "/subscriptions/12345/providers/Microsoft.AlertsManagement/alerts/67890",
