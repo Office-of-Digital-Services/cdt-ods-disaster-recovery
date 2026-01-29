@@ -12,6 +12,7 @@ from azure_functions.function_app import (
     format_item,
     format_raw_stack,
     format_search_results,
+    make_management_link,
     get_details_string,
     health_check,
     select_search_results,
@@ -56,7 +57,7 @@ def sample_alert_data():
     """Provides sample test alert data"""
     return {
         "essentials": {
-            "alertId": "alert-id-001",
+            "alertId": "/subscriptions/12345/providers/Microsoft.AlertsManagement/alerts/67890",
             "alertRule": "msqalert-cdt-pub-vip-ddrc-T-001",
             "severity": "Sev1",
             "firedDateTime": "2023-01-01T12:00:00.12345Z",
@@ -92,6 +93,49 @@ def mock_http_request(mocker):
 def test_format_item(key, value, expected_output):
     result = format_item(key, value)
     assert result == expected_output
+
+
+@pytest.mark.parametrize(
+    "alert_id, resource_group, alert_target_ids, expected_link",
+    [
+        # Valid Data
+        (
+            "/subscriptions/12345/providers/Microsoft.AlertsManagement/alerts/67890",
+            "rg-cdt-pub-vip-ddrc-d-001",
+            [
+                (
+                    "/subscriptions/12345/resourceGroups/rg-cdt-pub-vip-ddrc-d-001/providers/microsoft.insights/"
+                    "components/ai-cdt-pub-vip-ddrc-d-001"
+                )
+            ],
+            (
+                "https://portal.azure.com/#view/Microsoft_Azure_Monitoring_Alerts/AlertDetails.ReactView/alertId~/"
+                "%2Fsubscriptions%2F12345%2Fresourcegroups%2Frg-cdt-pub-vip-ddrc-d-001%2F"
+                "providers%2Fmicrosoft.insights%2Fcomponents%2Fai-cdt-pub-vip-ddrc-d-001%2Fproviders%2F"
+                "Microsoft.AlertsManagement%2Falerts%2F67890"
+            ),
+        ),
+        # Missing Data (N/A in string)
+        ("N/A", "rg-cdt-pub-vip-ddrc-d-001", ["/subscriptions/12345"], "#"),
+        # Missing Data (N/A in list)
+        ("/subscriptions/12345/providers/Microsoft.AlertsManagement/alerts/67890", "rg-cdt-pub-vip-ddrc-d-001", ["N/A"], "#"),
+        # Unexpected alert_target_ids
+        (
+            "/subscriptions/12345/providers/Microsoft.AlertsManagement/alerts/67890",
+            "rg-cdt-pub-vip-ddrc-d-001",
+            ["/subscriptions/12345"],
+            (
+                "https://portal.azure.com/#view/Microsoft_Azure_Monitoring_Alerts/AlertDetails.ReactView/alertId~/"
+                "%2Fsubscriptions%2F12345%2Fresourcegroups%2Frg-cdt-pub-vip-ddrc-d-001%2F"
+                "%2Fsubscriptions%2F12345"
+                "%2Fproviders%2FMicrosoft.AlertsManagement%2Falerts%2F67890"
+            ),
+        ),
+    ],
+)
+def test_make_management_link(alert_id, resource_group, alert_target_ids, expected_link):
+    result = make_management_link(alert_id, resource_group, alert_target_ids)
+    assert result == expected_link
 
 
 @pytest.mark.parametrize(
@@ -339,8 +383,7 @@ def test_build_slack_message(data_fixture_name, expected_heading, request):
     assert expected_heading in message
     assert "*Severity*: Sev1" in message
     assert "*Date*: 2023-01-01T12:00:00Z" in message
-    assert "*Alert ID*: alert-id-001" in message
-    assert "<http://link.to/portal|Click here to investigate in Azure Portal>" in message
+    assert "*Alert ID*: /subscriptions/12345/providers/Microsoft.AlertsManagement/alerts/67890" in message
     assert mock_details in message
 
 
