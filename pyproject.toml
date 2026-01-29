@@ -17,7 +17,7 @@ dependencies = [
     "django-google-sso==9.0.2",
     "django-q2==1.9.0",
     "gunicorn==24.1.1",
-    "opentelemetry-instrumentation-psycopg==0.59b0",
+    "opentelemetry-instrumentation-psycopg==0.60b1",
     "psycopg[binary,pool]==3.3.2",
     "pypdf==6.6.0",
     "requests==2.32.5",
