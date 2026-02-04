@@ -72,7 +72,7 @@ These steps were followed when setting up our Azure deployment for the first tim
 
 - CDT team creates the [resources that they own](../reference/infrastructure.md#ownership)
 - `terraform apply`
-- Set up Slack notifications by [creating a Slack email](https://slack.com/help/articles/206819278-Send-emails-to-Slack) for the [#notify-benefits](https://cal-itp.slack.com/archives/C022HHSEE3F) channel, then [setting it as a Secret in the Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-portal#add-a-secret-to-key-vault) named `slack-benefits-notify-email`
-- Set required [App Service configuration](../configuration/environment-variables.md) and [configuration](../configuration/data.md) by setting values in Key Vault (the mapping is defined in [app_service.tf](https://github.com/cal-itp/benefits/blob/main/terraform/app_service.tf))
+- Set up Slack notifications by [creating a Slack email](https://slack.com/help/articles/206819278-Send-emails-to-Slack) for the `#shared-cdt-ddrc-notify` channel, then [setting it as a Secret in the Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-portal#add-a-secret-to-key-vault) named `slack-ddrc-notify-email`
+- Set required Container App configuration by setting values in Key Vault (the mapping is defined in [app_web.tf](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/terraform/modules/application/app_web.tf) and [modules.tf](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/terraform/modules.tf))
 
 This is not a complete step-by-step guide; more a list of things to remember.

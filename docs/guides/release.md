@@ -7,12 +7,10 @@ A release is made by pushing an annotated tag. The name of the tag must use
 the version number format mentioned below. This kicks off a deployment to the
 production environment and creates a GitHub release. The version number for the
 app and the release will be the tag’s name. More details on the deployment steps
-can be found under [Workflows](./workflows.md).
+can be found in the [Deploy Workflow](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/blob/main/.github/workflows/deploy.yml).
 
-The list of releases can be found on the [repository Releases page](https://github.com/cal-itp/benefits/tags)
+The list of releases can be found on the [repository Releases page](https://github.com/Office-of-Digital-Services/cdt-ods-disaster-recovery/tags)
 on GitHub.
-
-[Start a new Release on Github](https://github.com/cal-itp/benefits/issues/new?labels=release&template=release.yml&title=Make+a+Release){ .md-button }
 
 ## 0. Decide on the new version number
 
