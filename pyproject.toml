@@ -9,7 +9,7 @@ requires-python = ">=3.12"
 maintainers = [{ name = "Compiler LLC", email = "dev@compiler.la" }]
 dependencies = [
     "azure-monitor-opentelemetry==1.8.1",
-    "Django==5.2.11",
+    "Django==6.0.2",
     "django-azure-communication-email==1.6.0",
     "django-cdt-identity @ git+https://github.com/Office-of-Digital-Services/django-cdt-identity.git@c635773a75e7f184a9382748afcef6d5a705b2d6",
     "django-csp==3.8",
